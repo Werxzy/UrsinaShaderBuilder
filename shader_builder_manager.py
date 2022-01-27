@@ -2,6 +2,10 @@ from ursina import *
 from shader_node import ShaderNode
 from shader_node import CurveRenderer
 
+'''
+manager file that holds all the nodes and builds the shader
+'''
+
 class ShaderBuilderManager(Entity):
 
     def __init__(self, **kwargs):
