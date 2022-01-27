@@ -1,6 +1,6 @@
 from ursina import *
 from shader_node import ShaderNode
-from shader_node import CurveRenderer
+from curve_renderer import CurveRenderer
 
 '''
 manager file that holds all the nodes and builds the shader
@@ -19,6 +19,7 @@ class ShaderBuilderManager(Entity):
 
         #test node
         nodes.append(ShaderNode(parent = self, instruction = 'Add'))
+        nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (1,0)))
 
         # line = CurveRenderer(0.005, 40, parent = self)
         # line.set_curve([Vec3(0,0,0), Vec3(0.1,0,0), Vec3(0.1,0,0), Vec3(0.1,1,0), Vec3(0.1,1,0), Vec3(0.2,1,0)])

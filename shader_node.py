@@ -1,6 +1,7 @@
 from ursina import *
 from shader_instructions import *
 from color_atlas import *
+from shader_node_connector import NodeConnector
 
 
 '''
@@ -34,9 +35,12 @@ class ShaderNode(Entity):
 
         self.ui_name = self.append_text(instruction)
         self.ui_divider1 = self.append_divider()
-        self.ui_desc = self.append_text(GLSL[instruction]['description'])
+        self.ui_desc = self.append_text(GLSL[instruction]['description'], size=0.7)
         self.ui_divider2 = self.append_divider()
-        self.ui_func = self.append_text(GLSL[instruction]['function'])
+        self.ui_func = self.append_text(GLSL[instruction]['function'], size=0.7)
+
+        self.ui_divider1.scale_x = self.ui_build_width
+        self.ui_divider2.scale_x = self.ui_build_width
 
         self.ui_back = self.build_back()
 
@@ -48,10 +52,11 @@ class ShaderNode(Entity):
     def append_divider(self):
         return Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001), color = c_node_dark)
 
-    def append_text(self, text, text_color = c_text):
-        ent = Text(text, parent = self, color = text_color)
+    def append_text(self, text, text_color = c_text, size = 1):
+        ent = Text(text, parent = self, color = text_color, scale = size)
         ent.position = Vec2(-ent.width * 0.5, self.ui_build_pos - self.ui_spacing) #adjust based on text width and starting y pos
         self.ui_build_pos -= ent.height + self.ui_spacing * 2 # add the starting y position for next element
+        self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
 
         return ent
 

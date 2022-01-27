@@ -94,6 +94,7 @@ GLSL = {
 		},
 
 	'Clamp' : {
+		'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
 		'inputs' : {'input': ('genType','genType'),'min': ('genType','float'), 'max': ('genType','float'),}, 
 		'outputs': {'result': ('genType','genType'),}, 
 		'function' : 'result=clamp(input,min,max);'
