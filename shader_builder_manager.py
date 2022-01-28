@@ -18,8 +18,8 @@ class ShaderBuilderManager(Entity):
             setattr(self, key, value)
 
         #test node
-        nodes.append(ShaderNode(parent = self, instruction = 'Add'))
-        nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (1,0)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Add', position = (-0.3,0)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (0.3,0)))
 
         # line = CurveRenderer(0.005, 40, parent = self)
         # line.set_curve([Vec3(0,0,0), Vec3(0.1,0,0), Vec3(0.1,0,0), Vec3(0.1,1,0), Vec3(0.1,1,0), Vec3(0.2,1,0)])

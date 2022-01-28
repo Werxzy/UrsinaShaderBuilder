@@ -1,4 +1,3 @@
-from pickle import TRUE
 from ursina import *
 from color_atlas import *
 from curve_renderer import CurveRenderer
@@ -10,6 +9,7 @@ an input or output for a node
 class NodeConnector(Entity):
 
     prepared_node = None
+    prepared_line = None
 
     def __init__(self, x_disp, yth, **kwargs):
         super().__init__()
@@ -61,23 +61,24 @@ class NodeConnector(Entity):
             if self.ui_back.hovered:
                 if NodeConnector.prepared_node:
                     self.connect(NodeConnector.prepared_node)
-                    NodeConnector.prepared_node = None
+                    self.destroy_prepared_line()
                 else:
                     NodeConnector.prepared_node = self
+                    NodeConnector.prepared_line = CurveRenderer(length = 6, parent = self, color = c_conn_active)
+                    self.update_prepared_line()
+                    
             elif NodeConnector.prepared_node == self and mouse.hovered_entity is None:
-                NodeConnector.prepared_node = None
+                self.destroy_prepared_line()
 
         if key == 'right mouse down' and self.ui_back.hovered:
             self.disconnect_all()
 
     def update(self):
-        pass
-        #potentially animate line when creating the new connection
-
-
-    def connector_pos(self):
-        return self.ui_dot.get_position(camera.ui)
-
+        if NodeConnector.prepared_node == self:
+            if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
+                self.update_prepared_line()
+    
+    
     # announce that a connection should be made and check if one can be
     def connect(self, connector):
         if not isinstance(connector, NodeConnector): return
@@ -117,7 +118,7 @@ class NodeConnector(Entity):
                 self._apply_disconnection(0)
             self.connections.append(connector)
 
-            self.ui_line = CurveRenderer(length = 6, parent = camera.ui, color = c_conn_active) # TODO may need to be self?
+            self.ui_line = CurveRenderer(length = 6, parent = self, color = c_conn_active)
             self.update_line()
 
         self.ui_dot.color = c_conn_active
@@ -138,6 +139,21 @@ class NodeConnector(Entity):
     def any_connected(self):
         return self.connections.count() > 0
         
+
+    def update_prepared_line(self):
+        start = Vec3(self.ui_dot.position)
+        end = Vec3(mouse.position - self.get_position(camera.ui)) / self.parent.parent.scale
+        NodeConnector.prepared_line.set_curve([start, end])
+    
+    def destroy_prepared_line(self):
+        NodeConnector.prepared_node = None
+        destroy(NodeConnector.prepared_line)
+        NodeConnector.prepared_line = None
+
+
+    def connector_pos(self):
+        return Vec3(self.ui_dot.get_position(camera.ui))
+
     def update_line(self):
         if self.isOutput:
             for i in self.connections:
@@ -145,8 +161,8 @@ class NodeConnector(Entity):
             return
         if self.ui_line is None: return
 
-        start = Vec3(self.connector_pos())
-        end = Vec3(self.connections[0].connector_pos())
+        start = self.ui_dot.position
+        end = Vec3(self.connections[0].connector_pos() - self.connector_pos()) / self.parent.parent.scale + self.ui_dot.position
 
         bend = min(self.ui_line.magnitude(start - end) * 0.5, 0.1)
 
