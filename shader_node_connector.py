@@ -57,12 +57,15 @@ class NodeConnector(Entity):
             
 
     def input(self, key):
-        if key == 'left mouse down' and self.ui_back.hovered:
-            if NodeConnector.prepared_node:
-                self.connect(NodeConnector.prepared_node)
+        if key == 'left mouse down':
+            if self.ui_back.hovered:
+                if NodeConnector.prepared_node:
+                    self.connect(NodeConnector.prepared_node)
+                    NodeConnector.prepared_node = None
+                else:
+                    NodeConnector.prepared_node = self
+            elif NodeConnector.prepared_node == self and mouse.hovered_entity is None:
                 NodeConnector.prepared_node = None
-            else:
-                NodeConnector.prepared_node = self
 
         if key == 'right mouse down' and self.ui_back.hovered:
             self.disconnect_all()
@@ -145,7 +148,7 @@ class NodeConnector(Entity):
         start = Vec3(self.ui_dot.get_position(camera.ui))
         end = Vec3(self.connections[0].ui_dot.get_position(camera.ui))
 
-        bend = clamp((start.x - end.x) * 0.5, 0, 0.1)
+        bend = min(self.ui_line.magnitude(start - end) * 0.5, 0.1)
 
         start_bend = start - Vec3(bend, 0, 0)
         end_bend = end + Vec3(bend, 0, 0)
