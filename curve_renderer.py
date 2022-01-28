@@ -46,31 +46,19 @@ class CurveRenderer(Entity):
         p.x, p.y = -p.y, p.x
         return p
 
-    def magnitude(self, p):
-        from math import sqrt 
-        return sqrt(sum(p[i] ** 2 for i in range(len(p))))
-
-    def normalize(self, p):
-        m = self.magnitude(p)
-        if m < 0.00000001:
-            return Vec3(0,0,0)
-        for i in range(len(p)):
-            p[i] /= m
-        return p
-
     def set_curve(self, points):
         curve_points = [self.mlerp(points, i / (self.length - 1)) for i in range(self.length)]
 
-        dir = self.normalize(curve_points[1] - curve_points[0])
+        dir = (curve_points[1] - curve_points[0]).normalized()
         dir = self.swapxy(dir) * self.thickness * 0.5
         self.renderer.model.vertices[0:2] = [curve_points[0] + dir, curve_points[0] - dir]
 
-        dir = self.normalize(curve_points[-2] - curve_points[-1])
+        dir = (curve_points[-2] - curve_points[-1]).normalized()
         dir = self.swapxy(dir) * self.thickness * 0.5
         self.renderer.model.vertices[-1:-3:-1] = [curve_points[-1] + dir, curve_points[-1] - dir]
         
         for i in range(1, self.length - 1):
-            dir = self.normalize(self.normalize(curve_points[i + 1] - curve_points[i]) + self.normalize(curve_points[i] - curve_points[i - 1]))
+            dir = ((curve_points[i + 1] - curve_points[i]).normalized() + (curve_points[i] - curve_points[i - 1]).normalized()).normalized()
             dir = self.swapxy(dir) * self.thickness * 0.5
 
             self.renderer.model.vertices[i*2  ] = curve_points[i] + dir
@@ -79,9 +67,13 @@ class CurveRenderer(Entity):
         self.renderer.model.generate()
 
     def mlerp(self, points, t):
+        if abs(t) < 0.000001: return points[0]
+        if abs(t - 1) < 0.000001: return points[-1]
+        
         ps = copy(points)
-        while len(ps) > 1:
-            ps = [lerp(ps[j], ps[j+1], t) for j in range(len(ps) - 1)]            
+        for i in range(len(ps) - 1, 0, -1):
+            for j in range(i):
+                ps[j] = lerp(ps[j], ps[j+1], t)          
         return ps[0]
 
     def on_destroy(self):

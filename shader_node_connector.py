@@ -118,7 +118,7 @@ class NodeConnector(Entity):
                 self._apply_disconnection(0)
             self.connections.append(connector)
 
-            self.ui_line = CurveRenderer(length = 6, parent = self, color = c_conn_active)
+            self.ui_line = CurveRenderer(length = 12, parent = self, color = c_conn_active)
             self.update_line()
 
         self.ui_dot.color = c_conn_active
@@ -164,7 +164,7 @@ class NodeConnector(Entity):
         start = self.ui_dot.position
         end = Vec3(self.connections[0].connector_pos() - self.connector_pos()) / self.parent.parent.scale + self.ui_dot.position
 
-        bend = min(self.ui_line.magnitude(start - end) * 0.5, 0.1)
+        bend = min((start - end).length() * 0.5, 0.1)
 
         start_bend = start - Vec3(bend, 0, 0)
         end_bend = end + Vec3(bend, 0, 0)
