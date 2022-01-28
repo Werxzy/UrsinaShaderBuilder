@@ -64,6 +64,9 @@ class NodeConnector(Entity):
             else:
                 NodeConnector.prepared_node = self
 
+        if key == 'right mouse down' and self.ui_back.hovered:
+            self.disconnect_all()
+
     def update(self):
         pass
         #potentially animate line when creating the new connection
@@ -94,10 +97,10 @@ class NodeConnector(Entity):
         except:
             pass # no connection found
 
-    def disconnectAll(self):
-        for c in self.connections:
-            self._apply_disconnection(c)
-            c._apply_disconnection(self)
+    def disconnect_all(self):
+        for i in range(len(self.connections)):
+            self.connections[0]._apply_disconnection(self)
+            self._apply_disconnection(0)
 
     # apply the connection and any changes required by the conneciton being made 
     # (the apply functions are meant to remove any cyclical function calling)
