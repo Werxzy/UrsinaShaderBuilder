@@ -22,8 +22,6 @@ class ShaderNode(Entity):
         self.data_type_set = -1 # nth data type in (gentype, float,)
         # these two need to be checked any time that a connection would be made or removed
 
-        #TODO, line renderer and connecting nodes
-
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -77,7 +75,7 @@ class ShaderNode(Entity):
         # build output(s)
         for k,v in GLSL[self.instruction]['outputs'].items():
             conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, var_types = v)
-            self.inputs.append(conn)
+            self.outputs.append(conn)
             i += 1
 
 # - - - - - - -
@@ -93,6 +91,11 @@ class ShaderNode(Entity):
         if self.dragged:
             self.x += mouse.velocity[0] / self.parent.scale_x
             self.y += mouse.velocity[1] / self.parent.scale_y * window.aspect_ratio
+            if mouse.velocity[0] != 0 or  mouse.velocity[1] != 0:
+                for i in self.inputs:
+                    i.update_line()
+                for o in self.outputs:
+                    o.update_line()
 
     def on_destroy(self):
         for i in self.inputs:
