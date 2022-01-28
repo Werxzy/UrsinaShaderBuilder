@@ -76,7 +76,7 @@ class NodeConnector(Entity):
 
 
     def connector_pos(self):
-        return self.ui_dot.world_position(camera.ui) # !!! this may be incorrect
+        return self.ui_dot.get_position(camera.ui)
 
     # announce that a connection should be made and check if one can be
     def connect(self, connector):
@@ -145,8 +145,8 @@ class NodeConnector(Entity):
             return
         if self.ui_line is None: return
 
-        start = Vec3(self.ui_dot.get_position(camera.ui))
-        end = Vec3(self.connections[0].ui_dot.get_position(camera.ui))
+        start = Vec3(self.connector_pos())
+        end = Vec3(self.connections[0].connector_pos())
 
         bend = min(self.ui_line.magnitude(start - end) * 0.5, 0.1)
 
