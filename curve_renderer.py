@@ -24,7 +24,7 @@ class CurveRenderer(Entity):
         self.renderer.model.generate()
     '''
 
-    def __init__(self, thickness=0.1, length=15, **kwargs):
+    def __init__(self, thickness=0.005, length=25, color=color.white, **kwargs):
         super().__init__(**kwargs)
         self.renderer = Entity(
             parent = self,
@@ -34,9 +34,12 @@ class CurveRenderer(Entity):
             static=False
             )
         )
-        self.renderer.color = color.white
+        self.renderer.color = color
         self.thickness = thickness
         self.length = length
+
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     
     def swapxy(self, p):
@@ -49,6 +52,8 @@ class CurveRenderer(Entity):
 
     def normalize(self, p):
         m = self.magnitude(p)
+        if m < 0.00000001:
+            return Vec3(0,0,0)
         for i in range(len(p)):
             p[i] /= m
         return p
