@@ -57,10 +57,10 @@ could change the types and just have any inputs set to the best fitting gentype?
 'INSTRUCTION NAME' : {
 	'description' : '',				# text describing the instruction
 	'inputs' : { 					# lists all the inputs and their name
-		'INPUT NAME' : ('TYPE',) 	# input name and list of possible types (!!! Nth value in each tuple is paired together, even in output )
+		'INPUT NAME' : ['TYPE'] 	# input name and list of possible types (!!! Nth value in each tuple is paired together, even in output )
 	},
 	'outputs' : {					# lists all the outputs and their name (there's almost always only one, but with 'out' there could be multiple)
-		'OUTPUT NAME' : ('TYPE',)  	# output name and list of possible types
+		'OUTPUT NAME' : ['TYPE']  	# output name and list of possible types
 	},
 	'function : 'FUNCTION',			# function used to put into GLSL (using str.replace using input names)
 }
@@ -70,33 +70,33 @@ could change the types and just have any inputs set to the best fitting gentype?
 GLSL = {
 	'Add' : {
 		'description' : 'Add two values.', 
-		'inputs' : {'a': ('genType',),'b': ('genType',),}, 
-		'outputs': {'result': ('genType',),}, 
+		'inputs' : {'a': ['genType'],'b': ['genType']}, 
+		'outputs': {'result': ['genType']}, 
 		'function' : 'result=a+b;'
 		},
 	'Subtract' : {
 		'description' : 'Subtract a value by another.', 
-		'inputs' : {'a': ('genType',),'b': ('genType',),}, 
-		'outputs': {'result': ('genType',),}, 
+		'inputs' : {'a': ['genType'],'b': ['genType']}, 
+		'outputs': {'result': ['genType']}, 
 		'function' : 'result=a-b;'
 		},
 	'Multiply' : {
 		'description' : 'Multiply two values.', 
-		'inputs' : {'a': ('genType',),'b': ('genType',),}, 
-		'outputs': {'result': ('genType',),}, 
+		'inputs' : {'a': ['genType'],'b': ['genType']}, 
+		'outputs': {'result': ['genType']}, 
 		'function' : 'result=a*b;'
 		},
 	'Divide' : {
 		'description' : 'Divide a value by another.', 
-		'inputs' : {'a': ('genType',),'b': ('genType',),}, 
-		'outputs': {'result': ('genType',),}, 
+		'inputs' : {'a': ['genType'],'b': ['genType']}, 
+		'outputs': {'result': ['genType']}, 
 		'function' : 'result=a/b;'
 		},
 
 	'Clamp' : {
 		'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
-		'inputs' : {'input': ('genType','genType'),'min': ('genType','float'), 'max': ('genType','float'),}, 
-		'outputs': {'result': ('genType','genType'),}, 
+		'inputs' : {'input': ['genType','genType'],'min': ['genType','float'], 'max': ['genType','float']}, 
+		'outputs': {'result': ['genType','genType']}, 
 		'function' : 'result=clamp(input,min,max);'
 		},
 }
