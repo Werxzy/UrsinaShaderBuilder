@@ -128,8 +128,6 @@ class NodeConnector(Entity):
                 for o in conn.parent.outputs:
                     nodes_to_check += o.connections
 
-            
-
         return (True, '')
 
     # apply the connection and any changes required by the conneciton being made 
