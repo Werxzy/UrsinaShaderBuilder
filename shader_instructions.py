@@ -112,11 +112,8 @@ for inst in GLSL.values():
 
     for _ in range(len(c)):
 
-        inouts = []
-        for k,v in inst['inputs'].items():
-            inouts.append(('inputs', k, v.pop(0)))
-        for k,v in inst['outputs'].items():
-            inouts.append(('outputs', k, v.pop(0)))
+        inouts = [('inputs', k, v.pop(0)) for k,v in inst['inputs'].items()]
+        inouts += [('outputs', k, v.pop(0)) for k,v in inst['outputs'].items()]
 
         found = ''
         for i in inouts:
@@ -134,7 +131,6 @@ for inst in GLSL.values():
 
         for v in inouts:
             inst[v[0]][v[1]].append(v[2])
-    print(inst)
         
 '''
 ( example )
