@@ -19,6 +19,7 @@ class ShaderBuilderManager(Entity):
 
         #test node
         nodes.append(ShaderNode(parent = self, instruction = 'Add', position = (-0.3,0)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Subtract', position = (0,0.3)))
         nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (0.3,0)))
 
         # line = CurveRenderer(0.005, 40, parent = self)

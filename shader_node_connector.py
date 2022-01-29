@@ -85,6 +85,9 @@ class NodeConnector(Entity):
         if self.isOutput == connector.isOutput: return # connectors cannot connect to the same type
 
         #TODO more checks for if they can connect
+        check = self._propagate_check(connector)
+        print(check)
+        if not check[0]: return # loop detected
             
         if self.connections.count(connector) == 0: #if these two aren't already connected to eachother
             self._apply_connection(connector)
@@ -105,6 +108,29 @@ class NodeConnector(Entity):
         for i in range(len(self.connections)):
             self.connections[0]._apply_disconnection(self)
             self._apply_disconnection(0)
+
+
+    #returns if the connection can go through or not and maybe what type all the connections should take
+    def _propagate_check(self, start):
+        backwards = start.isOutput
+        nodes_to_check = [start]
+
+        while len(nodes_to_check) > 0:
+            conn = nodes_to_check.pop(0)
+
+            if conn.parent == self.parent: # if an infinite loop is detected
+                return (False, '')
+
+            if backwards:
+                for i in conn.parent.inputs:
+                    nodes_to_check += i.connections
+            else:
+                for o in conn.parent.outputs:
+                    nodes_to_check += o.connections
+
+            
+
+        return (True, '')
 
     # apply the connection and any changes required by the conneciton being made 
     # (the apply functions are meant to remove any cyclical function calling)
@@ -133,8 +159,9 @@ class NodeConnector(Entity):
         if not self.isOutput and self.ui_line:
             destroy(self.ui_line)
             self.ui_line = None
-        
-        self.ui_dot.color = c_node_back
+    
+        if len(self.connections) == 0:
+            self.ui_dot.color = c_node_back
 
     def any_connected(self):
         return self.connections.count() > 0
