@@ -21,6 +21,9 @@ class ShaderBuilderManager(Entity):
         nodes.append(ShaderNode(parent = self, instruction = 'Add', position = (-0.3,0)))
         nodes.append(ShaderNode(parent = self, instruction = 'Subtract', position = (0,0.3)))
         nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (0.3,0)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Random Float', position = (-0.4,-0.3)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Random Vector', position = (0.4,-0.3)))
+        nodes.append(ShaderNode(parent = self, instruction = 'Random Int', position = (0.0,-0.3)))
 
         # line = CurveRenderer(0.005, 40, parent = self)
         # line.set_curve([Vec3(0,0,0), Vec3(0.1,0,0), Vec3(0.1,0,0), Vec3(0.1,1,0), Vec3(0.1,1,0), Vec3(0.2,1,0)])

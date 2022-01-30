@@ -52,7 +52,6 @@ holds all base instructions
 '''
 
 be careful with input/output names in the function, as they might replace the incorrect things
-could change the types and just have any inputs set to the best fitting gentype? (may be difficult)
 
 'INSTRUCTION NAME' : {
     'description' : '',				# text describing the instruction
@@ -95,6 +94,27 @@ GLSL = {
         'outputs': {'result': ['genType']}, 
         'function' : 'result=a/b;'
         },
+    
+    'Random Float' : {
+        'description' : 'test instruction with float output.', 
+        'inputs' : {}, 
+        'outputs': {'float': ['float']}, 
+        'function' : 'float=random();'
+        },
+
+    'Random Vector' : {
+        'description' : 'test instruction with vector output.', 
+        'inputs' : {}, 
+        'outputs': {'vec': ['vec3']}, 
+        'function' : 'vec=vec3(random(), random(), random());'
+        },
+
+    'Random Int' : {
+        'description' : 'test instruction with Integer output.', 
+        'inputs' : {}, 
+        'outputs': {'int': ['int']}, 
+        'function' : 'int=random();'
+        },
 
     'Clamp' : {
         'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
@@ -108,7 +128,12 @@ GLSL = {
 
 #expands the genType for every version of the function
 for inst in GLSL.values():
-    c = list(inst['inputs'].values())[0]
+    c = 0
+    l = list(inst['inputs'].values())
+    if(len(l) > 0):
+        c = l[0]
+    else:
+        c = list(inst['outputs'].values())[0]
 
     for _ in range(len(c)):
 
