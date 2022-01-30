@@ -18,9 +18,8 @@ class ShaderNode(Entity):
         self.outputs = []
         self.dragged = False
 
-        self.data_type_common = '' # where all inputs/outputs need to be the same type, like gentype
-        self.data_type_set = -1 # nth data type in (gentype, float,)
-        # these two need to be checked any time that a connection would be made or removed
+        self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
+        # needs to be checked any time that a connection would be made or removed
 
 
         for key, value in kwargs.items():
@@ -67,19 +66,22 @@ class ShaderNode(Entity):
         i = 0.5    
         # build inputs
         for k,v in GLSL[self.instruction]['inputs'].items():
-            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, var_types = v, isOutput = False)
+            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, variable_type = v, isOutput = False)
             self.inputs.append(conn)
             i += 1
         
         i = 0.5     
         # build output(s)
         for k,v in GLSL[self.instruction]['outputs'].items():
-            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, var_types = v)
+            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, variable_type = v)
             self.outputs.append(conn)
             i += 1
 
 # - - - - - - -
 
+    #goes through all of the outputs and checks the data types that are possible, disconnecting any invalid connections
+    def update_connections(self):
+        pass
     
     def input(self, key):
         if key == 'left mouse down' and self.ui_back.hovered:

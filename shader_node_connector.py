@@ -17,7 +17,7 @@ class NodeConnector(Entity):
         self.isOutput = True # if not output, than is input
         self.connections = []
         self.variable = ''
-        self.var_types = ('',)
+        self.variable_type = []
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -83,15 +83,21 @@ class NodeConnector(Entity):
     def connect(self, connector):
         if not isinstance(connector, NodeConnector): return
         if self.isOutput == connector.isOutput: return # connectors cannot connect to the same type
+        if self.connections.count(connector) != 0: return # if these two aren't already connected to eachother
+        if len(self.matching_connections(connector)) == 0: return # no matching data types
 
-        #TODO more checks for if they can connect
-        check = self._propagate_check(connector)
-        print(check)
-        if not check[0]: return # loop detected
-            
-        if self.connections.count(connector) == 0: #if these two aren't already connected to eachother
-            self._apply_connection(connector)
-            connector._apply_connection(self)
+        # check if there is a loop
+        check = False
+        if self.isOutput: check = connector._propagate_check(self)
+        else: check = self._propagate_check(connector)
+        if not check: return # loop detected
+
+        # applies the connection
+        self._apply_connection(connector)
+        connector._apply_connection(self)
+
+        if self.isOutput: self.parent.update_connections()
+        else: connector.parent.update_connections()
 
     # announce that a connection is to be undone
     def disconnect(self, connector):
@@ -110,25 +116,31 @@ class NodeConnector(Entity):
             self._apply_disconnection(0)
 
 
+    #returns list of pars of matching variable types's indicies
+    def matching_connections(self, connector):
+        matches = []
+        self_range = range(len(self.variable_type))
+        conn_range = range(len(connector.variable_type))
+        for i in self_range:
+            for j in conn_range:
+                if self.variable_type[i] == connector.variable_type[j]:
+                    matches.append((i, j))
+        return matches
+
     #returns if the connection can go through or not and maybe what type all the connections should take
     def _propagate_check(self, start):
-        backwards = start.isOutput
         nodes_to_check = [start]
 
         while len(nodes_to_check) > 0:
             conn = nodes_to_check.pop(0)
 
             if conn.parent == self.parent: # if an infinite loop is detected
-                return (False, '')
+                return False
 
-            if backwards:
-                for i in conn.parent.inputs:
-                    nodes_to_check += i.connections
-            else:
-                for o in conn.parent.outputs:
-                    nodes_to_check += o.connections
+            for i in conn.parent.inputs:
+                nodes_to_check += i.connections
 
-        return (True, '')
+        return True
 
     # apply the connection and any changes required by the conneciton being made 
     # (the apply functions are meant to remove any cyclical function calling)
