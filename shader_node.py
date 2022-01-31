@@ -85,7 +85,7 @@ class ShaderNode(Entity):
         while len(nodes) > 0:
             if len(nodes[0].inputs) > 0:
                 r = set(range(len(nodes[0].inputs[0].variable_type)))
-                for i in nodes[0].inputs:
+                for i in nodes[0].inputs: # get overlaps that exist on each node (disconnect any if they suddenly don't work)
                     p_types = i.get_possible_data_types()
                     
                     data_types = set()
@@ -93,8 +93,8 @@ class ShaderNode(Entity):
                         data_types.add(p[0])
                     r_overlap = r & data_types
                     
-                    if len(r_overlap) == 0:
-                        i.disconnect_all() #should only be one anyways
+                    if len(r_overlap) == 0:# no matching types
+                        i.disconnect_all() # should only be one anyways
                     else:
                         r = r_overlap
 

@@ -133,7 +133,7 @@ class NodeConnector(Entity):
         if len(self.connections) == 0: # any type is possible since there's no connection
             l = len(self.variable_type)
             return list(zip(range(l), l * [-1])) 
-        if self.connections[0].parent.data_type_set == -1: return self._matching_connections()
+        if self.connections[0].parent.data_type_set == -1: return self._matching_connections(self.connections[0])
 
         matches = []
         self_range = range(len(self.variable_type))
