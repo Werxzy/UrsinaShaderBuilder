@@ -81,7 +81,41 @@ class ShaderNode(Entity):
 
     #goes through all of the outputs and checks the data types that are possible, disconnecting any invalid connections
     def update_connections(self):
-        pass
+        nodes = [self]
+        while len(nodes) > 0:
+            if len(nodes[0].inputs) > 0:
+                r = set(range(len(nodes[0].inputs[0].variable_type)))
+                for i in nodes[0].inputs:
+                    p_types = i.get_possible_data_types()
+                    
+                    data_types = set()
+                    for p in p_types:
+                        data_types.add(p[0])
+                    r_overlap = r & data_types
+                    
+                    if len(r_overlap) == 0:
+                        i.disconnect_all() #should only be one anyways
+                    else:
+                        r = r_overlap
+
+                if len(r) == 1: # one matching input set
+                    nodes[0].data_type_set = r.pop()
+
+                    for o in nodes[0].outputs:# propogate, since we know this node's output type
+                        for c in o.connections:
+                            nodes.append(c.parent)
+
+            else: # node has only an output (should only have one usually)
+                nodes[0].data_type_set = 0
+                for o in nodes[0].outputs: # propogate, since we know this node's output type
+                    for c in o.connections:
+                        nodes.append(c.parent)
+
+            nodes.pop(0)
+
+    def disconnection(self, connector):
+        if connector in self.inputs:
+           self.data_type_set = -1
     
     def input(self, key):
         if key == 'left mouse down' and self.ui_back.hovered:

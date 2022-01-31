@@ -68,6 +68,9 @@ be careful with input/output names in the function, as they might replace the in
 currently assumes there will be only one of DataMultiTypes in any ith inputs or outputs types
     (there can be genType in all inputs and outputs, but no genType and vec together)
 
+if there's only outputs, there should only be one
+    this can be changed, but would need reworking of ShaderNode.update_connections and what GLSL[]['funciton'] stores
+
 '''
 GLSL = {
     'Add' : {

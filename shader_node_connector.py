@@ -84,7 +84,7 @@ class NodeConnector(Entity):
         if not isinstance(connector, NodeConnector): return
         if self.isOutput == connector.isOutput: return # connectors cannot connect to the same type
         if self.connections.count(connector) != 0: return # if these two aren't already connected to eachother
-        if len(self.matching_connections(connector)) == 0: return # no matching data types
+        if len(self._matching_connections(connector)) == 0: return # no matching data types
 
         # check if there is a loop
         check = False
@@ -116,8 +116,8 @@ class NodeConnector(Entity):
             self._apply_disconnection(0)
 
 
-    #returns list of pars of matching variable types's indicies
-    def matching_connections(self, connector):
+    #returns list of pars of matching variable types's indicies (self, connector)
+    def _matching_connections(self, connector):
         matches = []
         self_range = range(len(self.variable_type))
         conn_range = range(len(connector.variable_type))
@@ -125,6 +125,23 @@ class NodeConnector(Entity):
             for j in conn_range:
                 if self.variable_type[i] == connector.variable_type[j]:
                     matches.append((i, j))
+        return matches
+
+    # return list of pares of matching variables types's indicies, with respect to nodes' set types (self, connector)
+    def get_possible_data_types(self):
+        if self.isOutput: return [] # should only be called on inputs
+        if len(self.connections) == 0: # any type is possible since there's no connection
+            l = len(self.variable_type)
+            return list(zip(range(l), l * [-1])) 
+        if self.connections[0].parent.data_type_set == -1: return self._matching_connections()
+
+        matches = []
+        self_range = range(len(self.variable_type))
+        set_pos = self.connections[0].parent.data_type_set
+        var_type = self.connections[0].variable_type[set_pos]
+        for i in self_range:
+            if self.variable_type[i] == var_type:
+                matches.append((i, set_pos))
         return matches
 
     #returns if the connection can go through or not and maybe what type all the connections should take
@@ -172,6 +189,8 @@ class NodeConnector(Entity):
     
         if len(self.connections) == 0:
             self.ui_dot.color = c_node_back
+
+        self.parent.disconnection(self)
 
     def any_connected(self):
         return self.connections.count() > 0
