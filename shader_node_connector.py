@@ -28,7 +28,8 @@ class NodeConnector(Entity):
         y_spacing = 0.005
         y_height = 0.02 + y_spacing * 2
 
-        self.ui_text = Text(self.variable, parent = self, y = -y_spacing - y_height * yth, color = c_text)
+        self.ui_text = Text(self.variable, parent = self, scale = 0.7, color = c_text)
+        self.ui_text.y = -(y_height - self.ui_text.height) * 0.5 - y_height * yth
         
         ui_back_width = y_height * 2.5 + self.ui_text.width
         self.ui_back = Entity(parent = self, 
