@@ -156,6 +156,26 @@ for inst in GLSL.values():
 
         for v in inouts:
             inst[v[0]][v[1]].append(v[2])
+    
+    # remove duplicates, if input[i] == input[j]: input.pop(i), output.pop(i)
+    # only checks inputs, because there shouldn't be any duplicate input data types with different outputs data types
+    for i in range(len(c) - 1, 0, -1):
+        keys_i = list(inst['inputs'].keys())
+        
+        for j in range(i - 1):
+            dupe = True
+            
+            for k in keys_i:
+                if inst['inputs'][k][i] != inst['inputs'][k][j]:
+                    dupe = False
+                    break
+            
+            if dupe:
+                for k in keys_i:
+                    inst['inputs'][k].pop(i)
+                for k in inst['outputs'].keys():
+                    inst['outputs'][k].pop(i)
+    
         
 '''
 ( example )
@@ -176,11 +196,11 @@ for inst in GLSL.values():
 'Clamp' : {
     'description': 'Clamps a value or vector\nbetween a minimum and maximum.', 
     'inputs': {
-        'input' : ['float', 'vec2', 'vec3', 'vec4', 'float', 'vec2', 'vec3', 'vec4'], 
-        'min': ['float', 'vec2', 'vec3', 'vec4', 'float', 'float', 'float', 'float'], 
-        'max': ['float', 'vec2', 'vec3', 'vec4', 'float', 'float', 'float', 'float']}, 
+        'input' : ['float', 'vec2', 'vec3', 'vec4', 'vec2', 'vec3', 'vec4'], 
+        'min': ['float', 'vec2', 'vec3', 'vec4', 'float', 'float', 'float'], 
+        'max': ['float', 'vec2', 'vec3', 'vec4', 'float', 'float', 'float']}, 
     'outputs': {
-        'result': ['float', 'vec2', 'vec3', 'vec4', 'float', 'vec2', 'vec3', 'vec4']}, 
+        'result': ['float', 'vec2', 'vec3', 'vec4', 'vec2', 'vec3', 'vec4']}, 
     'function': 'result=clamp(input,min,max);'
 }
 
