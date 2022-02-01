@@ -43,7 +43,34 @@ holds all base instructions
 # for key, value in GLSL.items: # probably not needed in this way, but just in case
 
 
+def simple_func(desc, func, types = ['genType']):
+    return {
+        'description' : desc, 
+        'inputs' : {'a_': list(types)}, 
+        'outputs': {'result': list(types)}, 
+        'function' : 'result=' + func + '(a_);'
+        }
 
+def build_func(desc, func, names = 'abcdef', inputTypes = [['genType'],], outputTypes = ['genType']):
+    re = {
+        'description' : desc, 
+        'inputs' : {}, 
+        'outputs': {'result': outputTypes}, 
+        'function' : 'result=' + func + '('
+        }
+
+    for i in range(len(inputTypes)):
+        v = names[i]
+        if len(v) == 1:
+            v += '_'
+        re['inputs'].update({v : inputTypes[i]})
+        if i > 0: 
+            re['function'] += ','
+        re['function'] += v
+    
+    re['function'] += ');'
+
+    return re
 
 
 # instructions like swizzle might need special nodes
@@ -73,6 +100,9 @@ if there's only outputs, there should only be one
 
 '''
 GLSL = {
+
+# Arithmatic instructions
+
     'Add' : {
         'description' : 'Add two values.', 
         'inputs' : {'a': ['genType'],'b': ['genType']}, 
@@ -98,26 +128,34 @@ GLSL = {
         'function' : 'result=a/b;'
         },
     
-    'Random Float' : {
-        'description' : 'test instruction with float output.', 
-        'inputs' : {}, 
-        'outputs': {'float': ['float']}, 
-        'function' : 'float=random();'
+# Angle and trigonometry functions
+
+    'Sine' : simple_func('Sine math function.', 'sin'),
+    'Cosine' : simple_func('Cosine math function.', 'cos'),
+    'Tangent' : simple_func('Tangent math function.', 'tan'),
+    'Arcsine' : simple_func('Arcsine math function.', 'asin'),
+    'Arccosine' : simple_func('Arccosine math function.', 'acos'),
+    'Arctangent' : simple_func('Arctangent math function.', 'atan'),
+    'Arctangent 2' : {
+        'description' : 'Arctangent math function using\nseperate x and y inputs.', 
+        'inputs' : {'y': ['genType'], 'x': ['genType']}, 
+        'outputs': {'result': ['genType']}, 
+        'function' : 'result=atan(y,x);'
         },
 
-    'Random Vector' : {
-        'description' : 'test instruction with vector output.', 
-        'inputs' : {}, 
-        'outputs': {'vec': ['vec3']}, 
-        'function' : 'vec=vec3(random(), random(), random());'
-        },
+    'Radians' : simple_func('Converts degrees to radians.', 'radians'),
+    'Degrees' : simple_func('Converts radians to degrees.', 'degrees'),
+    
+# Exponential functions
+    
+    'Power' : build_func('Math function being a^b.', 'pow', inputTypes=[['genType'], ['genType']]),
+    'Exponent' : simple_func('Natural exponential.', 'exp'),
+    'Logarithm' : simple_func('Natural logarithm.', 'log'),
+    'Exponent 2' : simple_func('Finds 2^return = a', 'exp2'),
+    'Square Root' : simple_func('Square root.', 'sqrt'),
+    'Inverse Square Root' : simple_func('Inverse square root.', 'inversesqrt'),
 
-    'Random Int' : {
-        'description' : 'test instruction with Integer output.', 
-        'inputs' : {}, 
-        'outputs': {'int': ['int']}, 
-        'function' : 'int=random();'
-        },
+# Common Functions
 
     'Clamp' : {
         'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
