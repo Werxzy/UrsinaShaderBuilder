@@ -36,13 +36,13 @@ class ShaderBuilderManager(Entity):
 
 
     def input(self, key):
-        #TODO displace based on cursor position
         if key == 'scroll up':
             self.scale *= 1.1
+            self.position = (self.position - mouse.position) * 1.1 + mouse.position
 
         if key == 'scroll down':
             self.scale /= 1.1
-        pass
+            self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
     def update(self):
         if mouse.right:
