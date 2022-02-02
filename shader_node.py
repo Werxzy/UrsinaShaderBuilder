@@ -16,9 +16,11 @@ class ShaderNode(Entity):
         self.inputs = []
         self.outputs = []
         self.dragged = False
+        self.manager = None
 
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
         # needs to be checked any time that a connection would be made or removed
+            # or when node settings are changed 
 
         for key, value in kwargs.items():
             setattr(self, key, value)

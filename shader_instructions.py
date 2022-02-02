@@ -83,7 +83,7 @@ be careful with input/output names in the function, as they might replace the in
 'INSTRUCTION NAME' : {
     'description' : '',				# text describing the instruction
     'inputs' : { 					# lists all the inputs and their name
-        'INPUT NAME' : ['TYPE'] 	# input name and list of possible types (!!! Nth value in each tuple is paired together, even in output )
+        'INPUT NAME' : ['TYPE'] 	# input name and list of possible types (!!! Nth value in each array is paired together, even in output )
     },
     'outputs' : {					# lists all the outputs and their name (there's almost always only one, but with 'out' there could be multiple)
         'OUTPUT NAME' : ['TYPE']  	# output name and list of possible types
