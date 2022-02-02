@@ -10,10 +10,9 @@ will be a child of shader_builder_manager
 '''
 
 class ShaderNode(Entity):
-    def __init__(self, instruction, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
 
-        self.instruction = instruction
         self.inputs = []
         self.outputs = []
         self.dragged = False
@@ -21,27 +20,12 @@ class ShaderNode(Entity):
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
         # needs to be checked any time that a connection would be made or removed
 
-
         for key, value in kwargs.items():
             setattr(self, key, value)
-        
         
         self.ui_build_width = 0.2
         self.ui_build_pos = 0 # to allow appending ui without intersection
         self.ui_spacing = 0.01
-
-        self.ui_name = self.append_text(instruction)
-        self.ui_divider1 = self.append_divider()
-        self.ui_desc = self.append_text(GLSL[instruction]['description'], size=0.7)
-        self.ui_divider2 = self.append_divider()
-        self.ui_func = self.append_text(GLSL[instruction]['function'], size=0.7)
-
-        self.ui_divider1.scale_x = self.ui_build_width
-        self.ui_divider2.scale_x = self.ui_build_width
-
-        self.ui_back = self.build_back()
-
-        self.build_inputs_outputs_ui()
 
 
 # - - - ui builder functions - - -
@@ -62,20 +46,13 @@ class ShaderNode(Entity):
         ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
         return ent
 
-    def build_inputs_outputs_ui(self):  
-        i = 0.5    
-        # build inputs
-        for k,v in GLSL[self.instruction]['inputs'].items():
-            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, variable_type = v, isOutput = False)
-            self.inputs.append(conn)
-            i += 1
-        
-        i = 0.5     
-        # build output(s)
-        for k,v in GLSL[self.instruction]['outputs'].items():
-            conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = i, variable = k, variable_type = v)
+    def build_connector(self, variable, variable_type, isOutput, offset = 0):
+        conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = offset, variable = variable, variable_type = variable_type, isOutput = isOutput)
+        if isOutput:
             self.outputs.append(conn)
-            i += 1
+        else:
+            self.inputs.append(conn)
+
 
 # - - - - - - -
 

@@ -35,7 +35,7 @@ DataMultiTypes = {
 }
    
 
-# http://mew.cx/glsl_quickref.pdf (bless)
+# http://mew.cx/glsl_quickref.pdf (bless) (probably outdated and bit unrelated to panda3d)
 
 '''
 holds all base instructions

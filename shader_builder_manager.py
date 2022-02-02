@@ -1,5 +1,6 @@
 from ursina import *
 from shader_node import ShaderNode
+from node_instruction import InstructionNode
 from curve_renderer import CurveRenderer
 
 '''
@@ -18,12 +19,12 @@ class ShaderBuilderManager(Entity):
             setattr(self, key, value)
 
         #test node
-        nodes.append(ShaderNode(parent = self, instruction = 'Add', position = (-0.3,0)))
-        nodes.append(ShaderNode(parent = self, instruction = 'Subtract', position = (0,0.3)))
-        nodes.append(ShaderNode(parent = self, instruction = 'Clamp', position = (0.3,0)))
-        nodes.append(ShaderNode(parent = self, instruction = 'Sine', position = (-0.4,-0.3)))
-        nodes.append(ShaderNode(parent = self, instruction = 'Cosine', position = (0.4,-0.3)))
-        nodes.append(ShaderNode(parent = self, instruction = 'Power', position = (0.0,-0.3)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Add', position = (-0.3,0)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Subtract', position = (0,0.3)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Clamp', position = (0.3,0)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Sine', position = (-0.4,-0.3)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Cosine', position = (0.4,-0.3)))
+        nodes.append(InstructionNode(parent = self, instruction = 'Power', position = (0.0,-0.3)))
 
         # line = CurveRenderer(0.005, 40, parent = self)
         # line.set_curve([Vec3(0,0,0), Vec3(0.1,0,0), Vec3(0.1,0,0), Vec3(0.1,1,0), Vec3(0.1,1,0), Vec3(0.2,1,0)])
