@@ -1,7 +1,6 @@
 from ursina import *
-from shader_node import ShaderNode
+from node_variable import ConstantNode
 from node_instruction import InstructionNode
-from curve_renderer import CurveRenderer
 
 '''
 manager file that holds all the nodes and builds the shader
@@ -22,13 +21,9 @@ class ShaderBuilderManager(Entity):
         nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
         nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Subtract', position = (0,0.3)))
         nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
-        nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Sine', position = (-0.4,-0.3)))
-        nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Cosine', position = (0.4,-0.3)))
+        nodes.append(ConstantNode(parent = self, manager = self, data_type='vec3', position = (-0.4,-0.3)))
+        nodes.append(ConstantNode(parent = self, manager = self, data_type='vec2', position = (0.4,-0.3)))
         nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Power', position = (0.0,-0.3)))
-
-        # line = CurveRenderer(0.005, 40, parent = self)
-        # line.set_curve([Vec3(0,0,0), Vec3(0.1,0,0), Vec3(0.1,0,0), Vec3(0.1,1,0), Vec3(0.1,1,0), Vec3(0.2,1,0)])
-        # line.set_curve([Vec3(0,0,0), Vec3(1,0,0), Vec3(1,1,0), Vec3(2,1,0)])
 
 
     #quickly organize the nodes based on how the inputs/outputs are connected

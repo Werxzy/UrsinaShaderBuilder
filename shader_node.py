@@ -43,6 +43,52 @@ class ShaderNode(Entity):
 
         return ent
 
+    def append_value_input(self, name, data_type, text_color = c_text):
+        ent_name = Text(name + ':', parent = self, color = text_color)
+        ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
+
+        if data_type in ['float', 'int']:
+            ent_field = TextField(parent = ent_name, scale = 0.8, scroll_size = (12,1), max_lines = 1, decimal = data_type == 'float', register_mouse_input = True)
+            ent_field.text = '0.0' if data_type == 'float' else '0'
+            ent_field.text_entity.color = text_color
+            ent_field.render()
+            
+            ent_field.position = Vec2(ent_name.width + self.ui_spacing, -(ent_name.height - ent_field.text_entity.height * 0.8) * 0.5)
+            ent_field.shortcuts['indent'] = ('')
+            ent_field.shortcuts['dedent'] = ('')
+
+            orig_render = ent_field.render
+            
+            def render():
+                org_length = len(ent_field.text)
+                if org_length == 0:
+                    ent_field.text = '0'
+                elif ent_field.decimal:
+                    ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789.'])
+                else:
+                    ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789'])
+
+                ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
+                ent_field.cursor.x -= org_length - len(ent_field.text)
+                ent_field.cursor.x = max(0, ent_field.cursor.x)
+
+                orig_render()
+
+            ent_field.render = render
+
+            quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_name.height)
+            ent_field_back = Entity(parent = ent_name, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark)
+            ent_field_back.position = Vec2(ent_name.width + self.ui_spacing * 0.5, 0)
+
+        elif data_type == 'bool':
+            ent_field, ent_field_back = None #TODO, dropdown menu
+            
+
+        self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
+        # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
+
+        return (ent_name, ent_field, ent_field_back)
+
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos)
         ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
