@@ -3,7 +3,7 @@ from node_variable import ConstantNode
 from node_instruction import InstructionNode
 
 '''
-manager file that holds all the nodes and builds the shader
+Manager file that holds all the nodes and builds the shader.
 '''
 
 class ShaderBuilderManager(Entity):

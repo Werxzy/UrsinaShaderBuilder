@@ -3,7 +3,7 @@ from color_atlas import *
 from curve_renderer import CurveRenderer
 
 '''
-an input or output for a node
+The input or output for a ShaderNode.
 '''
 
 class NodeConnector(Entity):

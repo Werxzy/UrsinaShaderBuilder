@@ -3,10 +3,10 @@ from shader_instructions import *
 from color_atlas import *
 from shader_node_connector import NodeConnector
 
-
 '''
-holds a single instruction and all inputs and puts
-will be a child of shader_builder_manager
+Base class for all nodes.
+
+Almost always a child of shader_builder_manager
 '''
 
 class ShaderNode(Entity):

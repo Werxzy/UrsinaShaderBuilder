@@ -3,6 +3,10 @@ from shader_instructions import *
 from color_atlas import *
 from shader_node import ShaderNode
 
+'''
+Node that usually holds a glsl function or instruction
+'''
+
 class InstructionNode(ShaderNode):
     def __init__(self, instruction, **kwargs):
         super().__init__(**kwargs)

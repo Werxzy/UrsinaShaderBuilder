@@ -1,7 +1,7 @@
 from shader_node import ShaderNode
 
 '''
-Node that holds a constant variable
+Node that holds a constant variable.
 '''
 
 class ConstantNode(ShaderNode):

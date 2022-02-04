@@ -1,5 +1,9 @@
 from ursina import *
 
+'''
+Renders a Bezier curve based on given points.
+'''
+
 class CurveRenderer(Entity):
     '''
     def __init__(self, thickness=10, length=15, **kwargs):
