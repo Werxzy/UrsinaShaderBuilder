@@ -29,6 +29,9 @@ class ShaderNode(Entity):
         self.ui_build_pos = 0 # to allow appending ui without intersection
         self.ui_spacing = 0.01
 
+        if self.manager == None:
+            print_warning('No manager assigned.')
+
 
 # - - - ui builder functions - - -
 

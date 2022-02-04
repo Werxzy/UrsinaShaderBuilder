@@ -5,12 +5,9 @@ from shader_node import ShaderNode
 
 class InstructionNode(ShaderNode):
     def __init__(self, instruction, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.instruction = instruction
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
         
         self.ui_name = self.append_text(instruction)
         self.ui_divider1 = self.append_divider()

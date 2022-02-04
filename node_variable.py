@@ -25,12 +25,9 @@ class ConstantNode(ShaderNode):
 
 
     def __init__(self, data_type, **kwargs):
-        super().__init__()
+        super().__init__(**kwargs)
 
         self.data_type = data_type
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
         self.ui_name = self.append_text(data_type, size = 0.8)
         self.ui_divider1 = self.append_divider()
