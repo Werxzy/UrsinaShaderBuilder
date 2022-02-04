@@ -65,6 +65,10 @@ class ShaderNode(Entity):
                     ent_field.text = '0'
                 elif ent_field.decimal:
                     ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789.'])
+                    sp = ent_field.text.split('.')
+                    if len(sp) > 1: ent_field.text = '.'.join(sp[0:2]) + ''.join(sp[2:])
+                    else: ent_field.text = ''.join(sp)
+
                 else:
                     ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789'])
 
