@@ -71,6 +71,8 @@ class ShaderNode(Entity):
                 ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
                 ent_field.cursor.x -= org_length - len(ent_field.text)
                 ent_field.cursor.x = max(0, ent_field.cursor.x)
+                if len(ent_field.text) < ent_field.scroll_size[0]:
+                    ent_field.scroll_position = (0,0)
 
                 orig_render()
 
