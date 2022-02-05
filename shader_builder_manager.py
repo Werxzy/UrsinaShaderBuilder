@@ -64,26 +64,21 @@ class ShaderBuilderManager(Entity):
 
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
-        nodes_queued = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected()]) # queues all nodes that have no outputs
-        nodes_checked = list()
+        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected()]) # queues all nodes that have no outputs
+        nodes_queued = list(nodes_to_check)
         n = 0
-        while n < len(nodes_queued):
-            if nodes_queued[n] not in nodes_checked:
-                nodes_checked.append(nodes_queued[n])
-                
-                for c in nodes_queued[n].inputs:
-                    node = c.connections[0].parent
-                    if not node.is_all_connected():
-                        print_warning('not all connection made')
-                        return 'bad'
+        while n < len(nodes_to_check):            
+            for c in nodes_queued[n].inputs:
+                node = c.connections[0].parent
+                if not node.is_all_connected():
+                    print_warning('not all connection made')
+                    return 'bad'
 
-                    if nodes_queued.count(node) > 0:
-                        if nodes_queued.index(node) <= n:
-                            n -= 1
-                        nodes_queued.remove(node)
-                        
-                    nodes_queued.append(node)
-
+                if nodes_queued.count(node) > 0:
+                    nodes_queued.remove(node)
+                else:
+                    nodes_to_check.append(node)
+                nodes_queued.append(node)
             n += 1
 
         # Was back to front, now needs to be front to back (flow from inputs to outputs)
@@ -94,8 +89,7 @@ class ShaderBuilderManager(Entity):
         
         final_build = '#version 150\n\n'
         final_build += self.build['inout'] + '\n'
-        if len(self.build['function']) > 0:
-            final_build += self.build['function'] + '\n'
+        if len(self.build['function']) > 0: final_build += self.build['function'] + '\n'
         final_build += 'void main(){\n' + self.build['main'] + '}'
 
         return final_build
