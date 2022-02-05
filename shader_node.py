@@ -172,4 +172,7 @@ class ShaderNode(Entity):
             i.disconnectAll()
         for o in self.outputs:
             o.disconnectAll()
+
+    def build_shader(self):
+        pass
         

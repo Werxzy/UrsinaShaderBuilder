@@ -48,5 +48,21 @@ class ShaderBuilderManager(Entity):
             self.y += mouse.velocity[1] * window.aspect_ratio
 
 
-    def buildShader(self):
-        return ''
+    def build_shader(self):
+        self.build = {
+            'inout' : '',
+            'function' : '',
+            'main' : '',
+        }
+
+        #TODO loop through all nodes
+        
+        final_build = '#version 150\n'
+        final_build += self.build['inout'] + '\n'
+        final_build += self.build['function'] + '\n'
+        final_build += 'void main(){\n' + self.build['main'] + '\n}'
+
+        return final_build
+
+    def build_shader_append(self, target, value):
+        self.build[target] += value + '\n'
