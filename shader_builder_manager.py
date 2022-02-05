@@ -2,6 +2,7 @@ from ursina import *
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
+from shader_instructions import DataTypes
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -55,7 +56,41 @@ class ShaderBuilderManager(Entity):
             'main' : '',
         }
 
-        #TODO loop through all nodes
+        self.build_var_count = dict()
+        self.build_var_finished = dict()
+
+        for i in self.shader_nodes:
+            i.clear_build_variables()
+
+        # queues the nodes from back to front and moves them back based on dependancies
+        # then goes in reverse order
+        nodes_queued = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected()]) # queues all nodes that have no outputs
+        nodes_checked = list()
+        n = 0
+        while n < len(nodes_queued):
+            if nodes_queued[n] not in nodes_checked:
+                nodes_checked.append(nodes_queued[n])
+                
+                for c in nodes_queued[n].inputs:
+                    node = c.connections[0].parent
+                    if not node.is_all_connected():
+                        print_warning('not all connection made')
+                        return 'bad'
+
+                    if nodes_queued.count(node) > 0:
+                        if nodes_queued.index(node) <= n:
+                            n -= 1
+                        nodes_queued.remove(node)
+                        
+                    nodes_queued.append(node)
+
+            n += 1
+
+        # Was back to front, now needs to be front to back (flow from inputs to outputs)
+        nodes_queued.reverse() 
+
+        for node in nodes_queued:
+            node.build_shader()
         
         final_build = '#version 150\n\n'
         final_build += self.build['inout'] + '\n'
@@ -67,3 +102,25 @@ class ShaderBuilderManager(Entity):
 
     def build_shader_append(self, target, value):
         self.build[target] += value + '\n'
+
+    # returns the variable name with a version if the variable need to be initialized
+    # (_vec3_0, vec3 _vec3_0)
+    def get_variable(self, data_type):
+        if data_type not in self.build_var_finished.keys(): # first variable of that type
+            self.build_var_count[data_type] = -1
+            self.build_var_finished[data_type] = list()
+        
+        if len(self.build_var_finished[data_type]) == 0: # no variables not in use
+            c = self.build_var_count[data_type] + 1
+            self.build_var_count[data_type] = c
+            v = '_' + data_type + '_' + str(c)
+            return (v, data_type + ' ' + v)
+
+        v = self.build_var_finished[data_type].pop()
+
+        return (v, v) # return a free variable
+
+    def finished_variable(self, data_type, variable):
+        self.build_var_finished[data_type].append(variable)
+
+

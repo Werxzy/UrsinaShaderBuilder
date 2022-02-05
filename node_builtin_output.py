@@ -19,3 +19,10 @@ class BuiltInOutputNode(ShaderNode):
         self.ui_back = self.build_back()
 
         self.build_connector('vec4', ['vec4'], False, 0.157)
+
+    def build_shader(self):
+        v1 = 'out ' + self.inputs[0].get_variable_type() + ' ' + self.variable_name + ';'
+        v2 = self.variable_name + ' = ' + self.inputs[0].get_build_variable() + ';'
+
+        self.manager.build_shader_append('inout', v1)
+        self.manager.build_shader_append('main', v2)

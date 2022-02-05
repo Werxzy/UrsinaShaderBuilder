@@ -150,6 +150,26 @@ class ShaderNode(Entity):
     def disconnection(self, connector):
         if connector in self.inputs:
            self.data_type_set = -1
+
+    # Returns true if:
+    # len(inputs) > 0 and all connected and at least 1 output connected
+    # len(inputs) > 0 and all connected and len(outputs) == 0
+    # len(inputs) == 0 and there is at least 1 output connected
+    # len(inputs) == 0 and len(outputs) == 0 (this is a weird but useful case)
+    def is_all_connected(self):
+        if len(self.inputs) > 0:
+            for i in self.inputs:
+                if not i.any_connected():
+                    return False
+
+        if len(self.outputs) > 0:
+            for o in self.outputs:
+                if o.any_connected():
+                    return True
+
+            return False
+
+        return True
     
     def input(self, key):
         if key == 'left mouse down' and self.ui_back.hovered:
@@ -173,6 +193,25 @@ class ShaderNode(Entity):
         for o in self.outputs:
             o.disconnectAll()
 
-    def build_shader(self):
-        pass
+
+# - - - shader builder functions - - -
+
+    # Called when building the shader.
+    # To be replaced in inheriting classes.
+    def build_shader(self): pass
+
+    # Checks if the node is ready to build
+    def is_build_ready(self):
+        ready = True
+        
+        for i in self.inputs:
+            if not i.is_build_ready():
+                ready = False
+                break
+
+        return ready
+
+    def clear_build_variables(self):
+        for o in self.outputs:
+            o.clear_build_variable()
         

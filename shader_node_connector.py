@@ -229,3 +229,53 @@ class NodeConnector(Entity):
         # path = [start, start_bend, start_bend, end_bend, end_bend, end]
         path = [start, start_bend, end_bend, end]
         self.ui_line.set_curve(path)
+
+
+# - - - shader builder functions - - -
+
+    # Returns if the connector has the variable initialized by its node.
+    def is_build_ready(self):
+        if not self.isOutput:
+            return self.connections[0].is_build_ready()
+        return self.build_variable != None
+
+    # Clears the used variable.
+    def clear_build_variable(self):
+        self.build_variable = None
+        self.build_use_count = 0
+
+    # Returns the variable name.
+    # If the number of expected uses is reached, then flag it as being no longer used.
+    def get_build_variable(self, decrement = True):
+        if not self.isOutput:
+            return self.connections[0].get_build_variable(decrement)
+
+        if decrement:
+            self.build_use_count -= 1
+            if self.build_use_count == 0:
+                self.parent.manager.finished_variable(self.get_variable_type(), self.build_variable)
+
+        return self.build_variable
+    
+    # Returns the type of the variable based on its node's mode.
+    def get_variable_type(self):
+        if self.parent.data_type_set == -1:
+            print_warning('No type specified.')
+            return ''
+        return self.variable_type[self.parent.data_type_set]
+
+    # Creates the build variable and returns the variable assignment version
+    # if there is a free variable to use
+    #   _vec3_0
+    # otherwise include the type
+    #   vec3 _vec3_0
+    def prepare_build_variable(self, uses = 0):
+        v = self.parent.manager.get_variable(self.get_variable_type())
+        self.build_variable = v[0]
+        self.build_use_count = uses if uses > 0 else len(self.connections)
+        return v[1]
+
+    # Sets the variable to a custom output. (usually a constant or global variable)
+    def set_build_variable(self, value):
+        self.build_variable = value
+        self.build_use_count = -1

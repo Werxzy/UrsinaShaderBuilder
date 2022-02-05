@@ -36,3 +36,14 @@ class InstructionNode(ShaderNode):
             self.build_connector(k, v, True, i)
             i += 1  
 
+    def build_shader(self):
+        var_replace = dict()
+        for i in self.inputs:
+            var_replace[i.variable] = i.get_build_variable()
+
+        for o in self.outputs:
+            v = o.prepare_build_variable()
+            var_replace[o.variable] = v
+
+        inst = multireplace(GLSL[self.instruction]['function'], var_replace)
+        self.manager.build_shader_append('main', inst)
