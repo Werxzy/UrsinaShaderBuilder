@@ -13,12 +13,15 @@ app = Ursina()
 # this appears to do nothing
 # camera.render.setAntialias(AntialiasAttrib.MMultisample)
 
-def input(key):
-    pass
-
 window.x = 200
 window.borderless = False
 
 sbm = ShaderBuilderManager()
+
+def input(key):
+    if key == 'b':
+        global sbm
+        print(sbm.build_shader())
+    pass
 
 app.run()

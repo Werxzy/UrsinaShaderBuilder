@@ -57,10 +57,11 @@ class ShaderBuilderManager(Entity):
 
         #TODO loop through all nodes
         
-        final_build = '#version 150\n'
+        final_build = '#version 150\n\n'
         final_build += self.build['inout'] + '\n'
-        final_build += self.build['function'] + '\n'
-        final_build += 'void main(){\n' + self.build['main'] + '\n}'
+        if len(self.build['function']) > 0:
+            final_build += self.build['function'] + '\n'
+        final_build += 'void main(){\n' + self.build['main'] + '}'
 
         return final_build
 

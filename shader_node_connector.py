@@ -194,7 +194,7 @@ class NodeConnector(Entity):
         self.parent.disconnection(self)
 
     def any_connected(self):
-        return self.connections.count() > 0
+        return len(self.connections) > 0
         
 
     def update_prepared_line(self):
