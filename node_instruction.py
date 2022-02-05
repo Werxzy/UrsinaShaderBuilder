@@ -4,7 +4,7 @@ from color_atlas import *
 from shader_node import ShaderNode
 
 '''
-Node that usually holds a glsl function or instruction
+Node that usually holds a glsl function or instruction.
 '''
 
 class InstructionNode(ShaderNode):
