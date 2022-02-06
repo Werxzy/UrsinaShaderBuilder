@@ -1,5 +1,5 @@
 from ursina import *
-
+from ursina import ursinamath
 '''
 Menu that allows being searched through.
 
@@ -20,7 +20,9 @@ class SearchMenu(Entity):
         super().__init__()
 
         self.option_scroll_count = 8
+        self.scroll_position = 0
         self.options = options
+        self.option_nested_position = []
         self.on_selected = None
         self.scroll_bar_width = 0.015
         self.edge_spacing = 0.02
@@ -60,6 +62,7 @@ class SearchMenu(Entity):
         quadScale = Vec2(self.width + self.edge_spacing, len(self.option_slots) * (text_height + self.text_spacing) + (self.edge_spacing - self.text_spacing) + text_start)
         self.ui_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.015), z = 0.2, origin_y = quadScale.y * 0.5, color = self.color_back, collider='box')
 
+        self.update_options()
 
 
     def input(self, key):
@@ -67,9 +70,61 @@ class SearchMenu(Entity):
             if key == 'left mouse down':
                 destroy(self)
 
+        elif key == 'left mouse down' and mouse.hovered_entity in self.option_highlights:
+            ind = self.option_highlights.index(mouse.hovered_entity)
+            current_options = self.get_options(self.option_nested_position)
+
+            if self.option_slots[ind].text == '':
+                pass
+
+            elif self.option_slots[ind].text == '< Back':
+                self.option_nested_position.pop()
+                self.scroll_position = 0
+                self.update_options()
+
+            elif isinstance(current_options[self.option_slots[ind].text], dict):
+                self.option_nested_position.append(self.option_slots[ind].text)
+                self.scroll_position = 0
+                self.update_options()
+
+            else:
+                self.on_selected(current_options[self.option_slots[ind].text])
+
+        if key == 'scroll down':
+            self.update_options(1)
+        if key == 'scroll up':
+            self.update_options(-1)
 
     def update(self):
         for h in self.option_highlights:
             if h.visible != (mouse.hovered_entity == h):
                 h.visible = mouse.hovered_entity == h
             
+    def update_options(self, scroll = 0):
+        current_options = self.get_options(self.option_nested_position)
+        print(self.scroll_position, scroll, len(current_options), self.option_scroll_count)
+        self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, len(current_options) - self.option_scroll_count)
+
+
+        keys = list(current_options.keys())
+        max = len(current_options)
+        for i in range(self.option_scroll_count):
+            if i < max:
+                self.option_slots[i].text = keys[i + self.scroll_position]
+                # if isinstance(current_options[keys[i]], dict):
+                #   TODO, show arrow
+            else:
+                self.option_slots[i].text = ''
+            
+
+    # returns a list of options for that position in the tree
+    # 'back' is added to the front if 
+    def get_options(self, nested_position):
+        op = dict(self.options)
+        for p in nested_position:
+            op = op[p]
+        if len(nested_position) > 0:
+            new_op = dict({'< Back':'< Back'})
+            new_op.update(op)
+            return new_op
+        return op

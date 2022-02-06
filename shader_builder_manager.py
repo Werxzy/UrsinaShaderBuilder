@@ -44,11 +44,11 @@ class ShaderBuilderManager(Entity):
 
 
     def input(self, key):
-        if key == 'scroll up':
+        if key == 'scroll up' and self.search_menu == None:
             self.scale *= 1.1
             self.position = (self.position - mouse.position) * 1.1 + mouse.position
 
-        if key == 'scroll down':
+        if key == 'scroll down' and self.search_menu == None:
             self.scale /= 1.1
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
@@ -64,7 +64,7 @@ class ShaderBuilderManager(Entity):
             if mouse.point == None and mouse.delta_drag.length() < 0.001:
                 if self.search_menu != None:
                     destroy(self.search_menu)
-                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
+                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, on_selected = print, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
 
                 def clear_ref():
                     self.search_menu = None
