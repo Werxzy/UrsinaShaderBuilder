@@ -38,14 +38,15 @@ class SearchMenu(Entity):
             setattr(self, key, value)
 
         self.search_text = TextField(parent = self, scale = 0.8, position = Vec3(-self.width * 0.5, - self.edge_spacing * 0.5, -0.1), scroll_size = (16,1), max_lines = 1, register_mouse_input = True)
-        self.search_text.text = 'TEST g test'
+        self.search_text.text = ' '
         self.search_text.text_entity.color = self.color_text
         self.search_text.render()
         quadScale = Vec2(self.width + self.edge_spacing * 0.5, self.search_text.text_entity.height + self.text_spacing * 0.5)
         self.search_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.01), z = 0.1, y = -self.edge_spacing * 0.25, origin_y = quadScale.y * 0.5, color = self.color_search_box, collider='box')
+        self.search_text.text = ''
 
         self.option_slots = [
-            Text('TEST g test', parent = self, position = Vec3(-self.width * 0.5, -i, 0), color = self.color_text, scale = 0.7)
+            Text(' ', parent = self, position = Vec3(-self.width * 0.5, -i, 0), color = self.color_text, scale = 0.7)
             for i in range(self.option_scroll_count)
         ]
         text_height = self.option_slots[0].height
@@ -74,7 +75,7 @@ class SearchMenu(Entity):
             ind = self.option_highlights.index(mouse.hovered_entity)
             current_options = self.get_options(self.option_nested_position)
 
-            if self.option_slots[ind].text == '':
+            if self.option_slots[ind].text == ' ':
                 pass
 
             elif self.option_slots[ind].text == '< Back':
@@ -96,9 +97,10 @@ class SearchMenu(Entity):
             self.update_options(-1)
 
     def update(self):
-        for h in self.option_highlights:
-            if h.visible != (mouse.hovered_entity == h):
-                h.visible = mouse.hovered_entity == h
+        for i in range(len(self.option_highlights)):
+            s = mouse.hovered_entity == self.option_highlights[i] and self.option_slots[i].text != ' '
+            if self.option_highlights[i].visible != s:
+                self.option_highlights[i].visible = s
             
     def update_options(self, scroll = 0):
         current_options = self.get_options(self.option_nested_position)
@@ -112,7 +114,7 @@ class SearchMenu(Entity):
                 # if isinstance(current_options[keys[i]], dict):
                 #   TODO, show arrow
             else:
-                self.option_slots[i].text = ''
+                self.option_slots[i].text = ' '
             
 
     # returns a list of options for that position in the tree
