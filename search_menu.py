@@ -88,7 +88,7 @@ class SearchMenu(Entity):
 
         elif key == 'left mouse down' and mouse.hovered_entity in self.option_highlights:
             ind = self.option_highlights.index(mouse.hovered_entity)
-            current_options = self.get_options(self.option_nested_position)
+            current_options = self.get_current_options()
 
             if self.option_slots[ind].text == ' ':
                 pass
@@ -122,10 +122,7 @@ class SearchMenu(Entity):
                 self.option_highlights[i].visible = s
             
     def update_options(self, scroll = 0):
-        if self.search_text.text == '':
-            current_options = self.get_options(self.option_nested_position)
-        else:
-            current_options = self.search_options(self.search_text.text)
+        current_options = self.get_current_options()
         self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, len(current_options) - self.option_scroll_count)
 
         keys = list(current_options.keys())
@@ -138,6 +135,13 @@ class SearchMenu(Entity):
             else:
                 self.option_slots[i].text = ' '
             
+
+    def get_current_options(self):
+        if self.search_text.text == '':
+            op = self.get_options(self.option_nested_position)
+        else:
+            op = self.search_options(self.search_text.text)
+        return op
 
     # returns a list of options for that position in the tree
     # 'back' is added to the front if 
