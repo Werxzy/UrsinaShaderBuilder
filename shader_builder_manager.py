@@ -25,7 +25,7 @@ class ShaderBuilderManager(Entity):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.right_mouse_released = False
+        self.create_menu = False
         self.search_menu = None
 
         #test node
@@ -53,15 +53,18 @@ class ShaderBuilderManager(Entity):
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
         if key == 'right mouse up':
-            self.right_mouse_released = True
+            self.create_menu = 1
+            
+        if key == 'space':
+            self.create_menu = 2
 
     def update(self):
         if mouse.right:
             self.x += mouse.velocity[0]
             self.y += mouse.velocity[1] * window.aspect_ratio
-        if self.right_mouse_released:
-            self.right_mouse_released = False
-            if mouse.point == None and mouse.delta_drag.length() < 0.001:
+        if self.create_menu > 0:
+            
+            if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu == 2:
                 if self.search_menu != None:
                     destroy(self.search_menu)
                 self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, on_selected = print, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
@@ -69,6 +72,7 @@ class ShaderBuilderManager(Entity):
                 def clear_ref():
                     self.search_menu = None
                 self.search_menu.on_destroy = clear_ref
+            self.create_menu = 0
             
 
     def build_shader(self):

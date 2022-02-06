@@ -102,9 +102,7 @@ class SearchMenu(Entity):
             
     def update_options(self, scroll = 0):
         current_options = self.get_options(self.option_nested_position)
-        print(self.scroll_position, scroll, len(current_options), self.option_scroll_count)
         self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, len(current_options) - self.option_scroll_count)
-
 
         keys = list(current_options.keys())
         max = len(current_options)
