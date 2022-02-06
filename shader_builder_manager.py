@@ -12,8 +12,8 @@ Manager file that holds all the nodes and builds the shader.
 class ShaderBuilderManager(Entity):
 
     menu_options = {
-        'constants' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
-        'instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
+        'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
+        'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
 
     def __init__(self, **kwargs):
@@ -67,11 +67,24 @@ class ShaderBuilderManager(Entity):
             if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu == 2:
                 if self.search_menu != None:
                     destroy(self.search_menu)
-                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, on_selected = print, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
+                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
 
                 def clear_ref():
                     self.search_menu = None
                 self.search_menu.on_destroy = clear_ref
+
+                def create_node(val):
+                    sp = val.split(',')
+                    if sp[0] == 'ConstantNode':
+                        self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type = sp[1], position = self.search_menu.position, z = 0))
+                    elif sp[0] == 'InstructionNode':
+                        self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.search_menu.position, z = 0))
+                    else:
+                        return
+                    destroy(self.search_menu)
+                    self.search_menu = None
+
+                self.search_menu.on_selected = create_node
             self.create_menu = 0
             
 
