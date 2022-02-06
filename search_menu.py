@@ -87,7 +87,7 @@ class SearchMenu(Entity):
                 self.scroll_position = 0
                 self.update_options()
 
-            else:
+            elif self.on_selected != None:
                 self.on_selected(current_options[self.option_slots[ind].text])
 
         if key == 'scroll down':
