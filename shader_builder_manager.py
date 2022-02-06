@@ -21,6 +21,7 @@ class ShaderBuilderManager(Entity):
             setattr(self, key, value)
 
         self.right_mouse_released = False
+        self.search_menu = None
 
         #test node
         self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -56,7 +57,13 @@ class ShaderBuilderManager(Entity):
         if self.right_mouse_released:
             self.right_mouse_released = False
             if mouse.point == None and mouse.delta_drag.length() < 0.001:
-                SearchMenu(parent = self, position = mouse.position, z = -1)
+                if self.search_menu != None:
+                    destroy(self.search_menu)
+                self.search_menu = SearchMenu(parent = self, position = mouse.position, z = -1)
+
+                def clear_ref():
+                    self.search_menu = None
+                self.search_menu.on_destroy = clear_ref
             
 
     def build_shader(self):
