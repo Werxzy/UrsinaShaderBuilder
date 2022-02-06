@@ -55,7 +55,7 @@ class ShaderBuilderManager(Entity):
         if key == 'right mouse up':
             self.create_menu = 1
             
-        if key == 'space':
+        if key == 'space' and self.search_menu == None:
             self.create_menu = 2
 
     def update(self):
