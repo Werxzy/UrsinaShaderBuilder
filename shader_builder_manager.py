@@ -72,19 +72,7 @@ class ShaderBuilderManager(Entity):
                 def clear_ref():
                     self.search_menu = None
                 self.search_menu.on_destroy = clear_ref
-
-                def create_node(val):
-                    sp = val.split(',')
-                    if sp[0] == 'ConstantNode':
-                        self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type = sp[1], position = self.search_menu.position, z = 0))
-                    elif sp[0] == 'InstructionNode':
-                        self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.search_menu.position, z = 0))
-                    else:
-                        return
-                    destroy(self.search_menu)
-                    self.search_menu = None
-
-                self.search_menu.on_selected = create_node
+                self.search_menu.on_selected = self.create_node
             self.create_menu = 0
             
 
@@ -155,5 +143,16 @@ class ShaderBuilderManager(Entity):
 
     def finished_variable(self, data_type, variable):
         self.build_var_finished[data_type].append(variable)
+
+    def create_node(self, val):
+        sp = val.split(',')
+        if sp[0] == 'ConstantNode':
+            self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type = sp[1], position = self.search_menu.position, z = 0))
+        elif sp[0] == 'InstructionNode':
+            self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.search_menu.position, z = 0))
+        else:
+            return
+        destroy(self.search_menu)
+        self.search_menu = None
 
 
