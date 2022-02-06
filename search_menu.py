@@ -16,11 +16,11 @@ Menu that allows being searched through.
 '''
 
 class SearchMenu(Entity):
-    def __init__(self, **kwargs):
+    def __init__(self, options, **kwargs):
         super().__init__()
 
         self.option_scroll_count = 8
-        self.options = dict()
+        self.options = options
         self.on_selected = None
         self.scroll_bar_width = 0.015
         self.edge_spacing = 0.02

@@ -3,13 +3,18 @@ from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
 from search_menu import SearchMenu
-from shader_instructions import DataTypes
+from shader_instructions import GLSL
 
 '''
 Manager file that holds all the nodes and builds the shader.
 '''
 
 class ShaderBuilderManager(Entity):
+
+    menu_options = {
+        'constants' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
+        'instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
+    }
 
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)
@@ -59,7 +64,7 @@ class ShaderBuilderManager(Entity):
             if mouse.point == None and mouse.delta_drag.length() < 0.001:
                 if self.search_menu != None:
                     destroy(self.search_menu)
-                self.search_menu = SearchMenu(parent = self, position = mouse.position, z = -1)
+                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
 
                 def clear_ref():
                     self.search_menu = None
