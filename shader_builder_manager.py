@@ -2,6 +2,7 @@ from ursina import *
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
+from search_menu import SearchMenu
 from shader_instructions import DataTypes
 
 '''
@@ -18,6 +19,8 @@ class ShaderBuilderManager(Entity):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        self.right_mouse_released = False
 
         #test node
         self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -43,11 +46,18 @@ class ShaderBuilderManager(Entity):
             self.scale /= 1.1
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
+        if key == 'right mouse up':
+            self.right_mouse_released = True
+
     def update(self):
         if mouse.right:
             self.x += mouse.velocity[0]
             self.y += mouse.velocity[1] * window.aspect_ratio
-
+        if self.right_mouse_released:
+            self.right_mouse_released = False
+            if mouse.point == None and mouse.delta_drag.length() < 0.001:
+                SearchMenu(parent = self, position = mouse.position, z = -1)
+            
 
     def build_shader(self):
         self.build = {
