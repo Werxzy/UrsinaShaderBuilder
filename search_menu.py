@@ -44,6 +44,10 @@ class SearchMenu(Entity):
         quadScale = Vec2(self.width + self.edge_spacing * 0.5, self.search_text.text_entity.height + self.text_spacing * 0.5)
         self.search_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.01), z = 0.1, y = -self.edge_spacing * 0.25, origin_y = quadScale.y * 0.5, color = self.color_search_box, collider='box')
         self.search_text.text = ''
+        self.search_text_input = self.search_text.input
+        self.search_text.input = self.search_input
+        self.search_text_keystroke = self.search_text.keystroke
+        self.search_text.keystroke = self.search_keystroke
 
         self.option_slots = [
             Text(' ', parent = self, position = Vec3(-self.width * 0.5, -i, 0), color = self.color_text, scale = 0.7)
@@ -63,6 +67,17 @@ class SearchMenu(Entity):
         quadScale = Vec2(self.width + self.edge_spacing, len(self.option_slots) * (text_height + self.text_spacing) + (self.edge_spacing - self.text_spacing) + text_start)
         self.ui_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.015), z = 0.2, origin_y = quadScale.y * 0.5, color = self.color_back, collider='box')
 
+        self.options_all = dict(self.options)
+        finished = False
+        while not finished:
+            finished = True
+            for k,v in self.options_all.items():
+                if isinstance(v, dict):
+                    finished = False
+                    self.options_all.pop(k)
+                    self.options_all.update(v)
+                    break
+
         self.update_options()
 
 
@@ -77,6 +92,9 @@ class SearchMenu(Entity):
 
             if self.option_slots[ind].text == ' ':
                 pass
+
+            elif self.option_slots[ind].text == '< Clear Search':
+                self.end_search()
 
             elif self.option_slots[ind].text == '< Back':
                 self.option_nested_position.pop()
@@ -95,7 +113,8 @@ class SearchMenu(Entity):
             self.update_options(1)
         if key == 'scroll up':
             self.update_options(-1)
-
+    
+    
     def update(self):
         for i in range(len(self.option_highlights)):
             s = mouse.hovered_entity == self.option_highlights[i] and self.option_slots[i].text != ' '
@@ -103,7 +122,10 @@ class SearchMenu(Entity):
                 self.option_highlights[i].visible = s
             
     def update_options(self, scroll = 0):
-        current_options = self.get_options(self.option_nested_position)
+        if self.search_text.text == '':
+            current_options = self.get_options(self.option_nested_position)
+        else:
+            current_options = self.search_options(self.search_text.text)
         self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, len(current_options) - self.option_scroll_count)
 
         keys = list(current_options.keys())
@@ -128,3 +150,35 @@ class SearchMenu(Entity):
             new_op.update(op)
             return new_op
         return op
+
+
+# - - - search functions - - -
+
+    def search_options(self, query):
+        query = query.lower()
+        op = dict({'< Clear Search':'< Clear Search'})
+        op.update([(k,v) for k,v in self.options_all.items() if query in k.lower()])
+        return op
+
+    def search_keystroke(self, key):
+        self.search_check(self.search_text_keystroke, key)
+
+    def search_input(self, key):
+        self.search_check(self.search_text_input, key)
+
+    def search_check(self, func, key):
+        old_text = str(self.search_text.text)
+        func(key)
+        if old_text != self.search_text.text:
+            if self.search_text.text == '':
+                self.end_search()
+            else:
+                self.update_options()
+        
+
+    def end_search(self):
+        self.search_text.text = ''
+        self.search_text.render()
+        self.option_nested_position = []
+        self.scroll_position = 0
+        self.update_options()
