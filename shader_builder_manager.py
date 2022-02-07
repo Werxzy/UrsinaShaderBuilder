@@ -4,6 +4,7 @@ from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
 from search_menu import SearchMenu
 from shader_instructions import GLSL
+from color_atlas import *
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -67,7 +68,16 @@ class ShaderBuilderManager(Entity):
             if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu == 2:
                 if self.search_menu != None:
                     destroy(self.search_menu)
-                self.search_menu = SearchMenu(ShaderBuilderManager.menu_options, parent = self, position = Vec3(Vec3(mouse.position) - self.position) / self.scale, z = -1)
+                self.search_menu = SearchMenu(
+                    ShaderBuilderManager.menu_options, 
+                    parent = self, 
+                    position = Vec3(Vec3(mouse.position) - self.position) / self.scale, 
+                    z = -1,
+                    color_text = c_text,
+                    color_text_highlight = c_text_highlight,
+                    color_back = c_node_back,
+                    color_search_box = c_node_dark,
+                    color_highlight = c_node_light)
 
                 def clear_ref():
                     self.search_menu = None

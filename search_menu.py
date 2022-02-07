@@ -30,6 +30,7 @@ class SearchMenu(Entity):
         self.width = 0.2
 
         self.color_text = color.hsv(0,0,0.7)
+        self.color_text_highlight = color.hsv(0,0,0.7, 0.3)
         self.color_back = color.hsv(0,0,0.2)
         self.color_highlight = color.hsv(0,0,0.3)
         self.color_search_box = color.hsv(0,0,0.15)
@@ -40,9 +41,11 @@ class SearchMenu(Entity):
         self.search_text = TextField(parent = self, scale = 0.8, position = Vec3(-self.width * 0.5, - self.edge_spacing * 0.5, -0.1), scroll_size = (16,1), max_lines = 1, register_mouse_input = True)
         self.search_text.text = ' '
         self.search_text.text_entity.color = self.color_text
+        self.search_text.cursor.color = self.color_text
+        self.search_text.highlight_color = self.color_text_highlight
         self.search_text.render()
         quadScale = Vec2(self.width + self.edge_spacing * 0.5, self.search_text.text_entity.height + self.text_spacing * 0.5)
-        self.search_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.01), z = 0.1, y = -self.edge_spacing * 0.25, origin_y = quadScale.y * 0.5, color = self.color_search_box, collider='box')
+        self.search_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.01), z = 0.1, y = -self.edge_spacing * 0.25, origin_y = quadScale.y * 0.5, color = self.color_search_box)
         self.search_text.text = ''
         self.search_text_input = self.search_text.input
         self.search_text.input = self.search_input
@@ -84,32 +87,32 @@ class SearchMenu(Entity):
 
 
     def input(self, key):
-        if (mouse.hovered_entity != self.ui_back) and (mouse.hovered_entity not in self.option_highlights) and (mouse.hovered_entity != self.search_text.bg):
-            if key == 'left mouse down':
+        if key == 'left mouse down':
+            if (mouse.hovered_entity != self.ui_back) and (mouse.hovered_entity not in self.option_highlights) and (mouse.hovered_entity != self.search_text.bg):
                 destroy(self)
 
-        elif key == 'left mouse down' and mouse.hovered_entity in self.option_highlights:
-            ind = self.option_highlights.index(mouse.hovered_entity)
-            current_options = self.get_current_options()
+            elif mouse.hovered_entity in self.option_highlights:
+                ind = self.option_highlights.index(mouse.hovered_entity)
+                current_options = self.get_current_options()
 
-            if self.option_slots[ind].text == ' ':
-                pass
+                if self.option_slots[ind].text == ' ':
+                    pass
 
-            elif self.option_slots[ind].text == '< Clear Search':
-                self.end_search()
+                elif self.option_slots[ind].text == '< Clear Search':
+                    self.end_search()
 
-            elif self.option_slots[ind].text == '< Back':
-                self.option_nested_position.pop()
-                self.scroll_position = 0
-                self.update_options()
+                elif self.option_slots[ind].text == '< Back':
+                    self.option_nested_position.pop()
+                    self.scroll_position = 0
+                    self.update_options()
 
-            elif isinstance(current_options[self.option_slots[ind].text], dict):
-                self.option_nested_position.append(self.option_slots[ind].text)
-                self.scroll_position = 0
-                self.update_options()
+                elif isinstance(current_options[self.option_slots[ind].text], dict):
+                    self.option_nested_position.append(self.option_slots[ind].text)
+                    self.scroll_position = 0
+                    self.update_options()
 
-            elif self.on_selected != None:
-                self.on_selected(current_options[self.option_slots[ind].text])
+                elif self.on_selected != None:
+                    self.on_selected(current_options[self.option_slots[ind].text])
 
         if key == 'scroll down':
             self.update_options(1)
