@@ -157,7 +157,7 @@ class SearchMenu(Entity):
         if mouse.left and mouse.hovered_entity == self.scroll_back:
             amount = ursinamath.clamp((-mouse.point.y - self.scroll_bar_radius) / (self.scroll_height - self.scroll_bar_radius * 2), 0, 1)
             total = self._current_option_count - self.option_scroll_count
-            new_scroll_position = floor(ursinamath.clamp(amount * (total + 1), 0, total))
+            new_scroll_position = round(ursinamath.clamp(amount * (total), 0, total))
             if self.scroll_position != new_scroll_position:
                 self.scroll_position = new_scroll_position
                 self.update_options()
