@@ -47,10 +47,12 @@ class ShaderBuilderManager(Entity):
     def input(self, key):
         if key == 'scroll up' and self.search_menu == None:
             self.scale *= 1.1
+            self.scale_z = 1
             self.position = (self.position - mouse.position) * 1.1 + mouse.position
 
         if key == 'scroll down' and self.search_menu == None:
             self.scale /= 1.1
+            self.scale_z = 1
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
         if key == 'right mouse up':
