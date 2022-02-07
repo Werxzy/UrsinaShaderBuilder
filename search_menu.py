@@ -81,6 +81,7 @@ class SearchMenu(Entity):
             color = self.color_back, 
             z = 0.1,
             collider='box')
+        self.scroll_height = quadScale.y
 
         inner_radius = self.scroll_bar_radius / 3
         quadScale = Vec2(inner_radius * 2, quadScale.y - inner_radius * 4)
@@ -148,11 +149,21 @@ class SearchMenu(Entity):
 
         if key == 'enter' and self.search_text.text != '':
             current_options = self.get_current_options()
-            if len(current_options) > 1:
+            if self._current_option_count > 1:
                 self.on_selected(current_options[self.option_slots[1].text])
     
     
     def update(self):
+        if mouse.left and mouse.hovered_entity == self.scroll_back:
+            amount = ursinamath.clamp((-mouse.point.y - self.scroll_bar_radius) / (self.scroll_height - self.scroll_bar_radius * 2), 0, 1)
+            total = self._current_option_count - self.option_scroll_count
+            new_scroll_position = floor(ursinamath.clamp(amount * (total + 1), 0, total))
+            if self.scroll_position != new_scroll_position:
+                self.scroll_position = new_scroll_position
+                self.update_options()
+            
+            self.update_options()
+
         for i in range(len(self.option_highlights)):
             s = mouse.hovered_entity == self.option_highlights[i] and self.option_slots[i].text != ' '
             if self.option_highlights[i].visible != s:
@@ -160,12 +171,17 @@ class SearchMenu(Entity):
             
     def update_options(self, scroll = 0):
         current_options = self.get_current_options()
-        self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, len(current_options) - self.option_scroll_count)
+        self.scroll_position = ursinamath.clamp(self.scroll_position + scroll, 0, self._current_option_count - self.option_scroll_count)
+        
+        if self._current_option_count > self.option_scroll_count:
+            self.scroll_bar.y = -self.scroll_position / (self._current_option_count - self.option_scroll_count) * (self.scroll_height - self.scroll_bar_radius * 2)
+            self.scroll_bar.visible = True
+        else:
+            self.scroll_bar.visible = False
 
         keys = list(current_options.keys())
-        max = len(current_options)
         for i in range(self.option_scroll_count):
-            if i < max:
+            if i < self._current_option_count:
                 self.option_slots[i].text = keys[i + self.scroll_position]
                 # if isinstance(current_options[keys[i]], dict):
                 #   TODO, show arrow
@@ -178,6 +194,7 @@ class SearchMenu(Entity):
             op = self.get_options(self.option_nested_position)
         else:
             op = self.search_options(self.search_text.text)
+        self._current_option_count = len(op)
         return op
 
     # returns a list of options for that position in the tree
