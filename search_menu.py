@@ -48,6 +48,8 @@ class SearchMenu(Entity):
         self.search_text.input = self.search_input
         self.search_text_keystroke = self.search_text.keystroke
         self.search_text.keystroke = self.search_keystroke
+        self.search_text.active = True
+        self.search_text.shortcuts['indent', 'dedent'] = ('',)
 
         self.option_slots = [
             Text(' ', parent = self, position = Vec3(-self.width * 0.5, -i, 0), color = self.color_text, scale = 0.7)
@@ -113,6 +115,11 @@ class SearchMenu(Entity):
             self.update_options(1)
         if key == 'scroll up':
             self.update_options(-1)
+
+        if key == 'enter' and self.search_text.text != '':
+            current_options = self.get_current_options()
+            if len(current_options) > 1:
+                self.on_selected(current_options[self.option_slots[1].text])
     
     
     def update(self):

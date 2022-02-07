@@ -57,8 +57,7 @@ class ShaderNode(Entity):
             ent_field.render()
             
             ent_field.position = Vec2(ent_name.width + self.ui_spacing, -(ent_name.height - ent_field.text_entity.height * 0.8) * 0.5)
-            ent_field.shortcuts['indent'] = ('')
-            ent_field.shortcuts['dedent'] = ('')
+            ent_field.shortcuts['indent', 'dedent'] = ('',)
 
             orig_render = ent_field.render
             
