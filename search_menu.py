@@ -24,7 +24,7 @@ class SearchMenu(Entity):
         self.options = options
         self.option_nested_position = []
         self.on_selected = None
-        self.scroll_bar_width = 0.015
+        self.scroll_bar_radius = 0.015
         self.edge_spacing = 0.02
         self.text_spacing = 0.007
         self.width = 0.2
@@ -72,6 +72,33 @@ class SearchMenu(Entity):
         quadScale = Vec2(self.width + self.edge_spacing, len(self.option_slots) * (text_height + self.text_spacing) + (self.edge_spacing - self.text_spacing) + text_start)
         self.ui_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.015), z = 0.2, origin_y = quadScale.y * 0.5, color = self.color_back, collider='box')
 
+        quadScale = Vec2(self.scroll_bar_radius * 2, quadScale.y)
+        self.scroll_back = Entity(
+            parent = self, 
+            model = Quad(scale = quadScale, radius=self.scroll_bar_radius), 
+            x = self.scroll_bar_radius + self.width * 0.5 + self.edge_spacing * 1, 
+            origin_y = quadScale.y * 0.5, 
+            color = self.color_back, 
+            z = 0.1,
+            collider='box')
+
+        inner_radius = self.scroll_bar_radius / 3
+        quadScale = Vec2(inner_radius * 2, quadScale.y - inner_radius * 4)
+        self.scroll_rail = Entity(
+            parent = self.scroll_back, 
+            model = Quad(scale = quadScale, radius=inner_radius), 
+            origin_y = quadScale.y * 0.5 + self.scroll_bar_radius - inner_radius, 
+            color = self.color_search_box,
+            z = -0.1)
+
+        self.scroll_bar = Entity(
+            parent = self.scroll_back, 
+            model = 'circle', 
+            scale = self.scroll_bar_radius * 2,
+            origin_y = 0.5, 
+            color = self.color_highlight,
+            z = -0.2)
+
         self.options_all = dict(self.options)
         finished = False
         while not finished:
@@ -88,7 +115,7 @@ class SearchMenu(Entity):
 
     def input(self, key):
         if key == 'left mouse down':
-            if (mouse.hovered_entity != self.ui_back) and (mouse.hovered_entity not in self.option_highlights) and (mouse.hovered_entity != self.search_text.bg):
+            if (mouse.hovered_entity not in (self.ui_back, self.search_text.bg, self.scroll_back)) and (mouse.hovered_entity not in self.option_highlights):
                 destroy(self)
 
             elif mouse.hovered_entity in self.option_highlights:
