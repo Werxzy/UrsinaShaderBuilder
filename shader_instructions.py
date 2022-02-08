@@ -159,57 +159,27 @@ GLSL = {
 
     'Absolute' : simple_func('Removes the sign of a value.', 'abs'),
     'Ceiling' : simple_func('Rounds the value(s) up.', 'ceil'),
-
-    'Clamp' : {
-        'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
-        'inputs' : {'input': ['genType','genType'],'min': ['genType','float'], 'max': ['genType','float']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=clamp(input,min,max);'
-        },
+    'Clamp' : build_func('Clamps a value or vector\nbetween a minimum and maximum.', 'clamp', 
+        names=['input_', 'min_', 'max_'],
+        inputTypes=[['genType','genType'], ['genType','float'], ['genType','float']], 
+        outputTypes=['genType','genType']),
     
     'Floor' : simple_func('Rounds the value(s) down.', 'floor'),
     'Fraction' : simple_func('Gets the decimal values.', 'frac'),
+    'Maximum' : build_func('Gets the maximum value(s).', 'max', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
+    'Minimum' : build_func('Gets the minimum value(s).', 'min', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
+    'Interpolate' : build_func('Linearly interpolates between\n two values.', 'mix', names=['from_', 'to_', 'T_'],
+        inputTypes=[['genType','genType'], ['genType','genType'], ['genType','float']], 
+        outputTypes=['genType','genType']),
 
-    'Maximum' : {
-        'description' : 'Gets the maximum value(s).', 
-        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=max(_a,_b);'
-        },
-    'Minimum' : {
-        'description' : 'Gets the minimum value(s).', 
-        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=min(_a,_b);'
-        },
-    'Interpolate' : {
-        'description' : 'Linearly interpolates between\n two values.', 
-        'inputs' : {'from': ['genType','genType'],'to': ['genType','genType'], 't': ['genType','float']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=mix(from,to,t);'
-        },
-    'Modulous' : {
-        'description' : 'Gets the remainder of\n dividing by a value.', 
-        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=mod(_a,_b);'
-        },
-
+    'Modulous' : build_func('Gets the remainder of\n dividing by a value.', 'mod', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
     'Sign' : simple_func('Gets the sign of a value', 'sign'),
-
-    'Smooth Step' : {
-        'description' : 'Smoothly interpolates between 0 and 1.\n(I think?)', 
-        'inputs' : {'_edge_a': ['genType','float'],'_edge_b': ['genType','float'], '_x': ['genType','genType']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=smoothstep(_edge_a,_edge_b,_x);'
-        },
+    'Smooth Step' : build_func('Smoothly interpolates between 0 and 1.\n(I think?)', 'smoothstep', names=['edge_a_', 'edge_b_', 'x_'],
+        inputTypes=[['genType','float'], ['genType','float'], ['genType','genType']], 
+        outputTypes=['genType','genType']),
     
-    'Step' : {
-        'description' : 'Gives 0 where x is smaller,\n otherwise gives 1.', 
-        'inputs' : {'_edge_a': ['genType','float'], '_x': ['genType','genType']}, 
-        'outputs': {'result': ['genType','genType']}, 
-        'function' : 'result=smoothstep(_edge_a,_edge_b,_x);'
-        },
+    'Step' : build_func('Gives 0 where x is smaller,\n otherwise gives 1.', 'step', names=['edge_', 'x_'],
+        inputTypes=[['genType','float'], ['genType','genType']], outputTypes=['genType','genType']),
 
 # Geometric functions
 
