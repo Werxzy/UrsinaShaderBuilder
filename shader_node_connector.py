@@ -7,7 +7,8 @@ The input or output for a ShaderNode.
 '''
 
 class NodeConnector(Entity):
-
+    
+    line_quality = 26
     prepared_node = None
     prepared_line = None
 
@@ -172,7 +173,7 @@ class NodeConnector(Entity):
                 self._apply_disconnection(0)
             self.connections.append(connector)
 
-            self.ui_line = CurveRenderer(length = 26, parent = self, color = c_conn_active)
+            self.ui_line = CurveRenderer(length = NodeConnector.line_quality, parent = self, color = c_conn_active)
             self.update_line()
 
         self.ui_dot.color = c_conn_active
