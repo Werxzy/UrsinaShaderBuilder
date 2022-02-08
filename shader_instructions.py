@@ -211,6 +211,22 @@ GLSL = {
         'function' : 'result=smoothstep(_edge_a,_edge_b,_x);'
         },
 
+# Geometric functions
+
+    'ftransform':{
+        'description' : 'I don\'t know?\nFragment shader only.', 
+        'inputs' : {},
+        'outputs' : {'result': ['vec4']}, 
+        'function' : 'result=ftransform();'
+    },
+    'Cross Product' : build_func('Cross product of two vectors.', 'cross', inputTypes=[['vec3'], ['vec3']], outputTypes=['vec3']),
+    'Distance' : build_func('Distance between two values.', 'distance', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
+    'Dot Product' : build_func('Dot product of two values.', 'dot', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
+    'Face Forward' : build_func('Flips Direction of V\n if I and N face differently.', 'dot', names='VIN', inputTypes=[['genType'], ['genType'], ['genType']], outputTypes=['genType']),
+    'Length' : build_func('Length of the vector', 'length', inputTypes=[['genType']], outputTypes=['float']),
+    'Normalize' : build_func('Normalizes the vector.', 'normalize', inputTypes=[['genType']], outputTypes=['genType']),
+    'Reflect' : build_func('Reflects a vector.', 'reflect', names=['_in', '_normal'], inputTypes=[['genType'], ['genType']], outputTypes=['genType']),
+    'Refract' : build_func('Refracts a vector.', 'refract', names=['_in', '_normal', '_eta'], inputTypes=[['genType'], ['genType'], ['float']], outputTypes=['genType']),
 }
 
 
