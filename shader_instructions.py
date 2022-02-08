@@ -155,7 +155,10 @@ GLSL = {
     'Square Root' : simple_func('Square root.', 'sqrt'),
     'Inverse Square Root' : simple_func('Inverse square root.', 'inversesqrt'),
 
-# Common Functions
+# Common functions
+
+    'Absolute' : simple_func('Removes the sign of a value.', 'abs'),
+    'Ceiling' : simple_func('Rounds the value(s) up.', 'ceil'),
 
     'Clamp' : {
         'description' : 'Clamps a value or vector\nbetween a minimum and maximum.', 
@@ -164,6 +167,50 @@ GLSL = {
         'function' : 'result=clamp(input,min,max);'
         },
     
+    'Floor' : simple_func('Rounds the value(s) down.', 'floor'),
+    'Fraction' : simple_func('Gets the decimal values.', 'frac'),
+
+    'Maximum' : {
+        'description' : 'Gets the maximum value(s).', 
+        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=max(_a,_b);'
+        },
+    'Minimum' : {
+        'description' : 'Gets the minimum value(s).', 
+        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=min(_a,_b);'
+        },
+    'Interpolate' : {
+        'description' : 'Linearly interpolates between\n two values.', 
+        'inputs' : {'from': ['genType','genType'],'to': ['genType','genType'], 't': ['genType','float']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=mix(from,to,t);'
+        },
+    'Modulous' : {
+        'description' : 'Gets the remainder of\n dividing by a value.', 
+        'inputs' : {'_a': ['genType','genType'],'_b': ['genType','float']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=mod(_a,_b);'
+        },
+
+    'Sign' : simple_func('Gets the sign of a value', 'sign'),
+
+    'Smooth Step' : {
+        'description' : 'Smoothly interpolates between 0 and 1.\n(I think?)', 
+        'inputs' : {'_edge_a': ['genType','float'],'_edge_b': ['genType','float'], '_x': ['genType','genType']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=smoothstep(_edge_a,_edge_b,_x);'
+        },
+    
+    'Step' : {
+        'description' : 'Gives 0 where x is smaller,\n otherwise gives 1.', 
+        'inputs' : {'_edge_a': ['genType','float'], '_x': ['genType','genType']}, 
+        'outputs': {'result': ['genType','genType']}, 
+        'function' : 'result=smoothstep(_edge_a,_edge_b,_x);'
+        },
+
 }
 
 
