@@ -3,7 +3,7 @@ from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
 from search_menu import SearchMenu
-from shader_instructions import GLSL
+from shader_instructions import GLSL_catagorized
 from color_atlas import *
 
 '''
@@ -14,8 +14,9 @@ class ShaderBuilderManager(Entity):
 
     menu_options = {
         'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
-        'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
+        # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
+    menu_options.update(dict((cat,dict((v,'InstructionNode,'+v) for v in con)) for cat,con in GLSL_catagorized.items()))
 
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)

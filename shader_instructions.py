@@ -330,6 +330,22 @@ GLSL = {
 
 }
 
+def _get_range(a, b):
+    _keys = list(GLSL.keys())
+    return _keys[_keys.index(a):(_keys.index(b) + 1)]
+
+GLSL_catagorized = {
+    'Arithmatic' : _get_range('Add','Divide'),
+    'Trigonometry' : _get_range('Sine', 'Degrees'),
+    'Exponential' : _get_range('Power', 'Inverse Square Root'),
+    'Common' : _get_range('Absolute', 'Is Infinite'),
+    'Geometric' : _get_range('Cross Product', 'ftransform'),
+    'Matrix' : _get_range('Matrix Comp Multiply', 'Inverse Matrix'),
+    'Logic' : _get_range('Boolean All', 'Less Than or Equal'),
+    'Noise' : _get_range('Noise Float', 'Noise Vec4'),
+    'Texture' : _get_range('Boolean All', 'Less Than or Equal'),
+    'Other' : _get_range('dFdx', 'fwidth'),
+}
 
 #expands the genType for every version of the function
 for inst in GLSL.values():
