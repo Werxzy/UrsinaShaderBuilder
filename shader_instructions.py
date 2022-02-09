@@ -4,6 +4,7 @@
 DataTypes = [
     'bool',
     'int',
+    'uint',
     'float',
     'vec2',
     'vec3',
@@ -18,6 +19,18 @@ DataTypes = [
     'mat3',
     'mat4',
 
+    'mat2x2',
+    'mat2x3',
+    'mat2x4',
+
+    'mat3x2',
+    'mat3x3',
+    'mat3x4',
+
+    'mat4x2',
+    'mat4x3',
+    'mat4x4',
+
     'sampler1D',
     'sampler2D',
     'sampler3D',
@@ -30,19 +43,24 @@ DataMultiTypes = {
     'vec' : ['vec2', 'vec3', 'vec4'],
     'mat' : ['mat2', 'mat3', 'mat4'],
     'ivec' : ['ivec2', 'ivec3', 'ivec4'],
+    'uvec' : ['uvec2', 'uvec3', 'uvec4'],
     'bvec' : ['bvec2', 'bvec3', 'bvec4'],
     'genType' : ['float', 'vec2', 'vec3', 'vec4'],
+    'intType' : ['int', 'ivec2', 'ivec3', 'ivec4'],
+    'uintType' : ['uint', 'uvec2', 'uvec3', 'uvec4'],
+    'boolType' : ['bool', 'bvec2', 'bvec3', 'bvec4'],
 }
    
 
 # http://mew.cx/glsl_quickref.pdf (bless) (probably outdated and bit unrelated to panda3d)
+# https://www.khronos.org/files/opengl-quick-reference-card.pdf (better)
 
 '''
 holds all base instructions
 '''
 # for key, value in GLSL.items: # probably not needed in this way, but just in case
 
-
+# 1 input and 1 output that are the same type
 def simple_func(desc, func, types = ['genType']):
     return {
         'description' : desc, 
@@ -133,15 +151,22 @@ GLSL = {
     'Sine' : simple_func('Sine math function.', 'sin'),
     'Cosine' : simple_func('Cosine math function.', 'cos'),
     'Tangent' : simple_func('Tangent math function.', 'tan'),
-    'Arcsine' : simple_func('Arcsine math function.', 'asin'),
-    'Arccosine' : simple_func('Arccosine math function.', 'acos'),
-    'Arctangent' : simple_func('Arctangent math function.', 'atan'),
-    'Arctangent 2' : {
-        'description' : 'Arctangent math function using\nseperate x and y inputs.', 
-        'inputs' : {'y': ['genType'], 'x': ['genType']}, 
+    'Arc Sine' : simple_func('Arc sine math function.', 'asin'),
+    'Arc Cosine' : simple_func('Arc cosine math function.', 'acos'),
+    'Arc Tangent' : simple_func('Arc tangent math function.', 'atan'),
+    'Arc Tangent 2' : {
+        'description' : 'Arc tangent math function using\nseperate x and y inputs.', 
+        'inputs' : {'y_': ['genType'], 'x_': ['genType']}, 
         'outputs': {'result': ['genType']}, 
-        'function' : 'result=atan(y,x);'
+        'function' : 'result=atan(y_,x_);'
         },
+
+    'Hyperbolic Sine' : simple_func('Hyperbolic sine math function.', 'sinh'),
+    'Hyperbolic Cosine' : simple_func('Hyperbolic cosine math function.', 'cosh'),
+    'Hyperbolic Tangent' : simple_func('Hyperbolic tangent math function.', 'tanh'),
+    'Hyperbolic Arc Sine' : simple_func('Hyperbolic arc sine math function.', 'asinh'),
+    'Hyperbolic Arc Cosine' : simple_func('Hyperbolic arc cosine math function.', 'acosh'),
+    'Hyperbolic Arc Tangent' : simple_func('Hyperbolic arc tangent math function.', 'atanh'),
 
     'Radians' : simple_func('Converts degrees to radians.', 'radians'),
     'Degrees' : simple_func('Converts radians to degrees.', 'degrees'),
@@ -152,28 +177,48 @@ GLSL = {
     'Exponent' : simple_func('Natural exponential.', 'exp'),
     'Logarithm' : simple_func('Natural logarithm.', 'log'),
     'Exponent 2' : simple_func('Finds 2^return = a', 'exp2'),
+    'Logarithm 2' : simple_func('logarithm of 2.', 'log2'),
     'Square Root' : simple_func('Square root.', 'sqrt'),
     'Inverse Square Root' : simple_func('Inverse square root.', 'inversesqrt'),
 
 # Common functions
 
-    'Absolute' : simple_func('Removes the sign of a value.', 'abs'),
+    'Absolute' : simple_func('Removes the sign of a value.', 'abs', types=['genType', 'intType']),
+    'Sign' : simple_func('Gets the sign of a value', 'sign', types=['genType', 'intType']),
     'Ceiling' : simple_func('Rounds the value(s) up.', 'ceil'),
-    'Clamp' : build_func('Clamps a value or vector\nbetween a minimum and maximum.', 'clamp', 
-        names=['input_', 'min_', 'max_'],
-        inputTypes=[['genType','genType'], ['genType','float'], ['genType','float']], 
-        outputTypes=['genType','genType']),
-    
     'Floor' : simple_func('Rounds the value(s) down.', 'floor'),
+    'Round' : simple_func('Rounds the value(s)\nto nearest integer.', 'round'),
+    'Round Even' : simple_func('Rounds the value(s)\nto nearest even integer.', 'roundEven'),
+    'Truncate' : simple_func('Rounds towards zero', 'trunc'),
     'Fraction' : simple_func('Gets the decimal values.', 'frac'),
-    'Maximum' : build_func('Gets the maximum value(s).', 'max', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
-    'Minimum' : build_func('Gets the minimum value(s).', 'min', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
-    'Interpolate' : build_func('Linearly interpolates between\n two values.', 'mix', names=['from_', 'to_', 'T_'],
-        inputTypes=[['genType','genType'], ['genType','genType'], ['genType','float']], 
-        outputTypes=['genType','genType']),
 
     'Modulous' : build_func('Gets the remainder of\n dividing by a value.', 'mod', inputTypes=[['genType','genType'], ['genType','float']], outputTypes=['genType','genType']),
-    'Sign' : simple_func('Gets the sign of a value', 'sign'),
+    # 'Modf' : { # currently out parameters have no funcitonality in instruction nodes
+    #     'description' : 'Seperates decimal from the value.', 
+    #     'inputs' : {'a_': ['genType']},
+    #     'outputs' : {'integer_': ['genType'], 'decimal_': ['genType']}, 
+    #     'function' : 'integer_=modf(a_, out decimal_);'
+    # },
+
+    'Maximum' : build_func('Gets the maximum value(s).', 'max', 
+        inputTypes=[['genType','genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType','float', 'intType', 'int', 'uintType', 'uint']], 
+        outputTypes=['genType','genType', 'intType', 'intType', 'uintType', 'uintType']),
+    'Minimum' : build_func('Gets the minimum value(s).', 'min', 
+        inputTypes=[['genType','genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType','float', 'intType', 'int', 'uintType', 'uint']], 
+        outputTypes=['genType','genType', 'intType', 'intType', 'uintType', 'uintType']),
+
+    'Clamp' : build_func('Clamps a value or vector\nbetween a minimum and maximum.', 'clamp', 
+        names=['input_', 'min_', 'max_'],
+        inputTypes=[['genType','genType', 'intType', 'intType', 'uintType', 'uintType'], 
+                    ['genType','float', 'intType', 'int', 'uintType', 'uint'], 
+                    ['genType','float', 'intType', 'int', 'uintType', 'uint']], 
+        outputTypes=['genType','genType', 'intType', 'intType', 'uintType', 'uintType']),
+
+    'Interpolate' : build_func('Linearly interpolates between\n two values.', 'mix', names=['from_', 'to_', 'T_'],
+        inputTypes=[['genType','genType','genType','genType'], ['genType','genType','genType','genType'], ['genType','float','boolType','bool']], 
+        outputTypes=['genType','genType','genType','genType']),
+
+    
     'Smooth Step' : build_func('Smoothly interpolates between 0 and 1.\n(I think?)', 'smoothstep', names=['edge_a_', 'edge_b_', 'x_'],
         inputTypes=[['genType','float'], ['genType','float'], ['genType','genType']], 
         outputTypes=['genType','genType']),
@@ -181,10 +226,13 @@ GLSL = {
     'Step' : build_func('Gives 0 where x is smaller,\n otherwise gives 1.', 'step', names=['edge_', 'x_'],
         inputTypes=[['genType','float'], ['genType','genType']], outputTypes=['genType','genType']),
 
+    'Is Not A Number' : build_func('For each component,\nreturns true if not a number.', 'isnan', inputTypes=[['genType'], ['boolType']]),
+    'Is Infinite' : build_func('For each component,\nreturns true if infinite', 'isinf', inputTypes=[['genType'], ['boolType']]),
+    
 # Geometric functions
 
     'ftransform':{
-        'description' : 'I don\'t know?\nFragment shader only.', 
+        'description' : 'Invariant vertex transformation.', 
         'inputs' : {},
         'outputs' : {'result': ['vec4']}, 
         'function' : 'result=ftransform();'
@@ -200,9 +248,9 @@ GLSL = {
 
 # Fragment processing functions (Fragment shaders only)
 
-    'dFdx' : simple_func('idk.', 'dFdx'),
-    'dFdy' : simple_func('idk.', 'dFdy'),
-    'fwidth' : simple_func('idk.', 'fwidth'),
+    'dFdx' : simple_func('Derivative in x.', 'dFdx'),
+    'dFdy' : simple_func('Derivative in y.', 'dFdy'),
+    'fwidth' : simple_func('Sum of the absolute derivative in x and y.', 'fwidth'),
 
 # Matrix functions
 
