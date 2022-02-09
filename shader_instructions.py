@@ -288,6 +288,13 @@ GLSL = {
     'Less Than or Equal' : build_func('For each component,\nreturns true if less than or equal to.', 'lessThanEqual', 
         inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
 
+# noise functions
+
+    'Noise Float' : build_func('Noise value as float', 'noise1', outputTypes=['float']),
+    'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['float']),
+    'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['float']),
+    'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['float']),
+
 }
 
 
