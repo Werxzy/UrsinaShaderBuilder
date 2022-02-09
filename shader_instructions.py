@@ -46,9 +46,12 @@ DataMultiTypes = {
     'uvec' : ['uvec2', 'uvec3', 'uvec4'],
     'bvec' : ['bvec2', 'bvec3', 'bvec4'],
     'genType' : ['float', 'vec2', 'vec3', 'vec4'],
+    'genType3' : ['float', 'vec2', 'vec3'],
     'intType' : ['int', 'ivec2', 'ivec3', 'ivec4'],
     'uintType' : ['uint', 'uvec2', 'uvec3', 'uvec4'],
     'boolType' : ['bool', 'bvec2', 'bvec3', 'bvec4'],
+    'intType3' : ['int', 'ivec2', 'ivec3'],
+    'samplerND' : ['sampler1D', 'sampler2D', 'sampler3D']
 }
    
 
@@ -231,12 +234,6 @@ GLSL = {
     
 # Geometric functions
 
-    'ftransform':{
-        'description' : 'Invariant vertex transformation.', 
-        'inputs' : {},
-        'outputs' : {'result': ['vec4']}, 
-        'function' : 'result=ftransform();'
-    },
     'Cross Product' : build_func('Cross product of two vectors.', 'cross', inputTypes=[['vec3'], ['vec3']], outputTypes=['vec3']),
     'Distance' : build_func('Distance between two values.', 'distance', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
     'Dot Product' : build_func('Dot product of two values.', 'dot', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
@@ -245,6 +242,12 @@ GLSL = {
     'Normalize' : build_func('Normalizes the vector.', 'normalize', inputTypes=[['genType']], outputTypes=['genType']),
     'Reflect' : build_func('Reflects a vector.', 'reflect', names=['in_', 'normal_'], inputTypes=[['genType'], ['genType']], outputTypes=['genType']),
     'Refract' : build_func('Refracts a vector.', 'refract', names=['in_', 'normal_', 'eta_'], inputTypes=[['genType'], ['genType'], ['float']], outputTypes=['genType']),
+    'ftransform':{
+        'description' : 'Invariant vertex transformation.', 
+        'inputs' : {},
+        'outputs' : {'result': ['vec4']}, 
+        'function' : 'result=ftransform();'
+    },
 
 # Fragment processing functions (Fragment shaders only)
 
@@ -294,6 +297,36 @@ GLSL = {
     'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['float']),
     'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['float']),
     'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['float']),
+
+# Texture lookup functions
+# NOTE, currently only adding sampler#D and not usampler or isampler and missing some other types
+
+    'Texture Size LOD' : build_func('returns Texture Size', 'textureSize', names=['sampler_', 'lod_'],
+        inputTypes=[['samplerND', 'samplerCube', 'sampler1DShadow', 'sampler2DShadow'], 
+                    ['int', 'int', 'int', 'int']], 
+        outputTypes=['intType3', 'ivec2', 'int', 'ivec2']),
+
+    'Texture Sample' : build_func('Samples texture at coodinate.', 'texture', names=['sampler_', 'uv_'],
+        inputTypes=[['samplerND', 'samplerCube', 'sampler1DShadow', 'sampler2DShadow'], 
+                    ['genType3', 'vec3', 'vec3', 'vec3']], 
+        outputTypes=['vec4', 'vec4', 'float', 'float']),
+
+    'Texture Sample + Bias' : build_func('Samples texture at coodinate with bias.', 'texture', names=['sampler_', 'uv_', 'bias_'],
+        inputTypes=[['samplerND', 'samplerCube', 'sampler1DShadow', 'sampler2DShadow'], 
+                    ['genType3', 'vec3', 'vec3', 'vec3'],
+                    ['float', 'float', 'float', 'float']], 
+        outputTypes=['vec4', 'vec4', 'float', 'float']),
+
+    'Tex Sample + Projection' : build_func('Samples texture at coodinate\nwith projection.', 'textureProj', names=['sampler_', 'uv_'],
+        inputTypes=[['sampler1D', 'sampler1D', 'sampler2D', 'sampler2D', 'sampler3D', 'sampler1DShadow', 'sampler2DShadow'], 
+                    ['vec2', 'vec4', 'vec3', 'vec4', 'vec4', 'vec4', 'vec4']], 
+        outputTypes=['vec4', 'vec4', 'vec4', 'vec4', 'vec4', 'float', 'float']),
+    
+    'Tex Sample + Proj + Bias' : build_func('Samples texture at coodinate\nwith projection.', 'textureProj', names=['sampler_', 'uv_', 'bias_'],
+        inputTypes=[['sampler1D', 'sampler1D', 'sampler2D', 'sampler2D', 'sampler3D', 'sampler1DShadow', 'sampler2DShadow'], 
+                    ['vec2', 'vec4', 'vec3', 'vec4', 'vec4', 'vec4', 'vec4'],
+                    ['float', 'float', 'float', 'float', 'float', 'float', 'float']], 
+        outputTypes=['vec4', 'vec4', 'vec4', 'vec4', 'vec4', 'float', 'float']),
 
 }
 
