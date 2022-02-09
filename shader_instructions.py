@@ -243,8 +243,8 @@ GLSL = {
     'Face Forward' : build_func('Flips Direction of V\nif I and N face differently.', 'dot', names='VIN', inputTypes=[['genType'], ['genType'], ['genType']], outputTypes=['genType']),
     'Length' : build_func('Length of the vector', 'length', inputTypes=[['genType']], outputTypes=['float']),
     'Normalize' : build_func('Normalizes the vector.', 'normalize', inputTypes=[['genType']], outputTypes=['genType']),
-    'Reflect' : build_func('Reflects a vector.', 'reflect', names=['_in', '_normal'], inputTypes=[['genType'], ['genType']], outputTypes=['genType']),
-    'Refract' : build_func('Refracts a vector.', 'refract', names=['_in', '_normal', '_eta'], inputTypes=[['genType'], ['genType'], ['float']], outputTypes=['genType']),
+    'Reflect' : build_func('Reflects a vector.', 'reflect', names=['in_', 'normal_'], inputTypes=[['genType'], ['genType']], outputTypes=['genType']),
+    'Refract' : build_func('Refracts a vector.', 'refract', names=['in_', 'normal_', 'eta_'], inputTypes=[['genType'], ['genType'], ['float']], outputTypes=['genType']),
 
 # Fragment processing functions (Fragment shaders only)
 
@@ -255,6 +255,17 @@ GLSL = {
 # Matrix functions
 
     'Matrix Comp Multiply' : build_func('Multiplies the components\n of two matricies.', 'matrixCompMult', inputTypes=[['mat'], ['mat']], outputTypes=['mat']),
+    'Outer Product Matrix' : build_func('Creates a matrix using\nthe output product of two vectors.', 'outerProduct', names='NM', 
+        inputTypes=[['vec',     'vec2',     'vec2',     'vec3',     'vec3',     'vec4',     'vec4'], 
+                    ['vec',     'vec3',     'vec4',     'vec2',     'vec4',     'vec2',     'vec3']], 
+        outputTypes=['mat',     'mat3x2',   'mat4x2',   'mat2x3',   'mat4x3',   'mat2x4',   'mat3x4']),
+
+    'Transpose Matrix' : build_func('Transposes a matrix.', 'transpose', names=['matrix',],
+        inputTypes=[['mat', 'mat2x3', 'mat2x4', 'mat3x2', 'mat3x4', 'mat4x2', 'mat4x3']], 
+        outputTypes=['mat', 'mat3x2', 'mat4x2', 'mat2x3', 'mat4x3', 'mat2x4', 'mat3x4']),
+    
+    'Determinant' : build_func('Gets the Deteriminant of a matrix', 'determinant', names=['matrix',], inputTypes=[['mat'],], outputTypes=['float']),
+    'Inverse Matrix' : build_func('Inverses the matrix.', 'inverse', names=['matrix',], inputTypes=[['mat'],], outputTypes=['mat']),
 
 # Vector Relational Functions
 
