@@ -188,9 +188,9 @@ class ShaderNode(Entity):
 
     def on_destroy(self):
         for i in self.inputs:
-            i.disconnectAll()
+            i.disconnect_all()
         for o in self.outputs:
-            o.disconnectAll()
+            o.disconnect_all()
 
 
 # - - - shader builder functions - - -
