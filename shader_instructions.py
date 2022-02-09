@@ -192,11 +192,43 @@ GLSL = {
     'Cross Product' : build_func('Cross product of two vectors.', 'cross', inputTypes=[['vec3'], ['vec3']], outputTypes=['vec3']),
     'Distance' : build_func('Distance between two values.', 'distance', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
     'Dot Product' : build_func('Dot product of two values.', 'dot', inputTypes=[['genType'], ['genType']], outputTypes=['float']),
-    'Face Forward' : build_func('Flips Direction of V\n if I and N face differently.', 'dot', names='VIN', inputTypes=[['genType'], ['genType'], ['genType']], outputTypes=['genType']),
+    'Face Forward' : build_func('Flips Direction of V\nif I and N face differently.', 'dot', names='VIN', inputTypes=[['genType'], ['genType'], ['genType']], outputTypes=['genType']),
     'Length' : build_func('Length of the vector', 'length', inputTypes=[['genType']], outputTypes=['float']),
     'Normalize' : build_func('Normalizes the vector.', 'normalize', inputTypes=[['genType']], outputTypes=['genType']),
     'Reflect' : build_func('Reflects a vector.', 'reflect', names=['_in', '_normal'], inputTypes=[['genType'], ['genType']], outputTypes=['genType']),
     'Refract' : build_func('Refracts a vector.', 'refract', names=['_in', '_normal', '_eta'], inputTypes=[['genType'], ['genType'], ['float']], outputTypes=['genType']),
+
+# Fragment processing functions (Fragment shaders only)
+
+    'dFdx' : simple_func('idk.', 'dFdx'),
+    'dFdy' : simple_func('idk.', 'dFdy'),
+    'fwidth' : simple_func('idk.', 'fwidth'),
+
+# Matrix functions
+
+    'Matrix Component Multiply' : build_func('Multiplies the components\n of two matricies.', 'matrixCompMult', inputTypes=[['mat'], ['mat']], outputTypes=['mat']),
+
+# Vector Relational Functions
+
+    'Boolean All' : build_func('Returns true if all values are true.', 'all', inputTypes=[['bvec']], outputTypes=['bool']),
+    'Boolean Any' : build_func('Returns true if at least\none value is true.', 'any', inputTypes=[['bvec']], outputTypes=['bool']),
+    'Boolean Not' : build_func('Inverts the boolean vector.', 'not', inputTypes=[['bvec']], outputTypes=['bvec']),
+
+    'Equal' : build_func('For each component,\nreturns true if equal.', 'equal', 
+        inputTypes=[['vec', 'ivec', 'bvec'], ['vec', 'ivec', 'bvec']], outputTypes=['bvec', 'bvec', 'bvec']),
+    'Not Equal' : build_func('For each component,\nreturns true if not equal.', 'notEqual', 
+        inputTypes=[['vec', 'ivec', 'bvec'], ['vec', 'ivec', 'bvec']], outputTypes=['bvec', 'bvec', 'bvec']),
+
+    'Greater Than' : build_func('For each component,\nreturns true if greater than.', 'greaterThan', 
+        inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
+    'Greater Than or Equal' : build_func('For each component,\nreturns true if greater than or equal to.', 'greaterThanEqual', 
+        inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
+
+    'Less Than' : build_func('For each component,\nreturns true if less than.', 'lessThan', 
+        inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
+    'Less Than or Equal' : build_func('For each component,\nreturns true if less than or equal to.', 'lessThanEqual', 
+        inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
+
 }
 
 
