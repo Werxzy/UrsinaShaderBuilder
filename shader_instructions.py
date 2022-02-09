@@ -206,7 +206,7 @@ GLSL = {
 
 # Matrix functions
 
-    'Matrix Component Multiply' : build_func('Multiplies the components\n of two matricies.', 'matrixCompMult', inputTypes=[['mat'], ['mat']], outputTypes=['mat']),
+    'Matrix Comp Multiply' : build_func('Multiplies the components\n of two matricies.', 'matrixCompMult', inputTypes=[['mat'], ['mat']], outputTypes=['mat']),
 
 # Vector Relational Functions
 
@@ -257,6 +257,8 @@ for inst in GLSL.values():
                 orig = inouts.pop(0)
                 if orig[2] == found:
                     inouts += [(orig[0], orig[1], v) for v in DataMultiTypes[found]]
+                elif orig[2] in DataMultiTypes.keys() and len(DataMultiTypes[found]) == len(DataMultiTypes[orig[2]]):
+                    inouts += [(orig[0], orig[1], v) for v in DataMultiTypes[orig[2]]]
                 else:
                     inouts += [orig for _ in DataMultiTypes[found]]
 
