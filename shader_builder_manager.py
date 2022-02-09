@@ -17,6 +17,9 @@ class ShaderBuilderManager(Entity):
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
     menu_options.update(dict((cat,dict((v,'InstructionNode,'+v) for v in con)) for cat,con in GLSL_catagorized.items()))
+    right_click_options = {
+        'Delete' : 'Delete'
+    }
 
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)
@@ -29,6 +32,7 @@ class ShaderBuilderManager(Entity):
 
         self.create_menu = False
         self.search_menu = None
+        self.selected_node = None
 
         #test node
         self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -68,9 +72,11 @@ class ShaderBuilderManager(Entity):
             self.y += mouse.velocity[1] * window.aspect_ratio
         if self.create_menu > 0:
             
+            # Create menu with 
             if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu == 2:
                 if self.search_menu != None:
                     destroy(self.search_menu)
+                    self.selected_node = None
                 self.search_menu = SearchMenu(
                     ShaderBuilderManager.menu_options, 
                     parent = self, 
@@ -86,6 +92,33 @@ class ShaderBuilderManager(Entity):
                     self.search_menu = None
                 self.search_menu.on_destroy = clear_ref
                 self.search_menu.on_selected = self.create_node
+
+            if self.create_menu == 1 and mouse.hovered_entity != None:
+                if mouse.hovered_entity.parent in self.shader_nodes:
+                    if self.search_menu != None:
+                        destroy(self.search_menu)
+                        self.selected_node = None
+
+                    self.search_menu = SearchMenu(
+                        ShaderBuilderManager.right_click_options, 
+                        parent = self, 
+                        position = Vec3(Vec3(mouse.position) - self.position) / self.scale, 
+                        z = -1,
+                        disable_search = True,
+                        disable_scroll_bar = True,
+                        option_scroll_count = len(ShaderBuilderManager.right_click_options),
+                        color_text = c_text,
+                        color_text_highlight = c_text_highlight,
+                        color_back = c_node_back,
+                        color_search_box = c_node_dark,
+                        color_highlight = c_node_light)
+
+                    def clear_ref():
+                        self.search_menu = None
+                    self.search_menu.on_destroy = clear_ref
+                    self.search_menu.on_selected = self.node_menu
+                    self.selected_node = mouse.hovered_entity.parent
+
             self.create_menu = 0
             
 
@@ -165,6 +198,15 @@ class ShaderBuilderManager(Entity):
             self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.search_menu.position, z = 0))
         else:
             return
+        destroy(self.search_menu)
+        self.search_menu = None
+
+    def node_menu(self, val):
+        if val == 'Delete':
+            self.shader_nodes.remove(self.selected_node)
+            destroy(self.selected_node)
+            self.selected_node = None
+        
         destroy(self.search_menu)
         self.search_menu = None
 
