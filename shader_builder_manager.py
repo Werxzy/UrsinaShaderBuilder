@@ -1,4 +1,5 @@
 from ursina import *
+from bar_menu import BarMenu
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
@@ -21,11 +22,22 @@ class ShaderBuilderManager(Entity):
         'Delete' : 'Delete'
     }
 
+    bar_menu_options = {
+        'File' : {
+            'New' : 'file,new',
+            'Open' : 'file,open',
+            'Save' : 'file,save',
+        },
+        'Vertex' : 'mode,vertex',
+        'Fragment' : 'mode,fragment',
+    }
+
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)
         # temp model/color
 
         self.shader_nodes = list()
+        self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, on_selected = self.bar_menu_selected)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -210,4 +222,10 @@ class ShaderBuilderManager(Entity):
         destroy(self.node_menu)
         self.node_menu = None
 
+    def bar_menu_selected(self, val):
+        vals = val.split(',')
 
+        if vals[0] == 'mode':
+            pass
+        elif vals[0] == 'file':
+            pass
