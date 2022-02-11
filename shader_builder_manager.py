@@ -7,6 +7,7 @@ from search_menu import SearchMenu
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
 from shader_node import ShaderNode
+from shader_node_connector import NodeConnector
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -229,6 +230,8 @@ class ShaderBuilderManager(Entity):
 
         if vals[0] == 'mode':
             self.set_shader_mode(vals[1])
+            if NodeConnector.prepared_node != None:
+                NodeConnector.prepared_node.destroy_prepared_line()
         elif vals[0] == 'file':
             pass
 
