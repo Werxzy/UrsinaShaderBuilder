@@ -25,7 +25,7 @@ def input(key):
     if key == 'b':
         global sbm
         t = time.time()
-        print(sbm.build_shader())
+        print(sbm.build_shader(sbm.mode))
         print('\nBuild Time:',time.time() - t)
     pass
 

@@ -6,6 +6,7 @@ from node_instruction import InstructionNode
 from search_menu import SearchMenu
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
+from shader_node import ShaderNode
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -45,15 +46,16 @@ class ShaderBuilderManager(Entity):
         self.create_menu = False
         self.node_menu = None
         self.selected_node = None
+        self.mode = 'fragment'
 
         #test node
-        self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
-        self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Subtract', position = (0,0.3)))
-        self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
-        self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
-        self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type='vec3', position = (-0.3,-0.3)))
-        self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type='vec2', position = (0.0,-0.3)))
-        self.shader_nodes.append(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
+        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
+        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Subtract', position = (0,0.3)))
+        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
+        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
+        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec3', position = (-0.3,-0.3)))
+        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec2', position = (0.0,-0.3)))
+        self.append_node(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
 
 
     #quickly organize the nodes based on how the inputs/outputs are connected
@@ -134,7 +136,7 @@ class ShaderBuilderManager(Entity):
             self.create_menu = 0
             
 
-    def build_shader(self):
+    def build_shader(self, mode):
         self.build = {
             'inout' : '',
             'function' : '',
@@ -149,7 +151,7 @@ class ShaderBuilderManager(Entity):
 
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
-        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected()]) # queues all nodes that have no outputs
+        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected() and n.mode == mode]) # queues all nodes that have no outputs
         nodes_queued = list(nodes_to_check)
         n = 0
         while n < len(nodes_to_check):            
@@ -205,9 +207,9 @@ class ShaderBuilderManager(Entity):
     def create_node(self, val):
         sp = val.split(',')
         if sp[0] == 'ConstantNode':
-            self.shader_nodes.append(ConstantNode(parent = self, manager = self, data_type = sp[1], position = self.node_menu.position, z = 0))
+            self.append_node(ConstantNode(parent = self, manager = self, data_type = sp[1], position = self.node_menu.position, z = 0))
         elif sp[0] == 'InstructionNode':
-            self.shader_nodes.append(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.node_menu.position, z = 0))
+            self.append_node(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.node_menu.position, z = 0))
         else:
             return
         destroy(self.node_menu)
@@ -226,6 +228,17 @@ class ShaderBuilderManager(Entity):
         vals = val.split(',')
 
         if vals[0] == 'mode':
-            pass
+            self.set_shader_mode(vals[1])
         elif vals[0] == 'file':
             pass
+
+    def append_node(self, node):
+        node.mode = self.mode
+        self.shader_nodes.append(node)
+
+    def set_shader_mode(self, mode):
+        if self.mode == mode: return
+        self.mode = mode
+        for n in self.shader_nodes:
+            if not isinstance(n, ShaderNode): return
+            n.enabled = n.mode == self.mode
