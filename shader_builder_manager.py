@@ -38,7 +38,7 @@ class ShaderBuilderManager(Entity):
         super().__init__(parent = camera.ui)
         # temp model/color
 
-        self.shader_nodes = list()
+        self.shader_nodes:list[ShaderNode] = []
         self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, on_selected = self.bar_menu_selected)
 
         for key, value in kwargs.items():

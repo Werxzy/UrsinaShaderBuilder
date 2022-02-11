@@ -22,8 +22,8 @@ class BarMenu(Entity):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.texts = []
-        self.colliders = []
+        self.texts:list[Text] = []
+        self.colliders:list[Entity] = []
         start_x = 0
         self._height = 0
         for key in self.options.keys():

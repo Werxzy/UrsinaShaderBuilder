@@ -13,10 +13,11 @@ class ShaderNode(Entity):
     def __init__(self, **kwargs):
         super().__init__()
 
-        self.inputs = []
-        self.outputs = []
+        from shader_builder_manager import ShaderBuilderManager
+        self.manager:ShaderBuilderManager = None
+        self.inputs:list[NodeConnector] = []
+        self.outputs:list[NodeConnector] = []
         self.dragged = False
-        self.manager = None
         self.mode = ''
 
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]

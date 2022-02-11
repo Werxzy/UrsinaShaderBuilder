@@ -15,10 +15,13 @@ class NodeConnector(Entity):
     def __init__(self, x_disp, yth, **kwargs):
         super().__init__()
 
+        from shader_node import ShaderNode
+        self.parent:ShaderNode
+
         self.isOutput = True # if not output, than is input
-        self.connections = []
+        self.connections:list[NodeConnector] = []
         self.variable = ''
-        self.variable_type = []
+        self.variable_type:list[str] = []
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -148,7 +151,7 @@ class NodeConnector(Entity):
 
     #returns if the connection can go through or not and maybe what type all the connections should take
     def _propagate_check(self, start):
-        nodes_to_check = [start]
+        nodes_to_check:list[NodeConnector] = [start]
 
         while len(nodes_to_check) > 0:
             conn = nodes_to_check.pop(0)
