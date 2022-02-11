@@ -47,7 +47,7 @@ class ShaderBuilderManager(Entity):
         self.create_menu = False
         self.node_menu = None
         self.selected_node = None
-        self.mode = 'fragment'
+        self._mode = 'fragment'
 
         #test node
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -229,7 +229,7 @@ class ShaderBuilderManager(Entity):
         vals = val.split(',')
 
         if vals[0] == 'mode':
-            self.set_shader_mode(vals[1])
+            self.mode = vals[1]
             if NodeConnector.prepared_node != None:
                 NodeConnector.prepared_node.destroy_prepared_line()
         elif vals[0] == 'file':
@@ -239,9 +239,14 @@ class ShaderBuilderManager(Entity):
         node.mode = self.mode
         self.shader_nodes.append(node)
 
-    def set_shader_mode(self, mode):
-        if self.mode == mode: return
-        self.mode = mode
+    @property
+    def mode(self):
+        return self._mode
+
+    @mode.setter
+    def mode(self, value):
+        if self._mode == value: return
+        self._mode = value
         for n in self.shader_nodes:
             if not isinstance(n, ShaderNode): return
-            n.enabled = n.mode == self.mode
+            n.enabled = n.mode == self._mode
