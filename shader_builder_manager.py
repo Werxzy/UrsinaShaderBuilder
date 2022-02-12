@@ -1,5 +1,6 @@
 from ursina import *
 from bar_menu import BarMenu
+from node_user_input import UserInputNode
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
@@ -39,7 +40,7 @@ class ShaderBuilderManager(Entity):
         # temp model/color
 
         self.shader_nodes:list[ShaderNode] = []
-        self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, on_selected = self.bar_menu_selected)
+        self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, z = -2, on_selected = self.bar_menu_selected)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -55,7 +56,7 @@ class ShaderBuilderManager(Entity):
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
         self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
         self.append_node(ConstantNode(parent = self, manager = self, data_type='vec3', position = (-0.3,-0.3)))
-        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec2', position = (0.0,-0.3)))
+        self.append_node(UserInputNode(parent = self, manager = self, position = (0.0,-0.3)))
         self.append_node(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
 
 
