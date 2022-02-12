@@ -17,7 +17,7 @@ class UserInputNode(ShaderNode):
         
         self.ui_back = self.build_back()
 
-        self.main_output = self.build_connector('', ['vec4'], True, 0.157)
+        self.main_output = self.build_connector('', ['vec4'], True, 0.5)
 
     def on_selected(self, option):
         self.ui_type[1].text = option
@@ -26,9 +26,9 @@ class UserInputNode(ShaderNode):
         self.update_connections()
         
 
-    # def build_shader(self):
-    #     v1 = 'out ' + self.inputs[0].get_variable_type() + ' ' + self.variable_name + ';'
-    #     v2 = self.variable_name + ' = ' + self.inputs[0].get_build_variable() + ';'
+    def build_shader(self):
+        v1 = 'in ' + self.ui_type[1].text + ' ' + self.ui_name[1].text + ';'
+        self.manager.build_shader_append('inout', v1)
+        self.main_output.set_build_variable(self.ui_name[1].text)
 
-    #     self.manager.build_shader_append('inout', v1)
-    #     self.manager.build_shader_append('main', v2)
+        
