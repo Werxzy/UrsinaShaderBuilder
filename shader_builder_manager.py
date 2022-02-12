@@ -45,7 +45,7 @@ class ShaderBuilderManager(Entity):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-        self.create_menu = False
+        self.create_menu_trigger = False
         self.node_menu = None
         self.selected_node = None
         self._mode = 'fragment'
@@ -77,65 +77,33 @@ class ShaderBuilderManager(Entity):
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
         if key == 'right mouse up':
-            self.create_menu = 1
+            self.create_menu_trigger = 1
             
         if key == 'space' and self.node_menu == None:
-            self.create_menu = 2
+            self.create_menu_trigger = 2
 
     def update(self):
         if mouse.right:
             self.x += mouse.velocity[0]
             self.y += mouse.velocity[1] * window.aspect_ratio
-        if self.create_menu > 0:
+        if self.create_menu_trigger > 0:
             
             # Create menu with 
-            if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu == 2:
-                if self.node_menu != None:
-                    destroy(self.node_menu)
-                    self.selected_node = None
-                self.node_menu = SearchMenu(
-                    ShaderBuilderManager.menu_options, 
-                    parent = self, 
-                    position = Vec3(Vec3(mouse.position) - self.position) / self.scale, 
-                    z = -1,
-                    color_text = c_text,
-                    color_text_highlight = c_text_highlight,
-                    color_back = c_node_back,
-                    color_search_box = c_node_dark,
-                    color_highlight = c_node_light)
+            if (mouse.point == None and mouse.delta_drag.length() < 0.001) or self.create_menu_trigger == 2:
+                self.create_menu(Vec3(Vec3(mouse.position) - self.position) / self.scale, 
+                    ShaderBuilderManager.menu_options, 8, self.create_node)
 
-                def clear_ref():
-                    self.node_menu = None
-                self.node_menu.on_destroy = clear_ref
-                self.node_menu.on_selected = self.create_node
-
-            if self.create_menu == 1 and mouse.hovered_entity != None:
+            if self.create_menu_trigger == 1 and mouse.hovered_entity != None:
                 if mouse.hovered_entity.parent in self.shader_nodes:
-                    if self.node_menu != None:
-                        destroy(self.node_menu)
-                        self.selected_node = None
-
-                    self.node_menu = SearchMenu(
+                    self.create_menu(Vec3(Vec3(mouse.position) - self.position) / self.scale, 
                         ShaderBuilderManager.right_click_options, 
-                        parent = self, 
-                        position = Vec3(Vec3(mouse.position) - self.position) / self.scale, 
-                        z = -1,
-                        disable_search = True,
-                        disable_scroll_bar = True,
-                        option_scroll_count = len(ShaderBuilderManager.right_click_options),
-                        color_text = c_text,
-                        color_text_highlight = c_text_highlight,
-                        color_back = c_node_back,
-                        color_search_box = c_node_dark,
-                        color_highlight = c_node_light)
+                        len(ShaderBuilderManager.right_click_options), 
+                        self.node_menu_selected, 
+                        disable_search = True, disable_scroll_bar = True)
 
-                    def clear_ref():
-                        self.node_menu = None
-                    self.node_menu.on_destroy = clear_ref
-                    self.node_menu.on_selected = self.node_menu_selected
                     self.selected_node = mouse.hovered_entity.parent
 
-            self.create_menu = 0
+            self.create_menu_trigger = 0
             
 
     def build_shader(self, mode):
@@ -206,6 +174,35 @@ class ShaderBuilderManager(Entity):
     def finished_variable(self, data_type, variable):
         self.build_var_finished[data_type].append(variable)
 
+    def create_menu(self, position, options, scroll_count, on_selected, disable_search = False, disable_scroll_bar = False):
+        if self.node_menu != None:
+            self.destroy_menu()
+            
+        self.node_menu = SearchMenu(
+            options, 
+            parent = self, 
+            position = position, 
+            z = -1,
+
+            disable_search = disable_search,
+            disable_scroll_bar = disable_scroll_bar,
+            option_scroll_count = scroll_count,
+
+            color_text = c_text,
+            color_text_highlight = c_text_highlight,
+            color_back = c_node_back,
+            color_search_box = c_node_dark,
+            color_highlight = c_node_light,
+            on_destroy = self.clear_menu_ref,
+            on_selected = on_selected)
+
+    def destroy_menu(self):
+        destroy(self.node_menu)
+        
+    def clear_menu_ref(self):
+        self.node_menu = None
+        self.selected_node = None
+
     def create_node(self, val):
         sp = val.split(',')
         if sp[0] == 'ConstantNode':
@@ -214,8 +211,7 @@ class ShaderBuilderManager(Entity):
             self.append_node(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.node_menu.position, z = 0))
         else:
             return
-        destroy(self.node_menu)
-        self.node_menu = None
+        self.destroy_menu()
 
     def node_menu_selected(self, val):
         if val == 'Delete':
@@ -223,8 +219,7 @@ class ShaderBuilderManager(Entity):
             destroy(self.selected_node)
             self.selected_node = None
         
-        destroy(self.node_menu)
-        self.node_menu = None
+        self.destroy_menu()
 
     def bar_menu_selected(self, val):
         vals = val.split(',')

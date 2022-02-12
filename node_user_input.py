@@ -1,4 +1,3 @@
-from ursina import destroy
 from shader_instructions import DataTypes
 from shader_node import ShaderNode
 
@@ -22,7 +21,7 @@ class UserInputNode(ShaderNode):
     def on_selected(self, option):
         self.ui_type[1].text = option
         self.main_output.variable_type = [option]
-        destroy(self.manager.node_menu)
+        self.manager.destroy_menu()
         self.update_connections()
         
 

@@ -130,26 +130,11 @@ class ShaderNode(Entity):
 
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
-                if self.manager.node_menu != None:
-                    destroy(self.manager.node_menu)
-                self.manager.node_menu = SearchMenu(options, 
-                    parent = self.manager,
-                    position = Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
-                    z=-1,
-                    width = 0.17,
-                    option_scroll_count = min(len(options), 8),
-                    on_selected = on_select,
-                    color_text = c_text,
-                    color_text_highlight = c_text_highlight,
-                    color_back = c_node_back,
-                    color_search_box = c_node_dark,
-                    color_highlight = c_node_light)
-        
-        def on_destroy():
-            self.manager.node_menu = None
+                self.manager.create_menu(Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
+                    options, min(len(options), 8), on_select)
 
         ent_field_back.input = back_input
-        ent_field_back.on_destroy = on_destroy
+        ent_field_back.on_destroy = self.manager.destroy_menu()
 
         self.ui_build_pos -= ent_name.height + self.ui_spacing * 2 # add the starting y position for next element
 
