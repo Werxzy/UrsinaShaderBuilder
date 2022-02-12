@@ -1,5 +1,5 @@
-from re import S
 from ursina import destroy
+from shader_instructions import DataTypes
 from shader_node import ShaderNode
 
 '''
@@ -13,7 +13,7 @@ class UserInputNode(ShaderNode):
 
         self.ui_name = self.append_value_input('Name', 'var')
 
-        self.ui_type = self.append_drop_down('Type', {'float':'float', 'vec2':'vec2', 'vec3':'vec3'}, self.on_selected)
+        self.ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
         
         self.ui_back = self.build_back()
 

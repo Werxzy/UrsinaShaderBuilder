@@ -343,7 +343,7 @@ GLSL_catagorized = {
     'Matrix' : _get_range('Matrix Comp Multiply', 'Inverse Matrix'),
     'Logic' : _get_range('Boolean All', 'Less Than or Equal'),
     'Noise' : _get_range('Noise Float', 'Noise Vec4'),
-    'Texture' : _get_range('Boolean All', 'Less Than or Equal'),
+    'Texture' : _get_range('Texture Size LOD', 'Tex Sample + Proj + Bias'),
     'Other' : _get_range('dFdx', 'fwidth'),
 }
 
