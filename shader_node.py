@@ -1,4 +1,6 @@
+import string
 from ursina import *
+from search_menu import SearchMenu
 from shader_instructions import *
 from color_atlas import *
 from shader_node_connector import NodeConnector
@@ -49,34 +51,49 @@ class ShaderNode(Entity):
         return ent
 
     def append_value_input(self, name, data_type, text_color = c_text):
-        ent_name = Text(name + ':', parent = self, color = text_color)
+        ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
-        if data_type in ['float', 'int']:
-            ent_field = TextField(parent = ent_name, scale = 0.8, scroll_size = (12,1), max_lines = 1, decimal = data_type == 'float', register_mouse_input = True)
-            ent_field.text = '0.0' if data_type == 'float' else '0'
+        if data_type in ['float', 'int', 'uint', 'var']:
+            ent_field = TextField(parent = self, scale = 0.8, scroll_size = (12,1), max_lines = 1, type = data_type, register_mouse_input = True)
+            if data_type == 'float': ent_field.text = '0.0'
+            if data_type in ['int', 'uint']: ent_field.text = '0'
+            if data_type == 'var': ent_field.text = 'var'
+
             ent_field.text_entity.color = text_color
             ent_field.render()
             
-            ent_field.position = Vec2(ent_name.width + self.ui_spacing, -(ent_name.height - ent_field.text_entity.height * 0.8) * 0.5)
+            ent_field.position = ent_name.position + Vec2(ent_name.width + self.ui_spacing, -(ent_name.height - ent_field.text_entity.height * 0.8) * 0.5)
             ent_field.shortcuts['indent', 'dedent'] = ('',)
 
             orig_render = ent_field.render
             
             def render():
                 org_length = len(ent_field.text)
-                if org_length == 0:
-                    ent_field.text = '0'
-                elif ent_field.decimal:
-                    ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789.'])
-                    sp = ent_field.text.split('.')
-                    if len(sp) > 1: ent_field.text = '.'.join(sp[0:2]) + ''.join(sp[2:])
-                    else: ent_field.text = ''.join(sp)
+                if data_type in ['float', 'int', 'uint']:
+                    if org_length == 0:
+                        ent_field.text = '0'
+                    elif data_type == 'float':
+                        ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789.'])
+                        sp = ent_field.text.split('.')
+                        if len(sp) > 1: ent_field.text = '.'.join(sp[0:2]) + ''.join(sp[2:])
+                        else: ent_field.text = ''.join(sp)
 
-                else:
-                    ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789'])
+                    elif data_type == 'int':
+                        ent_field.text = ''.join([e for e in ent_field.text if e in '-0123456789'])
 
-                ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
+                    else: # data_type == 'uint':
+                        ent_field.text = ''.join([e for e in ent_field.text if e in '0123456789'])
+                
+                    ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
+                    
+                elif data_type == 'var':
+                    if org_length == 0:
+                        ent_field.text = 'var'
+                    if ent_field.text[0] not in string.ascii_letters + '_':
+                        ent_field.text = '_' + ent_field.text
+                    ent_field.text = ''.join([e for e in ent_field.text if e in string.ascii_letters + '0123456789_'])
+                
                 ent_field.cursor.x -= org_length - len(ent_field.text)
                 ent_field.cursor.x = max(0, ent_field.cursor.x)
                 if len(ent_field.text) < ent_field.scroll_size[0]:
@@ -86,9 +103,10 @@ class ShaderNode(Entity):
 
             ent_field.render = render
 
-            quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_name.height)
-            ent_field_back = Entity(parent = ent_name, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark)
-            ent_field_back.position = Vec2(ent_name.width + self.ui_spacing * 0.5, 0)
+            quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_name.height + self.ui_spacing * 0.5)
+            ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark)
+            ent_field_back.position = ent_name.position + Vec2(ent_name.width + self.ui_spacing * 0.5, self.ui_spacing * 0.25)
+            ent_field_back.z = 0.05
 
         elif data_type == 'bool':
             ent_field, ent_field_back = None #TODO, dropdown menu
@@ -98,6 +116,45 @@ class ShaderNode(Entity):
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
 
         return (ent_name, ent_field, ent_field_back)
+
+    def append_drop_down(self, name, options:dict, on_select, text_color = c_text):
+        ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
+        ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
+
+        ent_field = Text(list(options.keys())[0], parent = self, position = ent_name.position, scale = 0.8, color = text_color)
+        ent_field.x += ent_name.width + self.ui_spacing
+
+        quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
+        ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
+        ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
+
+        def back_input(key):
+            if key == 'left mouse down' and ent_field_back.hovered:
+                if self.manager.node_menu != None:
+                    destroy(self.manager.node_menu)
+                self.manager.node_menu = SearchMenu(options, 
+                    parent = self.manager,
+                    position = Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
+                    z=-1,
+                    width = 0.12,
+                    option_scroll_count = len(options),
+                    on_selected = on_select,
+                    color_text = c_text,
+                    color_text_highlight = c_text_highlight,
+                    color_back = c_node_back,
+                    color_search_box = c_node_dark,
+                    color_highlight = c_node_light)
+        
+        def on_destroy():
+            self.manager.node_menu = None
+
+        ent_field_back.input = back_input
+        ent_field_back.on_destroy = on_destroy
+
+        self.ui_build_pos -= ent_name.height + self.ui_spacing * 2 # add the starting y position for next element
+
+        return (ent_name, ent_field, ent_field_back)
+
 
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos)
@@ -110,6 +167,7 @@ class ShaderNode(Entity):
             self.outputs.append(conn)
         else:
             self.inputs.append(conn)
+        return conn
 
 
 # - - - - - - -
