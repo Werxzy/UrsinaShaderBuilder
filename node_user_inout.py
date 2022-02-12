@@ -2,7 +2,7 @@ from shader_instructions import DataTypes
 from shader_node import ShaderNode
 
 '''
-Node represents an input specified by the user
+Node represents an input or output specified by the user
 '''
 
 class UserInOutNode(ShaderNode):
@@ -18,7 +18,7 @@ class UserInOutNode(ShaderNode):
         
         self.ui_back = self.build_back()
 
-        self.main_connector = self.build_connector('', ['vec4'], isOutput, 0.5)
+        self.main_connector = self.build_connector('', [self.ui_type[1].text], isOutput, 0.5)
 
     def on_selected(self, option):
         self.ui_type[1].text = option
