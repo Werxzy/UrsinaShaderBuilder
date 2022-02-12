@@ -108,6 +108,8 @@ class ShaderNode(Entity):
             ent_field_back.position = ent_name.position + Vec2(ent_name.width + self.ui_spacing * 0.5, self.ui_spacing * 0.25)
             ent_field_back.z = 0.05
 
+            ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
+
         elif data_type == 'bool':
             ent_field, ent_field_back = None #TODO, dropdown menu
             

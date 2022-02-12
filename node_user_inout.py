@@ -9,7 +9,7 @@ class UserInOutNode(ShaderNode):
 
     def __init__(self, isOutput = True, **kwargs):
         super().__init__(**kwargs)
-
+        self.ui_build_width = 0.26
         # if this node is outputing a variable
         self.isOutput = isOutput
 
