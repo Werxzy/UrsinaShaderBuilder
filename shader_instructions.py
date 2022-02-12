@@ -123,26 +123,26 @@ GLSL = {
 
     'Add' : {
         'description' : 'Add two values.', 
-        'inputs' : {'a': ['genType'],'b': ['genType']}, 
-        'outputs': {'result': ['genType']}, 
+        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'outputs': {'result': ['genType', 'intType', 'uintType']}, 
         'function' : 'result=a+b;'
         },
     'Subtract' : {
         'description' : 'Subtract a value by another.', 
-        'inputs' : {'a': ['genType'],'b': ['genType']}, 
-        'outputs': {'result': ['genType']}, 
+        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'outputs': {'result': ['genType', 'intType', 'uintType']}, 
         'function' : 'result=a-b;'
         },
     'Multiply' : {
         'description' : 'Multiply two values.', 
-        'inputs' : {'a': ['genType'],'b': ['genType']}, 
-        'outputs': {'result': ['genType']}, 
+        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'outputs': {'result': ['genType', 'intType', 'uintType']}, 
         'function' : 'result=a*b;'
         },
     'Divide' : {
         'description' : 'Divide a value by another.', 
-        'inputs' : {'a': ['genType'],'b': ['genType']}, 
-        'outputs': {'result': ['genType']}, 
+        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'outputs': {'result': ['genType', 'intType', 'uintType']}, 
         'function' : 'result=a/b;'
         },
     
