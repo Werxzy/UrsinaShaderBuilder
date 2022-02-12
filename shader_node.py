@@ -50,7 +50,7 @@ class ShaderNode(Entity):
 
         return ent
 
-    def append_value_input(self, name, data_type, text_color = c_text):
+    def append_value_input(self, name, data_type, text_color = c_text, on_change = None):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
@@ -100,6 +100,7 @@ class ShaderNode(Entity):
                     ent_field.scroll_position = (0,0)
 
                 orig_render()
+                if on_change != None: on_change(ent_field.text)
 
             ent_field.render = render
 
@@ -127,6 +128,7 @@ class ShaderNode(Entity):
                 if key == 'left mouse down' and ent_field_back.hovered:
                     ent_field.text = 'true' if ent_field.text == 'false' else 'false'
                     ent_field.visible = not ent_field.visible
+                    if on_change != None: on_change(ent_field.text)
 
             ent_field_back.input = back_input                
 
