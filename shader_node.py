@@ -111,16 +111,22 @@ class ShaderNode(Entity):
             ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
 
         elif data_type == 'bool':
-            ent_field = Text('false', parent = self, position = ent_name.position, scale = 0.8, color = text_color)
-            ent_field.x += ent_name.width + self.ui_spacing
+            x_vert = [Vec3(0,1,0), Vec3(-1,2,0), Vec3(-2,1,0), Vec3(-1,0,0), Vec3(-2,-1,0), Vec3(-1,-2,0), Vec3(0,-1,0), Vec3(1,-2,0), Vec3(2,-1,0), Vec3(1,0,0), Vec3(2,1,0), Vec3(1,2,0), Vec3(0,1,0)]
+            check_vert = [Vec3(-0.5,0,0), Vec3(-1.5,1,0), Vec3(-2.5,0,0), Vec3(-0.5,-2,0), Vec3(2.5,1,0), Vec3(1.5,2,0)]
+            x_model = Mesh(vertices=x_vert, mode='ngon', static=False)
 
-            quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
+            ent_field = Entity(parent = self, position = ent_name.position, scale = ent_name.height * 0.25, origin = (-2, 2, 0), model = x_model, color = text_color, visible = False)
+            ent_field.text = 'false'
+            ent_field.x += ent_name.width + self.ui_spacing * 0.75
+
+            quadScale = Vec2(ent_name.height + self.ui_spacing * 0.5, ent_name.height + self.ui_spacing * 0.5)
             ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
-            ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
+            ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25)
 
             def back_input(key):
                 if key == 'left mouse down' and ent_field_back.hovered:
                     ent_field.text = 'true' if ent_field.text == 'false' else 'false'
+                    ent_field.visible = not ent_field.visible
 
             ent_field_back.input = back_input                
 
