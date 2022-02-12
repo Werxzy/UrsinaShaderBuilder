@@ -1,6 +1,6 @@
 from ursina import *
 from bar_menu import BarMenu
-from node_user_input import UserInputNode
+from node_user_inout import UserInOutNode
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
@@ -55,8 +55,8 @@ class ShaderBuilderManager(Entity):
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Subtract', position = (0,0.3)))
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
         self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
-        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec3', position = (-0.3,-0.3)))
-        self.append_node(UserInputNode(parent = self, manager = self, position = (0.0,-0.3)))
+        self.append_node(UserInOutNode(True, parent = self, manager = self, position = (-0.3,-0.3)))
+        self.append_node(UserInOutNode(False, parent = self, manager = self,  position = (0.0,-0.3)))
         self.append_node(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
 
 
