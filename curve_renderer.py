@@ -74,11 +74,10 @@ class CurveRenderer(Entity):
         if abs(t) < 0.000001: return points[0]
         if abs(t - 1) < 0.000001: return points[-1]
         # if len(points) > 3: return self.mlerp([points[0], self.mlerp(points[1:-1], t), points[-1]], t)
-
         ps = copy(points)
         for i in range(len(ps) - 1, 0, -1):
             for j in range(i):
-                ps[j] = lerp(ps[j], ps[j+1], t)          
+                ps[j] = ps[j] + (ps[j+1] - ps[j]) * t         
         return ps[0]
 
     def on_destroy(self):
