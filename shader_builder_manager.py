@@ -174,7 +174,7 @@ class ShaderBuilderManager(Entity):
     def finished_variable(self, data_type, variable):
         self.build_var_finished[data_type].append(variable)
 
-    def create_menu(self, position, options, scroll_count, on_selected, disable_search = False, disable_scroll_bar = False):
+    def create_menu(self, position, options, scroll_count, on_selected, disable_search = False, disable_scroll_bar = False, **kwargs):
         if self.node_menu != None:
             self.destroy_menu()
             
@@ -194,7 +194,8 @@ class ShaderBuilderManager(Entity):
             color_search_box = c_node_dark,
             color_highlight = c_node_light,
             on_destroy = self.clear_menu_ref,
-            on_selected = on_selected)
+            on_selected = on_selected,
+            **kwargs)
 
     def destroy_menu(self):
         destroy(self.node_menu)
