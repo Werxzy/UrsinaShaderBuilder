@@ -28,6 +28,7 @@ class SearchMenu(Entity):
         self.edge_spacing = 0.02
         self.text_spacing = 0.007
         self.width = 0.2
+        self.ignore_next_input = True
 
         self.color_text = color.hsv(0,0,0.7)
         self.color_text_highlight = color.hsv(0,0,0.7, 0.3)
@@ -128,6 +129,7 @@ class SearchMenu(Entity):
 
 
     def input(self, key):
+        if self.ignore_next_input: return
         if key == 'left mouse down':
             if self.disable_search:
                 if (mouse.hovered_entity not in (self.ui_back, self.scroll_back)) and (mouse.hovered_entity not in self.option_highlights):
@@ -172,6 +174,7 @@ class SearchMenu(Entity):
     
     
     def update(self):
+        self.ignore_next_input = False
         if mouse.left and mouse.hovered_entity == self.scroll_back:
             amount = ursinamath.clamp((-mouse.point.y - self.scroll_bar_radius) / (self.scroll_height - self.scroll_bar_radius * 2), 0, 1)
             total = self._current_option_count - self.option_scroll_count
