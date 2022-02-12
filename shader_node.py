@@ -111,8 +111,18 @@ class ShaderNode(Entity):
             ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
 
         elif data_type == 'bool':
-            ent_field, ent_field_back = None #TODO, dropdown menu
-            
+            ent_field = Text('false', parent = self, position = ent_name.position, scale = 0.8, color = text_color)
+            ent_field.x += ent_name.width + self.ui_spacing
+
+            quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
+            ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
+            ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
+
+            def back_input(key):
+                if key == 'left mouse down' and ent_field_back.hovered:
+                    ent_field.text = 'true' if ent_field.text == 'false' else 'false'
+
+            ent_field_back.input = back_input                
 
         self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
