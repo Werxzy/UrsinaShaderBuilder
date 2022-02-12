@@ -112,7 +112,7 @@ class ShaderNode(Entity):
             ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
 
         elif data_type == 'bool':
-            x_vert = [Vec3(0,1,0), Vec3(-1,2,0), Vec3(-2,1,0), Vec3(-1,0,0), Vec3(-2,-1,0), Vec3(-1,-2,0), Vec3(0,-1,0), Vec3(1,-2,0), Vec3(2,-1,0), Vec3(1,0,0), Vec3(2,1,0), Vec3(1,2,0), Vec3(0,1,0)]
+            x_vert = [Vec3(0,1,0), Vec3(-1,2,0), Vec3(-2,1,0), Vec3(-1,0,0), Vec3(-2,-1,0), Vec3(-1,-2,0), Vec3(0,-1,0), Vec3(1,-2,0), Vec3(2,-1,0), Vec3(1,0,0), Vec3(2,1,0), Vec3(1,2,0)]
             check_vert = [Vec3(-0.5,0,0), Vec3(-1.5,1,0), Vec3(-2.5,0,0), Vec3(-0.5,-2,0), Vec3(2.5,1,0), Vec3(1.5,2,0)]
             x_model = Mesh(vertices=x_vert, mode='ngon', static=False)
 
