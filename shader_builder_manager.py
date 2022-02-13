@@ -17,7 +17,11 @@ Manager file that holds all the nodes and builds the shader.
 class ShaderBuilderManager(Entity):
 
     menu_options = {
-        'Inputs/Outputs' : {'Shader Input':'UserInOutNode,input', 'Shader Output':'UserInOutNode,output'},
+        'Inputs/Outputs' : {
+            'Shader Input' : 'UserInOutNode,input', 
+            'Shader Output' : 'UserInOutNode,output', 
+            'Built-In' : dict([(v,'BuiltInOutputNode,'+v) for v in BuiltInOutputNode.build_in_attributes.keys()])
+            },
         'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
@@ -213,6 +217,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.node_menu.position, z = 0))
         elif sp[0] == 'UserInOutNode':
             self.append_node(UserInOutNode(isOutput = sp[1] == 'input', parent = self, manager = self, position = self.node_menu.position, z = 0))
+        elif sp[0] == 'BuiltInOutputNode':
+            self.append_node(BuiltInOutputNode(parent = self, manager = self, variable = sp[1], position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
@@ -235,9 +241,12 @@ class ShaderBuilderManager(Entity):
         elif vals[0] == 'file':
             pass
 
-    def append_node(self, node):
-        node.mode = self.mode
-        self.shader_nodes.append(node)
+    def append_node(self, node:ShaderNode):
+        if node.valid_mode(self.mode):
+            node.mode = self.mode
+            self.shader_nodes.append(node)
+        else:
+            destroy(node)
 
     @property
     def mode(self):
