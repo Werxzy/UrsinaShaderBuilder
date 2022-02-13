@@ -16,6 +16,11 @@ Menu that allows being searched through.
 '''
 
 class SearchMenu(Entity):
+    
+    right_arrow_vert = [Vec3(0,0,0), Vec3(-1,-1,0), Vec3(0,-2,0), Vec3(2,0,0), Vec3(0,2,0), Vec3(-1,1,0)]
+    back_text = '    Back'
+    clear_text = '    Clear Search'
+
     def __init__(self, options, **kwargs):
         super().__init__()
 
@@ -77,7 +82,26 @@ class SearchMenu(Entity):
             Entity(parent = self, model = Quad(scale = quadScale, radius=0.005), position = Vec3(0, s.y + self.text_spacing * 0.5, 0.1), origin_y = quadScale.y * 0.5, color = self.color_highlight, collider='box', visible = False)
             for s in self.option_slots
         ]
-        
+
+        self.option_arrows = [
+            Entity(parent = self, 
+                position = Vec3(self.width * 0.5, s.y, 0), 
+                model = Mesh(vertices=SearchMenu.right_arrow_vert, mode='ngon', static=False), 
+                scale = s.height * 0.25, 
+                origin = (2,2,0), 
+                color = self.color_text,
+                visible = False)
+            for s in self.option_slots
+        ]
+
+        self.back_arrow = Entity(parent = self, 
+                position = Vec3(self.width * -0.5, self.option_slots[0].y, 0), 
+                model = Mesh(vertices=SearchMenu.right_arrow_vert, mode='ngon', static=False), 
+                scale = self.option_slots[0].height * 0.25, 
+                origin = (2,-2,0), 
+                rotation_z = 180,
+                color = self.color_text)
+
         quadScale = Vec2(self.width + self.edge_spacing, len(self.option_slots) * (text_height + self.text_spacing) + (self.edge_spacing - self.text_spacing) + text_start)
         self.ui_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.015), z = 0.2, origin_y = quadScale.y * 0.5, color = self.color_back, collider='box')
 
@@ -146,10 +170,10 @@ class SearchMenu(Entity):
                 if self.option_slots[ind].text == ' ':
                     pass
 
-                elif self.option_slots[ind].text == '< Clear Search':
+                elif self.option_slots[ind].text == SearchMenu.clear_text:
                     self.end_search()
 
-                elif self.option_slots[ind].text == '< Back':
+                elif self.option_slots[ind].text == SearchMenu.back_text:
                     self.option_nested_position.pop()
                     self.scroll_position = 0
                     self.update_options()
@@ -204,10 +228,11 @@ class SearchMenu(Entity):
         for i in range(self.option_scroll_count):
             if i < self._current_option_count:
                 self.option_slots[i].text = keys[i + self.scroll_position]
-                # if isinstance(current_options[keys[i]], dict):
-                #   TODO, show arrow
+                self.option_arrows[i].visible = isinstance(current_options[keys[i]], dict)
             else:
                 self.option_slots[i].text = ' '
+                self.option_arrows[i].visible = False
+        self.back_arrow.visible = (self.option_slots[0].text in [SearchMenu.clear_text, SearchMenu.back_text])
             
 
     def get_current_options(self):
@@ -225,7 +250,7 @@ class SearchMenu(Entity):
         for p in nested_position:
             op = op[p]
         if len(nested_position) > 0:
-            new_op = dict({'< Back':'< Back'})
+            new_op = dict({SearchMenu.back_text:SearchMenu.back_text})
             new_op.update(op)
             return new_op
         return op
@@ -235,7 +260,7 @@ class SearchMenu(Entity):
 
     def search_options(self, query):
         query = query.lower()
-        op = dict({'< Clear Search':'< Clear Search'})
+        op = dict({SearchMenu.clear_text:SearchMenu.clear_text})
         op.update([(k,v) for k,v in self.options_all.items() if query in k.lower()])
         return op
 
