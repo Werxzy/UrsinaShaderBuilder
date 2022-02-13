@@ -98,7 +98,7 @@ class ShaderBuilderManager(Entity):
                 self.create_menu(Vec3(Vec3(mouse.position) - self.position) / self.scale, 
                     ShaderBuilderManager.menu_options, 8, self.create_node)
 
-            if self.create_menu_trigger == 1 and mouse.hovered_entity != None:
+            if self.create_menu_trigger == 1 and mouse.hovered_entity != None and mouse.delta_drag.length() < 0.001:
                 if mouse.hovered_entity.parent in self.shader_nodes:
                     self.create_menu(Vec3(Vec3(mouse.position) - self.position) / self.scale, 
                         ShaderBuilderManager.right_click_options, 
