@@ -17,7 +17,6 @@ class UserInOutNode(ShaderNode):
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
         if self.isOutput:
             self.ui_uniform = self.append_value_input('Uniform Input', 'bool')
-        self.ui_build_pos -= self.ui_spacing
         
         self.ui_back = self.build_back()
 

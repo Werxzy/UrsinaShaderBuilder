@@ -32,7 +32,6 @@ class ConstantNode(ShaderNode):
         self.ui_name = self.append_text(data_type, size = 0.8)
         self.ui_divider1 = self.append_divider()
         self.values = [self.append_value_input(k, v) for k,v in ConstantNode.data_type_layouts[data_type].items()]
-        self.ui_build_pos -= self.ui_spacing
 
         self.ui_back = self.build_back()
 

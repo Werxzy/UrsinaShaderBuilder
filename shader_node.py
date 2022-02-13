@@ -41,12 +41,13 @@ class ShaderNode(Entity):
 # - - - ui builder functions - - -
 
     def append_divider(self):
+        self.ui_build_pos -= self.ui_spacing
         return Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001), color = c_node_dark)
 
     def append_text(self, text, text_color = c_text, size = 1):
         ent = Text(text, parent = self, color = text_color, scale = size)
         ent.position = Vec2(-ent.width * 0.5, self.ui_build_pos - self.ui_spacing) #adjust based on text width and starting y pos
-        self.ui_build_pos -= ent.height + self.ui_spacing * 2 # add the starting y position for next element
+        self.ui_build_pos -= ent.height + self.ui_spacing # add the starting y position for next element
         self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
 
         return ent
@@ -161,7 +162,7 @@ class ShaderNode(Entity):
 
 
     def build_back(self):
-        quadScale = Vec2(self.ui_build_width, -self.ui_build_pos)
+        quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
         ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
         return ent
 
