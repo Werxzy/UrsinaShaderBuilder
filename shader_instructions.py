@@ -2,19 +2,27 @@
 
 # this may need to represent in a better way
 DataTypes = [
-    'bool',
-    'int',
-    'uint',
+    
     'float',
     'vec2',
     'vec3',
     'vec4',
+
+    'int',
     'ivec2',
     'ivec3',
     'ivec4',
+
+    'uint',
+    'uvec2',
+    'uvec3',
+    'uvec4',
+
+    'bool',
     'bvec2',
     'bvec3',
     'bvec4',
+    
     'mat2',
     'mat3',
     'mat4',
