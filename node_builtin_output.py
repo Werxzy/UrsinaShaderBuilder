@@ -80,6 +80,9 @@ class BuiltInOutputNode(ShaderNode):
 
         self.main_connector = self.build_connector(att[1], [att[1]], 'out' != att[0], 0.157)
 
+    def valid_mode(self, mode):
+        m = BuiltInOutputNode.build_in_attributes[self.variable]
+        return (mode in m) or ('all' in m)
 
     def build_shader(self):
         att = BuiltInOutputNode.build_in_attributes[self.variable]

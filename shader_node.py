@@ -263,6 +263,10 @@ class ShaderNode(Entity):
     # To be replaced in inheriting classes.
     def build_shader(self): pass
 
+    # Called when adding a node to the manager.
+    # determines if the node is usable in the given mode.
+    def valid_mode(self, mode): return True
+
     # Checks if the node is ready to build
     def is_build_ready(self):
         ready = True
