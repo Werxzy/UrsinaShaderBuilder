@@ -143,8 +143,31 @@ GLSL = {
         },
     'Multiply' : {
         'description' : 'Multiply two values.', 
-        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
-        'outputs': {'result': ['genType', 'intType', 'uintType']}, 
+        'inputs' : {
+            'a': ['genType', 'intType', 'uintType',
+                    'float', 'int', 'uint',
+
+                    'float', 'int', 'uint',
+                    'vec', 'ivec', 'uvec',
+                    'mat', 'mat', 'mat'
+                    ],
+                    
+            'b': ['genType', 'intType', 'uintType',
+                    'vec', 'vec', 'vec',
+
+                    'mat', 'mat', 'mat',
+                    'mat', 'mat', 'mat',
+                    'vec', 'ivec', 'uvec'
+                    ]},
+
+        'outputs': {
+            'result': ['genType', 'intType', 'uintType', # v*v, s*s
+                    'vec', 'vec', 'vec', # s*v
+
+                    'mat', 'mat', 'mat', # s*m
+                    'vec', 'vec', 'vec', # v*m
+                    'vec', 'vec', 'vec', # m*v
+                    ]},
         'function' : 'result=a*b;'
         },
     'Divide' : {
