@@ -4,6 +4,7 @@ from search_menu import SearchMenu
 from shader_instructions import *
 from color_atlas import *
 from shader_node_connector import NodeConnector
+from extra_models import x_vert
 
 '''
 Base class for all nodes.
@@ -112,8 +113,6 @@ class ShaderNode(Entity):
             ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
 
         elif data_type == 'bool':
-            x_vert = [Vec3(0,1,0), Vec3(-1,2,0), Vec3(-2,1,0), Vec3(-1,0,0), Vec3(-2,-1,0), Vec3(-1,-2,0), Vec3(0,-1,0), Vec3(1,-2,0), Vec3(2,-1,0), Vec3(1,0,0), Vec3(2,1,0), Vec3(1,2,0)]
-            check_vert = [Vec3(-0.5,0,0), Vec3(-1.5,1,0), Vec3(-2.5,0,0), Vec3(-0.5,-2,0), Vec3(2.5,1,0), Vec3(1.5,2,0)]
             x_model = Mesh(vertices=x_vert, mode='ngon', static=False)
 
             ent_field = Entity(parent = self, position = ent_name.position, scale = ent_name.height * 0.25, origin = (-2, 2, 0), model = x_model, color = text_color, visible = False)
