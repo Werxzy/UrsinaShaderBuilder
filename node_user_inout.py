@@ -15,6 +15,9 @@ class UserInOutNode(ShaderNode):
 
         self.ui_name = self.append_value_input('Name', 'var')
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
+        if self.isOutput:
+            self.ui_uniform = self.append_value_input('Uniform Input', 'bool')
+        self.ui_build_pos -= self.ui_spacing
         
         self.ui_back = self.build_back()
 
@@ -31,7 +34,10 @@ class UserInOutNode(ShaderNode):
 
     def build_shader(self):
         if self.isOutput:
-            v1 = 'in ' + self.ui_type[1].text + ' ' + self.ui_name[1].text + ';'
+            v1 = 'in '
+            if self.isOutput:
+                v1 = v1 if self.ui_uniform[1].text == 'false' else 'uniform '
+            v1 += self.ui_type[1].text + ' ' + self.ui_name[1].text + ';'
             self.main_connector.set_build_variable(self.ui_name[1].text)
 
         else:

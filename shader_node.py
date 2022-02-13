@@ -155,7 +155,7 @@ class ShaderNode(Entity):
         ent_field_back.input = back_input
         ent_field_back.on_destroy = self.manager.destroy_menu()
 
-        self.ui_build_pos -= ent_name.height + self.ui_spacing * 2 # add the starting y position for next element
+        self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
 
         return (ent_name, ent_field, ent_field_back)
 
