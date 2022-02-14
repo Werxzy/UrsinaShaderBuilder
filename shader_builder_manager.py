@@ -138,16 +138,31 @@ class ShaderBuilderManager(Entity):
         for i in self.shader_nodes:
             i.clear_build_variables()
 
+        nodes_queued = self.get_ordered_nodes(mode)
+        if nodes_queued == 'bad':
+            print_warning('not all connection made')
+            return 'bad'
+
+        for node in nodes_queued:
+            node.build_shader()
+        
+        final_build = '#version 150\n\n'
+        final_build += self.build['inout'] + '\n'
+        if len(self.build['function']) > 0: final_build += self.build['function'] + '\n'
+        final_build += 'void main(){\n' + self.build['main'] + '}'
+
+        return final_build
+
+    def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
-        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected() and n.mode == mode]) # queues all nodes that have no outputs
+        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected() and (n.mode == mode or mode == '')]) # queues all nodes that have no outputs
         nodes_queued = list(nodes_to_check)
         n = 0
         while n < len(nodes_to_check):            
             for c in nodes_queued[n].inputs:
                 node = c.connections[0].parent
                 if not node.is_all_connected():
-                    print_warning('not all connection made')
                     return 'bad'
 
                 if nodes_queued.count(node) > 0:
@@ -160,15 +175,7 @@ class ShaderBuilderManager(Entity):
         # Was back to front, now needs to be front to back (flow from inputs to outputs)
         nodes_queued.reverse() 
 
-        for node in nodes_queued:
-            node.build_shader()
-        
-        final_build = '#version 150\n\n'
-        final_build += self.build['inout'] + '\n'
-        if len(self.build['function']) > 0: final_build += self.build['function'] + '\n'
-        final_build += 'void main(){\n' + self.build['main'] + '}'
-
-        return final_build
+        return nodes_queued
 
     def preview_shader(self):
         build_time = time.time()

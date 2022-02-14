@@ -34,6 +34,9 @@ class VariableSplitterNode(ShaderNode):
         'int' : '0',
         'uint' : '0',
         'bool' : 'false',
+        'vec2' : 'vec2(0,0)',
+        'vec3' : 'vec3(0,0,0)',
+        'vec4' : 'vec4(0,0,0,0)',
     }
 
     def __init__(self, **kwargs):
@@ -73,7 +76,7 @@ class VariableSplitterNode(ShaderNode):
         self.build_connector(data_type, [data_type], not inout, i)
         
         for j,v in enumerate(VariableSplitterNode.versions[data_type]):
-            self.build_connector('xyzw'[j] + "_", [v], inout, i, True)
+            self.build_connector('xyzw'[j], [v], inout, i, True)
             i += 1   
 
         self.built = True
