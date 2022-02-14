@@ -319,12 +319,12 @@ GLSL = {
     'Less Than or Equal' : build_func('For each component,\nreturns true if less than or equal to.', 'lessThanEqual', 
         inputTypes=[['vec', 'ivec'], ['vec', 'ivec']], outputTypes=['bvec', 'bvec']),
 
-# noise functions
+# noise functions (not supported by panda3d?)
 
-    'Noise Float' : build_func('Noise value as float', 'noise1', outputTypes=['float']),
-    'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['vec2']),
-    'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['vec3']),
-    'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['vec4']),
+    # 'Noise Float' : build_func('Noise value as float', 'noise1', outputTypes=['float']),
+    # 'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['vec2']),
+    # 'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['vec3']),
+    # 'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['vec4']),
 
 # Texture lookup functions
 # NOTE, currently only adding sampler#D and not usampler or isampler and missing some other types
@@ -370,7 +370,7 @@ GLSL_catagorized = {
     'Geometric' : _get_range('Cross Product', 'ftransform'),
     'Matrix' : _get_range('Matrix Comp Multiply', 'Inverse Matrix'),
     'Logic' : _get_range('Boolean All', 'Less Than or Equal'),
-    'Noise' : _get_range('Noise Float', 'Noise Vec4'),
+    # 'Noise' : _get_range('Noise Float', 'Noise Vec4'),
     'Texture' : _get_range('Texture Size LOD', 'Tex Sample + Proj + Bias'),
     'Other' : _get_range('dFdx', 'fwidth'),
 }
