@@ -81,7 +81,7 @@ def build_func(desc, func, names = 'abcdef', inputTypes = [['genType'],], output
     re = {
         'description' : desc, 
         'inputs' : {}, 
-        'outputs': {'result': outputTypes}, 
+        'outputs': {'result': list(outputTypes)}, 
         'function' : 'result=' + func + '('
         }
 
@@ -89,7 +89,7 @@ def build_func(desc, func, names = 'abcdef', inputTypes = [['genType'],], output
         v = names[i]
         if len(v) == 1:
             v += '_'
-        re['inputs'].update({v : inputTypes[i]})
+        re['inputs'].update({v : list(inputTypes[i])})
         if i > 0: 
             re['function'] += ','
         re['function'] += v
@@ -322,9 +322,9 @@ GLSL = {
 # noise functions
 
     'Noise Float' : build_func('Noise value as float', 'noise1', outputTypes=['float']),
-    'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['float']),
-    'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['float']),
-    'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['float']),
+    'Noise Vec2' : build_func('Noise value as vec2', 'noise2', outputTypes=['vec2']),
+    'Noise Vec3' : build_func('Noise value as vec3', 'noise3', outputTypes=['vec3']),
+    'Noise Vec4' : build_func('Noise value as vec4', 'noise4', outputTypes=['vec4']),
 
 # Texture lookup functions
 # NOTE, currently only adding sampler#D and not usampler or isampler and missing some other types
@@ -380,11 +380,11 @@ for inst in GLSL.values():
     c = 0
     l = list(inst['inputs'].values())
     if(len(l) > 0):
-        c = l[0]
+        c = len(l[0])
     else:
-        c = list(inst['outputs'].values())[0]
+        c = len(list(inst['outputs'].values())[0])
 
-    for _ in range(len(c)):
+    for _ in range(c):
 
         inouts = [('inputs', k, v.pop(0)) for k,v in inst['inputs'].items()]
         inouts += [('outputs', k, v.pop(0)) for k,v in inst['outputs'].items()]
@@ -407,10 +407,16 @@ for inst in GLSL.values():
 
         for v in inouts:
             inst[v[0]][v[1]].append(v[2])
+
+    l = list(inst['inputs'].values())
+    if(len(l) > 0):
+        c = len(l[0])
+    else:
+        c = len(list(inst['outputs'].values())[0])
     
     # remove duplicates, if input[i] == input[j]: input.pop(i), output.pop(i)
     # only checks inputs, because there shouldn't be any duplicate input data types with different outputs data types
-    for i in range(len(c) - 1, 0, -1):
+    for i in range(c - 1, 0, -1):
         keys_i = list(inst['inputs'].keys())
         
         for j in range(i - 1):
