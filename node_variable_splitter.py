@@ -29,6 +29,13 @@ class VariableSplitterNode(ShaderNode):
         'bvec2' : ['bool', 'bool'],
     }
 
+    defaults = {
+        'float' : '0.0',
+        'int' : '0',
+        'uint' : '0',
+        'bool' : 'false',
+    }
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -66,11 +73,37 @@ class VariableSplitterNode(ShaderNode):
         self.build_connector(data_type, [data_type], not inout, i)
         
         for j,v in enumerate(VariableSplitterNode.versions[data_type]):
-            self.build_connector('xyzw'[j] + "_", [v], inout, i)
+            self.build_connector('xyzw'[j] + "_", [v], inout, i, True)
             i += 1   
 
         self.built = True
 
     def build_shader(self):
-        pass
+        if self.ui_merge[1].text == 'false':
+            v = self.inputs[0].get_build_variable()
+            t = self.outputs[0].get_variable_type()
 
+            for i,o in enumerate(self.outputs):
+                if not o.any_connected(): continue
+
+                v2 = o.prepare_build_variable()
+                comp = ['[0]', '[1]', '[2]', '[3]'] if t.startswith('mat') else ['.x', '.y', '.z', '.w'] 
+                    
+                inst = v2 + ' = ' + v + comp[i] + ';'
+                self.manager.build_shader_append('main', inst)
+
+        else:
+            v = self.outputs[0].prepare_build_variable()
+            t = self.outputs[0].get_variable_type()
+            inst = v + ' = ' + t + '('
+
+            for i,inp in enumerate(self.outputs):
+                if i > 0:  v += ','
+
+                if not inp.any_connected():
+                    v += VariableSplitterNode.defaults[t]
+                else:     
+                    v = inp.prepare_build_variable()
+
+            inst += ');'
+            self.manager.build_shader_append('main', inst)

@@ -26,6 +26,9 @@ class ShaderBuilderManager(Entity):
             'Built-In' : dict([(v,'BuiltInOutputNode,'+v) for v in BuiltInOutputNode.build_in_attributes.keys()])
             },
         'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
+        'Conversion' : {
+            'Splitter / Merger' : 'VariableSplitterNode,a'
+        }
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
     menu_options.update(dict((cat,dict((v,'InstructionNode,'+v) for v in con)) for cat,con in GLSL_catagorized.items()))
@@ -269,6 +272,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(UserInOutNode(isOutput = sp[1] == 'input', parent = self, manager = self, position = self.node_menu.position, z = 0))
         elif sp[0] == 'BuiltInOutputNode':
             self.append_node(BuiltInOutputNode(parent = self, manager = self, variable = sp[1], position = self.node_menu.position, z = 0))
+        elif sp[0] == 'VariableSplitterNode':
+            self.append_node(VariableSplitterNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
