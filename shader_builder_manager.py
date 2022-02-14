@@ -153,6 +153,41 @@ class ShaderBuilderManager(Entity):
 
         return final_build
 
+    def save_shader(self, location = ''):
+        
+        data = {'nodes':{}}
+        
+        nodes_queued = self.get_ordered_nodes()
+        if nodes_queued == 'bad': return
+
+        for i,node in enumerate(nodes_queued):
+            if node.mode not in data['nodes'].keys():
+                data['nodes'].update({node.mode : {}})
+            
+            node.save_name = 'node_' + str(i) # name just helps other nodes communicate what they are connected to.
+
+            node_data = {
+                'class' : str(type(node)),
+                'input connections' : [],
+            }
+            for inp in node.inputs:
+                if inp.any_connected():
+                    conn = inp.connections[0]
+                    node_data['input connections'].append(conn.parent.save_name + '.' + str(conn.parent.outputs.index(conn)))
+                else:
+                    node_data['input connections'].append('disconnected')
+
+            node_data.update(node.save())
+            data['nodes'][node.mode].update({node.save_name : node_data})
+
+        v = self.build_shader('vertex')
+        f = self.build_shader('fragment')
+
+        if v != 'bad': data.update({'vertex' : v})
+        if f != 'bad': data.update({'fragment' : f})
+        
+        print(data)
+        
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
