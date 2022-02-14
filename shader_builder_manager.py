@@ -38,6 +38,7 @@ class ShaderBuilderManager(Entity):
         },
         'Vertex' : 'mode,vertex',
         'Fragment' : 'mode,fragment',
+        'Preview' : 'preview'
     }
 
     def __init__(self, **kwargs):
@@ -54,7 +55,9 @@ class ShaderBuilderManager(Entity):
         self.node_menu = None
         self.selected_node = None
         self._mode = 'fragment'
+
         self.preview_entity:Entity = None
+        self.preview_cam = None
 
         #test node
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -162,26 +165,40 @@ class ShaderBuilderManager(Entity):
         return final_build
 
     def preview_shader(self):
+        build_time = time.time()
+        
         v = self.build_shader('vertex')
         f = self.build_shader('fragment')
         if v == 'bad' or f == 'bad':
             print_warning('Can\'t build shader.')
             return
 
+        build_time = time.time() - build_time
+
         print('Vertex Shadder :')
         print(v)
         print('Fragment Shader :')
         print(f)
 
+        print('\nBuild Time:', build_time)
+
         s = Shader(vertex = v, fragment = f)
 
-        self.cam = EditorCamera()
+        self.preview_cam = EditorCamera()
 
-        self.destroy_preview()
+        self.destroy_preview_entity()
         self.preview_entity = Entity(model = 'sphere', shader = s)
+        self._prev_mode = self.mode
         self.mode = 'hide all'
 
-    def destroy_preview(self):
+    def quit_preview(self, mode = ''):
+        if self.preview_cam != None:
+            destroy(self.preview_cam)
+            self.preview_cam = None
+        
+        self.mode = mode if mode != '' else self._prev_mode
+
+    def destroy_preview_entity(self):
         if self.preview_entity != None:
             destroy(self.preview_entity)
             self.preview_entity = None
@@ -265,11 +282,19 @@ class ShaderBuilderManager(Entity):
         vals = val.split(',')
 
         if vals[0] == 'mode':
+            if self.mode == 'hide all':
+                self.quit_preview()
             self.mode = vals[1]
             if NodeConnector.prepared_node != None:
                 NodeConnector.prepared_node.destroy_prepared_line()
         elif vals[0] == 'file':
             pass
+        elif vals[0] == 'preview':
+            if NodeConnector.prepared_node != None:
+                NodeConnector.prepared_node.destroy_prepared_line()
+            if self.preview_cam == None:
+                self.preview_shader()
+            
 
     def append_node(self, node:ShaderNode):
         if node.valid_mode(self.mode):

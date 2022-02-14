@@ -22,13 +22,4 @@ window.borderless = False
 
 sbm = ShaderBuilderManager()
 
-def input(key):
-    if key == 'b':
-        global sbm
-        t = time.time()
-        sbm.preview_shader()
-        # print(sbm.build_shader(sbm.mode))
-        print('\nBuild Time:',time.time() - t)
-    pass
-
 app.run()
