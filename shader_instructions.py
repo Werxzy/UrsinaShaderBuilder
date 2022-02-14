@@ -131,20 +131,20 @@ GLSL = {
 
     'Add' : {
         'description' : 'Add two values.', 
-        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'inputs' : {'a_': ['genType', 'intType', 'uintType'],'b_': ['genType', 'intType', 'uintType']}, 
         'outputs': {'result': ['genType', 'intType', 'uintType']}, 
-        'function' : 'result=a+b;'
+        'function' : 'result=a_+b_;'
         },
     'Subtract' : {
         'description' : 'Subtract a value by another.', 
-        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'inputs' : {'a_': ['genType', 'intType', 'uintType'],'b_': ['genType', 'intType', 'uintType']}, 
         'outputs': {'result': ['genType', 'intType', 'uintType']}, 
-        'function' : 'result=a-b;'
+        'function' : 'result=a_-b_;'
         },
     'Multiply' : {
         'description' : 'Multiply two values.', 
         'inputs' : {
-            'a': ['genType', 'intType', 'uintType', 'mat',
+            'a_': ['genType', 'intType', 'uintType', 'mat',
                     'float', 'int', 'uint',
                     'vec', 'vec', 'vec',
 
@@ -155,7 +155,7 @@ GLSL = {
                     'mat', 'mat', 'mat'
                     ],
                     
-            'b': ['genType', 'intType', 'uintType', 'mat',
+            'b_': ['genType', 'intType', 'uintType', 'mat',
                     'vec', 'vec', 'vec',
                     'float', 'int', 'uint',
 
@@ -177,13 +177,13 @@ GLSL = {
                     'vec', 'vec', 'vec', # v*m
                     'vec', 'vec', 'vec', # m*v
                     ]},
-        'function' : 'result=a*b;'
+        'function' : 'result=a_*b_;'
         },
     'Divide' : {
         'description' : 'Divide a value by another.', 
-        'inputs' : {'a': ['genType', 'intType', 'uintType'],'b': ['genType', 'intType', 'uintType']}, 
+        'inputs' : {'a_': ['genType', 'intType', 'uintType'],'b_': ['genType', 'intType', 'uintType']}, 
         'outputs': {'result': ['genType', 'intType', 'uintType']}, 
-        'function' : 'result=a/b;'
+        'function' : 'result=a_/b_;'
         },
     
 # Angle and trigonometry functions

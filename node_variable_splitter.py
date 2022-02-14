@@ -67,7 +67,6 @@ class VariableSplitterNode(ShaderNode):
         
         for j,v in enumerate(VariableSplitterNode.versions[data_type]):
             self.build_connector('xyzw'[j] + "_", [v], inout, i)
-            print(v)
             i += 1   
 
         self.built = True
