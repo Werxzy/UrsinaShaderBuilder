@@ -1,9 +1,12 @@
 from ursina import *
 from bar_menu import BarMenu
+
 from node_user_inout import UserInOutNode
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
+from node_variable_splitter import VariableSplitterNode
+
 from search_menu import SearchMenu
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
@@ -61,7 +64,7 @@ class ShaderBuilderManager(Entity):
 
         #test node
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
-        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Subtract', position = (0,0.3)))
+        self.append_node(VariableSplitterNode(parent = self, manager = self, position = (0,0.3)))
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
         self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
         self.append_node(UserInOutNode(True, parent = self, manager = self, position = (-0.3,-0.3)))
