@@ -54,6 +54,7 @@ class ShaderBuilderManager(Entity):
         self.node_menu = None
         self.selected_node = None
         self._mode = 'fragment'
+        self.preview_entity:Entity = None
 
         #test node
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
@@ -71,6 +72,8 @@ class ShaderBuilderManager(Entity):
 
 
     def input(self, key):
+        if self.mode == 'hide all': return
+
         if key == 'scroll up' and self.node_menu == None:
             self.scale *= 1.1
             self.scale_z = 1
@@ -88,6 +91,8 @@ class ShaderBuilderManager(Entity):
             self.create_menu_trigger = 2
 
     def update(self):
+        if self.mode == 'hide all': return
+
         if mouse.right:
             self.x += mouse.velocity[0]
             self.y += mouse.velocity[1] * window.aspect_ratio
@@ -155,6 +160,31 @@ class ShaderBuilderManager(Entity):
         final_build += 'void main(){\n' + self.build['main'] + '}'
 
         return final_build
+
+    def preview_shader(self):
+        v = self.build_shader('vertex')
+        f = self.build_shader('fragment')
+        if v == 'bad' or f == 'bad':
+            print_warning('Can\'t build shader.')
+            return
+
+        print('Vertex Shadder :')
+        print(v)
+        print('Fragment Shader :')
+        print(f)
+
+        s = Shader(vertex = v, fragment = f)
+
+        self.cam = EditorCamera()
+
+        self.destroy_preview()
+        self.preview_entity = Entity(model = 'sphere', shader = s)
+        self.mode = 'hide all'
+
+    def destroy_preview(self):
+        if self.preview_entity != None:
+            destroy(self.preview_entity)
+            self.preview_entity = None
 
     def build_shader_append(self, target, value):
         self.build[target] += value + '\n'
@@ -257,5 +287,4 @@ class ShaderBuilderManager(Entity):
         if self._mode == value: return
         self._mode = value
         for n in self.shader_nodes:
-            if not isinstance(n, ShaderNode): return
             n.enabled = n.mode == self._mode
