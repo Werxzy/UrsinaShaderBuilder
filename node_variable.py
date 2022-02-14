@@ -38,7 +38,6 @@ class ConstantNode(ShaderNode):
         self.build_connector('', [data_type], True, 0.5)
 
     def build_shader(self):
-        #TODO bool, bvec, and other values might have a problem with .text
         if len(self.values) > 1:
             var = self.data_type + '(' + ','.join([v[1].text for v in self.values]) + ')'
         else:

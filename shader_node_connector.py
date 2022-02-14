@@ -22,6 +22,7 @@ class NodeConnector(Entity):
         self.connections:list[NodeConnector] = []
         self.variable = ''
         self.variable_type:list[str] = []
+        self.optional = False
 
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -49,6 +50,13 @@ class NodeConnector(Entity):
             scale = y_height * 0.8,
             y = -y_height * 0.5 - y_height * yth,
             color = c_node_back)
+
+        if self.optional:
+            self.ui_dot2 = Entity(parent = self.ui_dot, 
+                model = 'circle',
+                scale = 0.7,
+                z = -0.01,
+                color = c_node_dark)
 
         if self.isOutput: # right size
             self.ui_text.x = x_disp + 0.01
@@ -180,6 +188,7 @@ class NodeConnector(Entity):
             self.update_line()
 
         self.ui_dot.color = c_conn_active
+        if self.optional: self.ui_dot2.visible = False
 
     # apply the disconnection and any changes required by the conneciton being made
     def _apply_disconnection(self, connector):
@@ -194,6 +203,7 @@ class NodeConnector(Entity):
     
         if len(self.connections) == 0:
             self.ui_dot.color = c_node_back
+            if self.optional: self.ui_dot2.visible = True
 
         self.parent.disconnection(self)
 

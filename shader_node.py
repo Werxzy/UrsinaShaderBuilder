@@ -169,8 +169,8 @@ class ShaderNode(Entity):
         ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
         return ent
 
-    def build_connector(self, variable, variable_type, isOutput, offset = 0):
-        conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = offset, variable = variable, variable_type = variable_type, isOutput = isOutput)
+    def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False):
+        conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = offset, variable = variable, variable_type = variable_type, isOutput = isOutput, optional = optional)
         if isOutput:
             self.outputs.append(conn)
         else:
@@ -226,7 +226,7 @@ class ShaderNode(Entity):
     def is_all_connected(self):
         if len(self.inputs) > 0:
             for i in self.inputs:
-                if not i.any_connected():
+                if not (i.any_connected() or i.optional):
                     return False
 
         if len(self.outputs) > 0:
