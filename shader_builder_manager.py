@@ -156,13 +156,18 @@ class ShaderBuilderManager(Entity):
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
-        nodes_to_check = list([n for n in self.shader_nodes if len(n.outputs) == 0 and n.is_all_connected() and (n.mode == mode or mode == '')]) # queues all nodes that have no outputs
+        nodes_to_check = list([n for n in self.shader_nodes if (len(n.outputs) == 0 and n.is_all_connected() and n.mode == mode) 
+                                                            or (not n.any_outputs_connected() and mode == '')]) 
+        # queues all nodes that have no outputs
+        # if no mode is set, queue any node with no *connected* outputs
+
         nodes_queued = list(nodes_to_check)
         n = 0
         while n < len(nodes_to_check):            
             for c in nodes_queued[n].inputs:
+                if not c.any_connected(): continue
                 node = c.connections[0].parent
-                if not node.is_all_connected():
+                if not node.is_all_connected() and mode != '':
                     return 'bad'
 
                 if nodes_queued.count(node) > 0:
