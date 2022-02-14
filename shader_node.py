@@ -86,8 +86,11 @@ class ShaderNode(Entity):
 
                     else: # data_type == 'uint':
                         ent_field.text = ''.join([e for e in ent_field.text if e in '0123456789'])
-                
-                    ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
+
+                    if len(ent_field.text) == 0:
+                        ent_field.text = '0'
+                    else:
+                        ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
                     
                 elif data_type == 'var':
                     if org_length == 0:
