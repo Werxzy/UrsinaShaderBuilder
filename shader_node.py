@@ -237,6 +237,12 @@ class ShaderNode(Entity):
             return False
 
         return True
+
+    def any_outputs_connected(self):
+        for o in self.outputs:
+            if o.any_connected():
+                return True
+        return False
     
     def input(self, key):
         if key == 'left mouse down' and self.ui_back.hovered:
@@ -285,4 +291,12 @@ class ShaderNode(Entity):
     def clear_build_variables(self):
         for o in self.outputs:
             o.clear_build_variable()
+
+    # Called when preparing to save the shader
+    # Returns any data unique to this node's class
+    def save(self): return {}
+
+    # Called when loading the node
+    # sets data of the node.
+    def load(self, data): pass
         
