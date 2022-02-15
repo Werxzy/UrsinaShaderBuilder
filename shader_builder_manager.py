@@ -229,6 +229,7 @@ class ShaderBuilderManager(Entity):
                 new_shader_nodes.update({name : new_node})
 
         self.shader_nodes.extend(new_shader_nodes.values())
+        self.set_nodes_visisble()
 
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
@@ -408,5 +409,8 @@ class ShaderBuilderManager(Entity):
     def mode(self, value):
         if self._mode == value: return
         self._mode = value
+        self.set_nodes_visisble()
+
+    def set_nodes_visisble(self):
         for n in self.shader_nodes:
             n.enabled = n.mode == self._mode

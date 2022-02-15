@@ -119,6 +119,6 @@ class VariableSplitterNode(ShaderNode):
 
     def load(manager, data):
         new_node = VariableSplitterNode(parent = manager, manager = manager, data_type = data['data type'])
-        new_node.ui_merge[1].set_value(data['merge'])
+        new_node.ui_merge[1].set_value(data['merge'] == 'true')
 
         return new_node
