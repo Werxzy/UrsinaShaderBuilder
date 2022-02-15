@@ -43,3 +43,14 @@ class ConstantNode(ShaderNode):
         else:
             var = self.values[0][1].text
         self.outputs[0].set_build_variable(var)
+
+    def save(self):
+        return {'data type' : self.data_type, 'values' : [v[1].text for v in self.values]}
+
+    def load(manager, data):
+        new_node = ConstantNode(parent = manager, manager = manager, data_type = data['data type'])
+        for i in len(new_node.values):
+            new_node.values[i][1].text = data['values'][i]
+            new_node.values[i][1].render()
+
+        return new_node

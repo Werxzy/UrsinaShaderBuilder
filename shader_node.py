@@ -277,7 +277,7 @@ class ShaderNode(Entity):
     # determines if the node is usable in the given mode.
     def valid_mode(self, mode): return True
 
-    # Checks if the node is ready to build
+    # Checks if the node is ready to build.
     def is_build_ready(self):
         ready = True
         
@@ -292,11 +292,12 @@ class ShaderNode(Entity):
         for o in self.outputs:
             o.clear_build_variable()
 
-    # Called when preparing to save the shader
-    # Returns any data unique to this node's class
+    # Called when preparing to save the shader.
+    # Returns any data unique to this node's class.
     def save(self): return {}
 
-    # Called when loading the node
-    # sets data of the node.
-    def load(self, data): pass
+    # Called when loading the node.
+    # Sets data of the node.
+    # The manager will handle the connections.
+    def load(manager, data): pass
         

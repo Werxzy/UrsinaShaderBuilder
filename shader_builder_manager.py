@@ -171,7 +171,7 @@ class ShaderBuilderManager(Entity):
 
             node_data = {
                 'class' : type(node).__name__,
-                'position': [node.x, node.y],
+                'position' : [node.x, node.y],
                 'input connections' : [],
             }
             for inp in node.inputs:
