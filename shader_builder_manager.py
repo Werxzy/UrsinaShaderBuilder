@@ -1,3 +1,4 @@
+import json
 from ursina import *
 from bar_menu import BarMenu
 
@@ -18,6 +19,8 @@ Manager file that holds all the nodes and builds the shader.
 '''
 
 class ShaderBuilderManager(Entity):
+
+    version = '0.0'
 
     menu_options = {
         'Inputs/Outputs' : {
@@ -155,7 +158,7 @@ class ShaderBuilderManager(Entity):
 
     def save_shader(self, location = ''):
         
-        data = {'version': '0.0', 'nodes':{}}
+        data = {'version': ShaderBuilderManager.version, 'nodes':{}}
         
         nodes_queued = self.get_ordered_nodes()
         if nodes_queued == 'bad': return
@@ -167,8 +170,8 @@ class ShaderBuilderManager(Entity):
             node.save_name = 'node_' + str(i) # name just helps other nodes communicate what they are connected to.
 
             node_data = {
-                'class' : str(type(node)),
-                'position': str(node.x) + ',' + str(node.y),
+                'class' : type(node).__name__,
+                'position': [node.x, node.y],
                 'input connections' : [],
             }
             for inp in node.inputs:
@@ -187,6 +190,9 @@ class ShaderBuilderManager(Entity):
         if v != 'bad': data.update({'vertex' : v})
         if f != 'bad': data.update({'fragment' : f})
         
+        with open(location, 'w') as json_file:
+            json.dump(data, json_file)
+
         print(data)
         
     def get_ordered_nodes(self, mode = ''):
