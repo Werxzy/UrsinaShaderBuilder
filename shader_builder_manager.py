@@ -73,8 +73,8 @@ class ShaderBuilderManager(Entity):
         self.append_node(VariableSplitterNode(parent = self, manager = self, position = (0,0.3)))
         self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
         self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
-        self.append_node(UserInOutNode(True, parent = self, manager = self, position = (-0.3,-0.3)))
-        self.append_node(UserInOutNode(False, parent = self, manager = self,  position = (0.0,-0.3)))
+        self.append_node(UserInOutNode(parent = self, manager = self, isOutput = True, position = (-0.3,-0.3)))
+        self.append_node(UserInOutNode(parent = self, manager = self, isOutput = False, position = (0.0,-0.3)))
         self.append_node(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
 
 
@@ -323,7 +323,7 @@ class ShaderBuilderManager(Entity):
         elif sp[0] == 'InstructionNode':
             self.append_node(InstructionNode(parent = self, manager = self, instruction = sp[1], position = self.node_menu.position, z = 0))
         elif sp[0] == 'UserInOutNode':
-            self.append_node(UserInOutNode(isOutput = sp[1] == 'input', parent = self, manager = self, position = self.node_menu.position, z = 0))
+            self.append_node(UserInOutNode(parent = self, manager = self, isOutput = sp[1] == 'input', position = self.node_menu.position, z = 0))
         elif sp[0] == 'BuiltInOutputNode':
             self.append_node(BuiltInOutputNode(parent = self, manager = self, variable = sp[1], position = self.node_menu.position, z = 0))
         elif sp[0] == 'VariableSplitterNode':
