@@ -65,9 +65,6 @@ class BuiltInOutputNode(ShaderNode):
 
         'gl_FragDepth': ('out', 'vec2', 'fragment'),
         'p3d_FragColor': ('out', 'vec4', 'fragment'),
-
-
-
     }
 
     def __init__(self, variable = 'p3d_FragColor', **kwargs):
@@ -98,3 +95,10 @@ class BuiltInOutputNode(ShaderNode):
         else:
             self.main_connector.set_build_variable(self.variable)
 
+
+    def save(self):
+        return {'variable' : self.variable}
+        #potentially add {'number' : 'self.ui_number.text'} in the new future
+
+    def load(manager, data):
+        return BuiltInOutputNode(parent = manager, manager = manager, variable = data['variable'])

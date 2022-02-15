@@ -303,6 +303,6 @@ class ShaderNode(Entity):
 
     # Called when loading the node.
     # Sets data of the node.
-    # The manager will handle the connections.
+    # The manager will handle the connections and position.
     def load(manager, data): return None
         
