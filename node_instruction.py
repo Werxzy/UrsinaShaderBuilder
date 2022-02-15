@@ -47,3 +47,10 @@ class InstructionNode(ShaderNode):
 
         inst = multireplace(GLSL[self.instruction]['function'], var_replace)
         self.manager.build_shader_append('main', inst)
+
+
+    def save(self):
+        return {'instruction' : self.instruction}
+
+    def load(manager, data):
+        return InstructionNode(parent = manager, manager = manager, instruction = data['instruction'])
