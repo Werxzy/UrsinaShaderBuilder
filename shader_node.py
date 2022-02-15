@@ -127,11 +127,16 @@ class ShaderNode(Entity):
             ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
             ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25)
 
+            def set_value(val):
+                ent_field.text = 'true' if val else 'false'
+                ent_field.visible = val
+                if on_change != None: on_change(ent_field.text)
+
+            ent_field.set_value = set_value
+
             def back_input(key):
                 if key == 'left mouse down' and ent_field_back.hovered:
-                    ent_field.text = 'true' if ent_field.text == 'false' else 'false'
-                    ent_field.visible = not ent_field.visible
-                    if on_change != None: on_change(ent_field.text)
+                    ent_field.set_value(ent_field.text == 'false')
 
             ent_field_back.input = back_input                
 
@@ -299,5 +304,5 @@ class ShaderNode(Entity):
     # Called when loading the node.
     # Sets data of the node.
     # The manager will handle the connections.
-    def load(manager, data): pass
+    def load(manager, data): return None
         

@@ -39,7 +39,7 @@ class VariableSplitterNode(ShaderNode):
         'vec4' : 'vec4(0,0,0,0)',
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, data_type = '', merge = False, **kwargs):
         super().__init__(**kwargs)
 
         self.ui_name = self.append_text('Split/Merge', size = 0.8)
@@ -47,6 +47,8 @@ class VariableSplitterNode(ShaderNode):
         self.div = self.append_divider()
 
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in VariableSplitterNode.versions), self.menu_select)
+        if data_type != '': self.ui_type[1].text = data_type
+
         self.ui_merge = self.append_value_input('Merge', 'bool', on_change = self.rebuild_connections)
         self.ui_back = self.build_back()
         self.built = False
@@ -110,3 +112,13 @@ class VariableSplitterNode(ShaderNode):
 
             inst += ');'
             self.manager.build_shader_append('main', inst)
+
+    
+    def save(self):
+        return {'data type' : self.ui_type[1].text, 'merge' : self.ui_merge[1].text}
+
+    def load(manager, data):
+        new_node = VariableSplitterNode(parent = manager, manager = manager, data_type = data['data_type'])
+        new_node.ui_merge[1].set_value(data['merge'])
+
+        return new_node
