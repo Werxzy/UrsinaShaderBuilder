@@ -1,4 +1,5 @@
 import json
+from tkinter import Tk, filedialog
 from ursina import *
 from bar_menu import BarMenu
 
@@ -199,9 +200,9 @@ class ShaderBuilderManager(Entity):
 
     def load_shader(self, location):
         try:
-            data = json.load(open(location))
-        except:
-            print_warning('file error')
+            data = json.load(open(location, 'r'))
+        except Exception as e:
+            print_warning('file error', e)
             return
 
         if data['version'] != ShaderBuilderManager.version:
@@ -386,13 +387,28 @@ class ShaderBuilderManager(Entity):
             if NodeConnector.prepared_node != None:
                 NodeConnector.prepared_node.destroy_prepared_line()
         elif vals[0] == 'file':
-            pass
+            if vals[1] == 'open':
+                loc = self.save_load(True)
+                if loc != '': self.load_shader(loc)
+
+            if vals[1] == 'save':
+                loc = self.save_load(False)
+                if loc != '': self.save_shader(loc)
+            
         elif vals[0] == 'preview':
             if NodeConnector.prepared_node != None:
                 NodeConnector.prepared_node.destroy_prepared_line()
             if self.preview_cam == None:
                 self.preview_shader()
-            
+
+    def save_load(self, to_load):
+        ftypes = [('JSON files', '*.json'), ('All files', '*')]
+        root = Tk()
+        root.withdraw()
+        if to_load: dlg = filedialog.Open(parent = root, filetypes = ftypes).show()
+        else:       dlg = filedialog.SaveAs(parent = root, filetypes = ftypes).show()
+        root.destroy()
+        return dlg
 
     def append_node(self, node:ShaderNode):
         if node.valid_mode(self.mode):
