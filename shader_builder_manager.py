@@ -155,7 +155,7 @@ class ShaderBuilderManager(Entity):
 
     def save_shader(self, location = ''):
         
-        data = {'nodes':{}}
+        data = {'version': '0.0', 'nodes':{}}
         
         nodes_queued = self.get_ordered_nodes()
         if nodes_queued == 'bad': return
@@ -168,6 +168,7 @@ class ShaderBuilderManager(Entity):
 
             node_data = {
                 'class' : str(type(node)),
+                'position': str(node.x) + ',' + str(node.y),
                 'input connections' : [],
             }
             for inp in node.inputs:
