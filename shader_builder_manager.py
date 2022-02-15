@@ -241,8 +241,8 @@ class ShaderBuilderManager(Entity):
 
         nodes_queued = list(nodes_to_check)
         n = 0
-        while n < len(nodes_to_check):            
-            for c in nodes_queued[n].inputs:
+        while n < len(nodes_to_check):
+            for c in nodes_to_check[n].inputs:
                 if not c.any_connected(): continue
                 node = c.connections[0].parent
                 if not node.is_all_connected() and mode != '':
