@@ -197,8 +197,39 @@ class ShaderBuilderManager(Entity):
         with open(location, 'w') as json_file:
             json.dump(data, json_file)
 
-        print(data)
-        
+    def load_shader(self, location):
+        try:
+            data = json.load(open(location))
+        except:
+            print_warning('file error')
+            return
+
+        if data['version'] != ShaderBuilderManager.version:
+            print_warning('unsupported version', data['version'])
+            return
+
+        for n in self.shader_nodes:
+            destroy(n)
+        self.shader_nodes.clear()
+
+        new_shader_nodes:dict[str,ShaderNode] = dict()
+
+        for shader_type, nodes in data['nodes'].items():
+            for name, node in nodes.items():
+                new_node:ShaderNode = eval(node['class']).load(self, node)
+                new_node.mode = shader_type
+                new_node.position = Vec3(node['position'][0], node['position'][1], 0)
+
+                for i,conn in enumerate(node['input connections']):
+                    conn:str
+                    if conn == 'disconnected': continue
+                    pos = conn.split('.')
+                    new_node.inputs[i].connect(new_shader_nodes[pos[0]].outputs[int(pos[1])])
+                
+                new_shader_nodes.update({name : new_node})
+
+        self.shader_nodes.extend(new_shader_nodes.values())
+
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
         # then goes in reverse order
