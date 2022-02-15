@@ -48,7 +48,7 @@ class UserInOutNode(ShaderNode):
         self.manager.build_shader_append('inout', v1)
 
     def save(self):
-        data = {'name' : self.ui_name, 'data type' : self.ui_type[1].text, 'is output' : self.isOutput}
+        data = {'name' : self.ui_name[1].text, 'data type' : self.ui_type[1].text, 'is output' : self.isOutput}
         if self.isOutput: data.update({'uniform' : self.ui_uniform[1].text})
 
         return data
