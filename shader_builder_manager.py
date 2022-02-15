@@ -164,6 +164,10 @@ class ShaderBuilderManager(Entity):
         if nodes_queued == 'bad': return
 
         for i,node in enumerate(nodes_queued):
+            save_data = node.save()
+            if save_data == 'no not save': continue
+            # there may be a case in which a node shouldn't be saved
+
             if node.mode not in data['nodes'].keys():
                 data['nodes'].update({node.mode : {}})
             
@@ -181,7 +185,7 @@ class ShaderBuilderManager(Entity):
                 else:
                     node_data['input connections'].append('disconnected')
 
-            node_data.update(node.save())
+            node_data.update(save_data)
             data['nodes'][node.mode].update({node.save_name : node_data})
 
         v = self.build_shader('vertex')
