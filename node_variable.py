@@ -49,7 +49,7 @@ class ConstantNode(ShaderNode):
 
     def load(manager, data):
         new_node = ConstantNode(parent = manager, manager = manager, data_type = data['data type'])
-        for i in len(new_node.values):
+        for i in range(len(new_node.values)):
             new_node.values[i][1].text = data['values'][i]
             new_node.values[i][1].render()
 

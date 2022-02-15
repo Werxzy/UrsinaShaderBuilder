@@ -140,6 +140,9 @@ class ShaderNode(Entity):
 
             ent_field_back.input = back_input                
 
+        else:
+            print_warning('ShaderNode.append_value_input() : invalid data type : ' + str(data_type))           
+
         self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
 

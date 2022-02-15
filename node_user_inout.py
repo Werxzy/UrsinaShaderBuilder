@@ -13,7 +13,8 @@ class UserInOutNode(ShaderNode):
         # if this node is outputing a variable
         self.isOutput = isOutput
 
-        self.ui_name = self.append_value_input('Name', name)
+        self.ui_name = self.append_value_input('Name', 'var')
+        self.ui_name[1].text = name
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
         if data_type != '': self.ui_type[1].text = data_type
         if self.isOutput:
@@ -47,6 +48,7 @@ class UserInOutNode(ShaderNode):
 
         self.manager.build_shader_append('inout', v1)
 
+
     def save(self):
         data = {'name' : self.ui_name[1].text, 'data type' : self.ui_type[1].text, 'is output' : self.isOutput}
         if self.isOutput: data.update({'uniform' : self.ui_uniform[1].text})
@@ -54,7 +56,7 @@ class UserInOutNode(ShaderNode):
         return data
 
     def load(manager, data):
-        new_node = UserInOutNode(parent = manager, manager = manager, name = data['name'], data_type = data['data type'], dataisOutput = data['is output'])
+        new_node = UserInOutNode(parent = manager, manager = manager, name = data['name'], data_type = data['data type'], isOutput = data['is output'])
         if new_node.isOutput:
             new_node.ui_uniform[1].set_value(data['uniform'])
 
