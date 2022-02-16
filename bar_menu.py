@@ -91,18 +91,20 @@ class BarMenuDropDown(Entity):
             text = Text(key, parent = self, position = Vec3(self.text_spacing.x, start_y - self.text_spacing.y, -0.1), scale = self.text_scale, color = self.color_text)
             
             height = text.height + self.text_spacing.y * 2
-            self._max_width = max(self._max_width, text.width)
+            self._max_width = max(self._max_width, text.width + self.text_spacing.x * 2)
 
-            collider = Entity(parent = self, y = start_y, scale = Vec3(text.width + self.text_spacing.x * 2, height, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', collider = 'box', visible = False)
+            collider = Entity(parent = self, y = start_y, z = - 0.05, scale = Vec3(1, height, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', collider = 'box', visible = False)
+            collider.color = (self.color_divider + self.color_back) * 0.5
 
             start_y -= height
             self.texts.append(text)
             self.colliders.append(collider)
 
-        self._max_width += self.text_spacing.x * 2
         self.back = Entity(parent = self, scale = Vec3(self._max_width, -start_y, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', color = self.color_back)
 
         for i, value in enumerate(self.options.values()):
+            self.colliders[i].scale_x = self._max_width
+
             if isinstance(value, dict):
                 self.arrow = Entity(parent = self, 
                     position = Vec3(self._max_width - self.text_spacing.x * 0.1, self.colliders[i].y - self.colliders[i].scale_y * 0.5, -0.1),
@@ -127,6 +129,10 @@ class BarMenuDropDown(Entity):
             elif self.drop_down != None:
                 if not self.drop_down.is_hovered():
                     destroy(self.drop_down)
+
+    def update(self):
+        for c in self.colliders:
+            c.visible = c.hovered
 
     def is_hovered(self):
         if mouse.hovered_entity in self.colliders:
