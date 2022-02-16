@@ -1,5 +1,6 @@
 from ursina import *
 from ursina import ursinamath
+from extra_models import right_arrow_vert
 '''
 Menu that allows being searched through.
 
@@ -17,7 +18,6 @@ Menu that allows being searched through.
 
 class SearchMenu(Entity):
     
-    right_arrow_vert = [Vec3(0,0,0), Vec3(-1,-1,0), Vec3(0,-2,0), Vec3(2,0,0), Vec3(0,2,0), Vec3(-1,1,0)]
     back_text = '    Back'
     clear_text = '    Clear Search'
 
@@ -86,7 +86,7 @@ class SearchMenu(Entity):
         self.option_arrows = [
             Entity(parent = self, 
                 position = Vec3(self.width * 0.5, s.y, 0), 
-                model = Mesh(vertices=SearchMenu.right_arrow_vert, mode='ngon', static=False), 
+                model = Mesh(vertices=right_arrow_vert, mode='ngon', static=False), 
                 scale = s.height * 0.25, 
                 origin = (2,2,0), 
                 color = self.color_text,
@@ -96,7 +96,7 @@ class SearchMenu(Entity):
 
         self.back_arrow = Entity(parent = self, 
                 position = Vec3(self.width * -0.5, self.option_slots[0].y, 0), 
-                model = Mesh(vertices=SearchMenu.right_arrow_vert, mode='ngon', static=False), 
+                model = Mesh(vertices=right_arrow_vert, mode='ngon', static=False), 
                 scale = self.option_slots[0].height * 0.25, 
                 origin = (2,-2,0), 
                 rotation_z = 180,
