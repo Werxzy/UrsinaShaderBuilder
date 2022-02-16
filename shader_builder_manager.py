@@ -209,9 +209,7 @@ class ShaderBuilderManager(Entity):
             print_warning('unsupported version', data['version'])
             return
 
-        for n in self.shader_nodes:
-            destroy(n)
-        self.shader_nodes.clear()
+        self.destroy_all_nodes()
 
         new_shader_nodes:dict[str,ShaderNode] = dict()
 
@@ -394,6 +392,9 @@ class ShaderBuilderManager(Entity):
             elif vals[1] == 'save':
                 loc = self.save_load(False)
                 if loc != '': self.save_shader(loc)
+
+            elif vals[1] == 'new':
+                self.destroy_all_nodes()
             
         elif vals[0] == 'preview':
             if NodeConnector.prepared_node != None:
@@ -416,6 +417,11 @@ class ShaderBuilderManager(Entity):
             self.shader_nodes.append(node)
         else:
             destroy(node)
+
+    def destroy_all_nodes(self):
+        for n in self.shader_nodes:
+            destroy(n)
+        self.shader_nodes.clear()
 
     @property
     def mode(self):
