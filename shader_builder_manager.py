@@ -391,7 +391,7 @@ class ShaderBuilderManager(Entity):
                 loc = self.save_load(True)
                 if loc != '': self.load_shader(loc)
 
-            if vals[1] == 'save':
+            elif vals[1] == 'save':
                 loc = self.save_load(False)
                 if loc != '': self.save_shader(loc)
             
