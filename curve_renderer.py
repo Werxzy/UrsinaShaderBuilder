@@ -79,6 +79,3 @@ class CurveRenderer(Entity):
             for j in range(i):
                 ps[j] = ps[j] + (ps[j+1] - ps[j]) * t         
         return ps[0]
-
-    def on_destroy(self):
-        destroy(self.renderer)
