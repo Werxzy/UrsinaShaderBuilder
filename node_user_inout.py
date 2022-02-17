@@ -26,9 +26,7 @@ class UserInOutNode(ShaderNode):
         self.main_connector = self.build_connector('', [self.ui_type[1].text], isOutput, 0.5)
 
     def on_selected(self, option):
-        self.ui_type[1].text = option
         self.main_connector.variable_type = [option]
-        self.manager.destroy_menu()
         if self.isOutput:
             self.update_connections()
         elif self.main_connector.any_connected():

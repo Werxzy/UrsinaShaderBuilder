@@ -159,10 +159,15 @@ class ShaderNode(Entity):
         ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
         ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
 
+        def on_select_wrapper(option):
+            ent_field.text = option
+            self.manager.destroy_menu()
+            on_select(option)
+
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
                 self.manager.create_menu(Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
-                    options, min(len(options), 8), on_select, width = 0.16)
+                    options, min(len(options), 8), on_select_wrapper, width = 0.16)
 
         ent_field_back.input = back_input
         ent_field_back.on_destroy = self.manager.destroy_menu

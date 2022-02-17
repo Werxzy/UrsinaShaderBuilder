@@ -56,11 +56,9 @@ class VariableSplitterNode(ShaderNode):
         self.rebuild_connections()
 
     def menu_select(self, option):
-        self.ui_type[1].text = option
-        self.manager.destroy_menu()
         self.rebuild_connections()
 
-    def rebuild_connections(self, val = ''):
+    def rebuild_connections(self, val='required'):
         if self.built:
             for i in self.inputs:
                 i.disconnect_all()
