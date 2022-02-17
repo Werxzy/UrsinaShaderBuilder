@@ -1,4 +1,5 @@
 import json
+import string
 from tkinter import Tk, filedialog
 from ursina import *
 from bar_menu import BarMenu
@@ -224,7 +225,12 @@ class ShaderBuilderManager(Entity):
 
         for shader_type, nodes in data['nodes'].items():
             for name, node in nodes.items():
-                new_node:ShaderNode = eval(node['class']).load(self, node)
+                node_class = node['class']
+                if not all(c in string.ascii_letters for c in node_class):
+                    print_warning('Potential malicious input ' + node_class + '.\n')
+                    return
+
+                new_node:ShaderNode = eval(node_class).load(self, node)
                 new_node.mode = shader_type
                 new_node.position = Vec3(node['position'][0], node['position'][1], 0)
 
