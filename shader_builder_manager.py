@@ -103,6 +103,15 @@ class ShaderBuilderManager(Entity):
         if key == 'space' and self.node_menu == None:
             self.create_menu_trigger = 2
 
+        if key == 's' and held_keys['control']:
+            self.save_load(False)
+            
+        if key == 'o' and held_keys['control']:
+            self.save_load(True)
+
+        if key == 'n' and held_keys['control']:
+            self.destroy_all_nodes()
+
     def update(self):
         if self.mode == 'hide all': return
 
@@ -386,12 +395,10 @@ class ShaderBuilderManager(Entity):
                 NodeConnector.prepared_node.destroy_prepared_line()
         elif vals[0] == 'file':
             if vals[1] == 'open':
-                loc = self.save_load(True)
-                if loc != '': self.load_shader(loc)
+                self.save_load(True)
 
             elif vals[1] == 'save':
-                loc = self.save_load(False)
-                if loc != '': self.save_shader(loc)
+                self.save_load(False)
 
             elif vals[1] == 'new':
                 self.destroy_all_nodes()
@@ -406,10 +413,12 @@ class ShaderBuilderManager(Entity):
         ftypes = [('JSON files', '*.json'), ('All files', '*')]
         root = Tk()
         root.withdraw()
-        if to_load: dlg = filedialog.Open(parent = root, filetypes = ftypes).show()
-        else:       dlg = filedialog.SaveAs(parent = root, filetypes = ftypes).show()
+        if to_load: loc = filedialog.Open(parent = root, filetypes = ftypes).show()
+        else:       loc = filedialog.SaveAs(parent = root, filetypes = ftypes).show()
         root.destroy()
-        return dlg
+        if loc != '': 
+            if to_load: self.load_shader(loc)
+            else:  self.save_shader(loc)
 
     def append_node(self, node:ShaderNode):
         if node.valid_mode(self.mode):
@@ -422,6 +431,8 @@ class ShaderBuilderManager(Entity):
         for n in self.shader_nodes:
             destroy(n)
         self.shader_nodes.clear()
+        destroy(self.preview_entity)
+        self.preview_entity = None
 
     @property
     def mode(self):
