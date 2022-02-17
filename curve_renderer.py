@@ -51,7 +51,10 @@ class CurveRenderer(Entity):
         return p
 
     def set_curve(self, points):
-        curve_points = [self.mlerp(points, i / (self.length - 1)) for i in range(self.length)]
+        if len(points) == 4:
+            curve_points = self.lerp4(points, self.length)
+        else:
+            curve_points = [self.mlerp(points, i / (self.length - 1)) for i in range(self.length)]
 
         dir = (curve_points[1] - curve_points[0]).normalized()
         dir = self.swapxy(dir) * self.thickness * 0.5
@@ -79,3 +82,12 @@ class CurveRenderer(Entity):
             for j in range(i):
                 ps[j] = ps[j] + (ps[j+1] - ps[j]) * t         
         return ps[0]
+        
+    def lerp4(self, p, l):
+        a = (p[1] - p[0])*3
+        # b = (p[0] - p[1]*2 + p[2])*3
+        # c = (p[3] + (p[1] - p[2])*3 - p[0])
+        b = (p[2] - p[1])*3
+        c = (p[3] - b - p[0])
+        b -= a
+        return [p[0] + (a + (b + c*t)*t)*t for t in [i / (l - 1) for i in range(l)]]
