@@ -148,11 +148,11 @@ class ShaderNode(Entity):
 
         return (ent_name, ent_field, ent_field_back)
 
-    def append_drop_down(self, name, options:dict, on_select, text_color = c_text):
+    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = ''):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
-        ent_field = Text(list(options.keys())[0], parent = self, position = ent_name.position, scale = 0.8, color = text_color)
+        ent_field = Text(list(options.keys())[0] if start_value == '' else start_value, parent = self, position = ent_name.position, scale = 0.8, color = text_color)
         ent_field.x += ent_name.width + self.ui_spacing
 
         quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
