@@ -31,7 +31,7 @@ class BarMenu(Entity):
         for key in self.options.keys():
             text = Text(key, parent = self, position = Vec3(start_x + self.text_spacing.x, -self.text_spacing.y, -0.1), scale = self.text_scale, color = self.color_text)
             if start_x > 0:
-                Entity(parent = self, position = Vec3(start_x, 0, -0.1), scale = Vec3(0.001, self._height, 1), origin_y = 0.5, model = 'quad', color = self.color_divider)
+                Entity(parent = self, position = Vec3(start_x, 0, -0.1), scale = Vec3(0.002, self._height, 1), origin_y = 0.5, model = 'quad', color = self.color_divider)
             else:
                 self._height = text.height + self.text_spacing.y * 2
             
@@ -87,14 +87,22 @@ class BarMenuDropDown(Entity):
         self.colliders:list[Entity] = []
         start_y = 0
         self._max_width = 0
-        for key in self.options.keys():
-            text = Text(key, parent = self, position = Vec3(self.text_spacing.x, start_y - self.text_spacing.y, -0.1), scale = self.text_scale, color = self.color_text)
+        for key, value in self.options.items():
+            text = Text(key if key[0] != ' ' else ' ', parent = self, position = Vec3(self.text_spacing.x, start_y - self.text_spacing.y, -0.1), scale = self.text_scale, color = self.color_text)
             
-            height = text.height + self.text_spacing.y * 2
-            self._max_width = max(self._max_width, text.width + self.text_spacing.x * 2)
+            if value == 'div':
+                height = 0.002
 
-            collider = Entity(parent = self, y = start_y, z = - 0.05, scale = Vec3(1, height, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', collider = 'box', visible = False)
-            collider.color = (self.color_divider + self.color_back) * 0.5
+                collider = Entity(parent = self, y = start_y, z = - 0.05, scale = Vec3(1, height, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', visible = False)
+                collider.color = self.color_divider
+                collider.always_visible = True
+            else:
+                height = text.height + self.text_spacing.y * 2
+                self._max_width = max(self._max_width, text.width + self.text_spacing.x * 2)
+
+                collider = Entity(parent = self, y = start_y, z = - 0.05, scale = Vec3(1, height, 1), origin = Vec3(-0.5,0.5,0), model = 'quad', collider = 'box', visible = False)
+                collider.color = (self.color_divider + self.color_back) * 0.5
+                collider.always_visible = False
 
             start_y -= height
             self.texts.append(text)
@@ -132,7 +140,7 @@ class BarMenuDropDown(Entity):
 
     def update(self):
         for c in self.colliders:
-            c.visible = c.hovered
+            c.visible = c.hovered or c.always_visible
 
     def is_hovered(self):
         if mouse.hovered_entity in self.colliders:
