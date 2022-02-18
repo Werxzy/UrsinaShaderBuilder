@@ -27,8 +27,13 @@ class ConvertNode(ShaderNode):
 
         self.built = False
 
+        self.ui_name = self.append_text('Split/Merge', size = 0.8)
+        self.div = self.append_divider()
+        
         self.ui_from = self.append_drop_down('From', dict([(v,v) for v in ConvertNode.allowed_types]), self.on_select, start_value = 'vec3')
         self.ui_to = self.append_drop_down('To', dict([(v,v) for v in ConvertNode.allowed_types]), self.on_select, start_value = 'vec4')
+
+        self.ui_back = self.build_back()
 
         self.rebuild_connections()
 
@@ -60,16 +65,15 @@ class ConvertNode(ShaderNode):
         sub_type = ConvertNode.get_sub_type(type_from if inout else type_to)
         i = 1.5
         for j in range(min(from_count, to_count), max(from_count, to_count)):
-            self.build_connector('xyzw'[j], [sub_type], inout, i, True)
+            self.build_connector(sub_type, [sub_type], not inout, i, True)
             i += 1   
 
         self.built = True
 
 
     def component_count(data_type):
-        if isinstance(type(data_type[-1]), int):
-            return int(data_type[-1])
-        return 1
+        try: return int(data_type[-1])
+        except: return 1
 
     def get_sub_type(data_type):
         if data_type[0] in ConvertNode.sub_types.keys():
