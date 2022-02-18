@@ -13,34 +13,29 @@ class ConvertNode(ShaderNode):
         'float', 'vec2', 'vec3', 'vec4',
         'int', 'ivec2', 'ivec3', 'ivec4',
         'uint', 'uvec2', 'uvec3', 'uvec4',
-        'bool', 'bvec2', 'bvec3', 'bvec4',
     ]
 
     sub_types = {
         'i' : 'int',
         'u' : 'uint',
-        'b' : 'bool',
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, start_from = 'vec3', start_to = 'vec4', **kwargs):
         super().__init__(**kwargs)
 
         self.built = False
 
-        self.ui_name = self.append_text('Split/Merge', size = 0.8)
+        self.ui_name = self.append_text('Convert', size = 0.8)
         self.div = self.append_divider()
-        
-        self.ui_from = self.append_drop_down('From', dict([(v,v) for v in ConvertNode.allowed_types]), self.on_select, start_value = 'vec3')
-        self.ui_to = self.append_drop_down('To', dict([(v,v) for v in ConvertNode.allowed_types]), self.on_select, start_value = 'vec4')
+
+        self.ui_from = self.append_drop_down('From', dict([(v,v) for v in ConvertNode.allowed_types]), self.rebuild_connections, start_value = start_from)
+        self.ui_to = self.append_drop_down('To', dict([(v,v) for v in ConvertNode.allowed_types]), self.rebuild_connections, start_value = start_to)
 
         self.ui_back = self.build_back()
 
         self.rebuild_connections()
 
-    def on_select(self, option):
-        self.rebuild_connections()
-
-    def rebuild_connections(self):
+    def rebuild_connections(self, val = 'required'):
         if self.built:
             for i in self.inputs:
                 i.disconnect_all()
@@ -82,10 +77,37 @@ class ConvertNode(ShaderNode):
 
     
     def build_shader(self):
-        pass
-    
+        type_from = self.ui_from[1].text
+        type_to = self.ui_to[1].text
+
+        from_count = ConvertNode.component_count(type_from)
+        to_count = ConvertNode.component_count(type_to)
+
+        v = self.outputs[0].prepare_build_variable()
+        inst = v + ' = ' + type_to + '('
+        inst_extra = []
+
+        if from_count <= to_count:
+            for i,inp in enumerate(self.inputs):
+                if i > 0: inst += ','
+                inst += inp.get_build_variable() if inp.any_connected() else '0'
+        else:
+            in_var = self.inputs[0].get_build_variable()
+            inst += in_var
+            if from_count > 1:
+                inst += '.xyzw'[:(to_count + 1)]
+            for i in range(1, len(self.outputs)):
+                if self.outputs[i].any_connected():
+                    vo = self.outputs[i].prepare_build_variable()
+                    inst_extra.append(vo + ' = ' + in_var + '.' + 'xyzw'[i + to_count - 1] + ';')
+
+        inst += ');'
+        self.manager.build_shader_append('main', inst)
+        for i in inst_extra:
+            self.manager.build_shader_append('main', i)
+
     def save(self):
         return {'from data type' : self.ui_from[1].text, 'to data type' : self.ui_to[1].text}
 
     def load(manager, data):
-        pass
+        return ConvertNode(parent = manager, manager = manager, start_from = data['from data type'], start_to = data['to data type'])
