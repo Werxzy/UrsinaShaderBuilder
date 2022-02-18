@@ -1,6 +1,5 @@
 import string
 from ursina import *
-from search_menu import SearchMenu
 from shader_instructions import *
 from color_atlas import *
 from shader_node_connector import NodeConnector
