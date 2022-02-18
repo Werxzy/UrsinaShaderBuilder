@@ -2,19 +2,21 @@ import json
 import string
 from tkinter import Tk, filedialog
 from ursina import *
-from bar_menu import BarMenu
 
+from bar_menu import BarMenu
+from search_menu import SearchMenu
+
+from shader_node import ShaderNode
+from shader_node_connector import NodeConnector
 from node_user_inout import UserInOutNode
 from node_variable import ConstantNode
 from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
 from node_variable_splitter import VariableSplitterNode
+from node_convert import ConvertNode
 
-from search_menu import SearchMenu
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
-from shader_node import ShaderNode
-from shader_node_connector import NodeConnector
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -32,7 +34,8 @@ class ShaderBuilderManager(Entity):
             },
         'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
         'Conversion' : {
-            'Splitter / Merger' : 'VariableSplitterNode,a'
+            'Splitter / Merger' : 'VariableSplitterNode,a',
+            'Type Conversion' : 'ConvertNode,a',
         }
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
@@ -378,6 +381,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(BuiltInOutputNode(parent = self, manager = self, variable = sp[1], position = self.node_menu.position, z = 0))
         elif sp[0] == 'VariableSplitterNode':
             self.append_node(VariableSplitterNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
+        elif sp[0] == 'ConvertNode':
+            self.append_node(ConvertNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
