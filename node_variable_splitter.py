@@ -102,11 +102,7 @@ class VariableSplitterNode(ShaderNode):
 
             for i,inp in enumerate(self.inputs):
                 if i > 0:  inst += ','
-                
-                if not inp.any_connected():
-                    inst += VariableSplitterNode.defaults[t]
-                else:     
-                    inst += inp.get_build_variable()
+                inst += inp.get_build_variable() if inp.any_connected() else VariableSplitterNode.defaults[inp.get_variable_type()]
 
             inst += ');'
             self.manager.build_shader_append('main', inst)

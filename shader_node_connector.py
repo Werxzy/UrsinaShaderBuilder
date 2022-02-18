@@ -120,13 +120,21 @@ class NodeConnector(Entity):
             i = self.connections.index(connector)
             self._apply_disconnection(i)
             connector._apply_disconnection(self)
+            if not self.isOutput: self.parent.update_connections()
+            else: connector.parent.update_connections()
         except:
+            print('error???')
             pass # no connection found
 
     def disconnect_all(self):
-        for i in range(len(self.connections)):
-            self.connections[0]._apply_disconnection(self)
+        for _ in range(len(self.connections)):
+            c = self.connections[0]
+            c._apply_disconnection(self)
             self._apply_disconnection(0)
+            if self.isOutput: 
+                c.parent.update_connections()
+            
+        if not self.isOutput: self.parent.update_connections()
 
 
     #returns list of pars of matching variable types's indicies (self, connector)
