@@ -3,7 +3,7 @@ from ursina import *
 from shader_instructions import *
 from color_atlas import *
 from shader_node_connector import NodeConnector
-from extra_models import x_vert
+from extra_models import x_vert, scale_arrow_vert
 
 '''
 Base class for all nodes.
@@ -186,7 +186,8 @@ class ShaderNode(Entity):
             register_mouse_input = True, 
             scroll_size = (floor(size[0] / w), floor(size[1] / h)),
             text = text,
-            scale = text_size)
+            scale = text_size,
+            color = c_text)
         ent_text.render()
         self.manager.append_activeable_entity(ent_text)
         ent_text.node_size = size
@@ -209,9 +210,12 @@ class ShaderNode(Entity):
                 size[0] * 0.5 + self.ui_spacing + inner_space,
                 self.ui_build_pos - size[1] - self.ui_spacing * 2 - inner_space * 2,
                 -0.05),
-            scale = 0.03,
-            model = 'quad',
-            collider = 'box')
+            scale = 0.005,
+            model = Mesh(vertices=scale_arrow_vert, mode='triangle', static=False),
+            origin_x = 1.5,
+            origin_y = -1.5,
+            collider = 'box',
+            color = c_text)
         ent_scaler.dragged = False
 
         self.ui_build_pos -= size[1] + self.ui_spacing + inner_space * 2
@@ -231,8 +235,8 @@ class ShaderNode(Entity):
         def update():
             if ent_scaler.dragged:
                 if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
-                    ent_text.node_size[0] = ent_scaler.org_size[0] + (mouse.x - ent_scaler.mouse_start.x)
-                    ent_text.node_size[1] = ent_scaler.org_size[1] - mouse.y + ent_scaler.mouse_start.y
+                    ent_text.node_size[0] = ent_scaler.org_size[0] + (mouse.x - ent_scaler.mouse_start.x) / self.manager.scale_x
+                    ent_text.node_size[1] = ent_scaler.org_size[1] + (-mouse.y + ent_scaler.mouse_start.y) / self.manager.scale_y
                     
                     ent_text.node_size[0] = clamp(ent_text.node_size[0], 0.2, 0.8)
                     ent_text.node_size[1] = clamp(ent_text.node_size[1], 0.1, 0.6)
