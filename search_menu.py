@@ -228,7 +228,7 @@ class SearchMenu(Entity):
         for i in range(self.option_scroll_count):
             if i < self._current_option_count:
                 self.option_slots[i].text = keys[i + self.scroll_position]
-                self.option_arrows[i].visible = isinstance(current_options[keys[i]], dict)
+                self.option_arrows[i].visible = isinstance(current_options[keys[i + self.scroll_position]], dict)
             else:
                 self.option_slots[i].text = ' '
                 self.option_arrows[i].visible = False

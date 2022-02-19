@@ -83,15 +83,6 @@ class ShaderBuilderManager(Entity):
         self.preview_entity:Entity = None
         self.preview_cam = None
 
-        #test node
-        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Add', position = (-0.3,0)))
-        self.append_node(VariableSplitterNode(parent = self, manager = self, position = (0,0.3)))
-        self.append_node(InstructionNode(parent = self, manager = self, instruction = 'Clamp', position = (0.3,0)))
-        self.append_node(ConstantNode(parent = self, manager = self, data_type='vec4', position = (-0.6,-0.3)))
-        self.append_node(UserInOutNode(parent = self, manager = self, isOutput = True, position = (-0.3,-0.3)))
-        self.append_node(UserInOutNode(parent = self, manager = self, isOutput = False, position = (0.0,-0.3)))
-        self.append_node(BuiltInOutputNode(parent = self, manager = self, position = (0.4,-0.3)))
-
 
     #quickly organize the nodes based on how the inputs/outputs are connected
     def organize_nodes():
