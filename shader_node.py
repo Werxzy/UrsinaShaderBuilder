@@ -188,6 +188,7 @@ class ShaderNode(Entity):
             text = text,
             scale = text_size)
         self.manager.append_activeable_entity(ent_text)
+        ent_text.node_size = size
         
         quadScale = Vec2(size[0] + inner_space * 2, size[1] + inner_space * 2)
         ent_text_back = Entity(parent = self, 
