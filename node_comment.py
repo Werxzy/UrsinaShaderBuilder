@@ -6,7 +6,7 @@ Node that holds a comment and doesn't affect the shader.
 
 class CommentNode(ShaderNode):
 
-    def __init__(self, text = '', size = [0.5,0.3], **kwargs):
+    def __init__(self, text = '', size = [0.3,0.2], **kwargs):
         super().__init__(**kwargs)
         self.append_text('Comment')
         self.ui_text = self.append_expandable_text_field(text, size)

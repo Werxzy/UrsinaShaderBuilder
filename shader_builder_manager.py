@@ -14,6 +14,7 @@ from node_builtin_output import BuiltInOutputNode
 from node_instruction import InstructionNode
 from node_variable_splitter import VariableSplitterNode
 from node_convert import ConvertNode
+from node_comment import CommentNode
 
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
@@ -37,10 +38,12 @@ class ShaderBuilderManager(Entity):
         'Conversion' : {
             'Splitter / Merger' : 'VariableSplitterNode,a',
             'Type Conversion' : 'ConvertNode,a',
-        }
+        },
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
     menu_options.update(dict((cat,dict((v,'InstructionNode,'+v) for v in con)) for cat,con in GLSL_catagorized.items()))
+    menu_options.update({'Comment' : 'CommentNode,a'})
+
     right_click_options = {
         'Delete' : 'Delete'
     }
@@ -63,7 +66,6 @@ class ShaderBuilderManager(Entity):
 
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)
-        # temp model/color
 
         self.shader_nodes:list[ShaderNode] = []
         self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, z = -2, on_selected = self.bar_menu_selected)
@@ -415,6 +417,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(VariableSplitterNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         elif sp[0] == 'ConvertNode':
             self.append_node(ConvertNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
+        elif sp[0] == 'CommentNode':
+            self.append_node(CommentNode(parent = self, manager = self, text = 'howdy :)' if random.random() < 0.005 else '', position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
