@@ -1,23 +1,40 @@
 from ursina import *
 from shader_builder_manager import ShaderBuilderManager
 from panda3d.core import loadPrcFileData
-# from panda3d.core import Nodepath as np
-# from panda3d.core import AntialiasAttrib
+import json
 
-# from shader_node_connector import NodeConnector
-# NodeConnector.line_quality = 10
+# default config info
+config = {
+	'AntiAliasing' : 1,
+	'Line Quality' : 26,
+	'Start Fullscreen' : 0
+}
 
-#need to be called before or in Ursina()
-loadPrcFileData('', 'framebuffer-multisample 1')
-loadPrcFileData('', 'multisamples 2')
+#loading config
+try:
+	with open('config.json', 'r') as f:
+		print(config)
+		config.update(json.load(f))
+	with open('config.json', 'w') as f:
+		print(config)
+		json.dump(config, f) # update any missing information
+except FileNotFoundError:
+	with open('config.json', 'w') as f:
+		json.dump(config, f)
+except json.JSONDecodeError:
+	with open('config.json', 'w') as f:
+		json.dump(config, f)
 
+# - - - setting config info - - -
 
-app = Ursina(borderless = False, fullscreen = False)
+if config['AntiAliasing'] == 1:
+	loadPrcFileData('', 'framebuffer-multisample 1')
+	loadPrcFileData('', 'multisamples 2')
 
-# this appears to do nothing
-# camera.render.setAntialias(AntialiasAttrib.MMultisample)
+from shader_node_connector import NodeConnector
+NodeConnector.line_quality = config['Line Quality']
 
-window.x = 200
+app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1)
 
 sbm = ShaderBuilderManager()
 

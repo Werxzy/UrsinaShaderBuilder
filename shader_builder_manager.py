@@ -17,6 +17,7 @@ from node_convert import ConvertNode
 
 from shader_instructions import GLSL_catagorized
 from color_atlas import *
+from builtin_shaders import Base_Shader
 
 '''
 Manager file that holds all the nodes and builds the shader.
