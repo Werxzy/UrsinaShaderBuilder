@@ -187,8 +187,11 @@ class ShaderNode(Entity):
             scroll_size = (floor(size[0] / w), floor(size[1] / h)),
             text = text,
             scale = text_size)
+        ent_text.render()
         self.manager.append_activeable_entity(ent_text)
         ent_text.node_size = size
+        ent_text.org_build_pos = self.ui_build_pos
+        ent_text.org_build_width = self.ui_build_width
         
         quadScale = Vec2(size[0] + inner_space * 2, size[1] + inner_space * 2)
         ent_text_back = Entity(parent = self, 
@@ -201,13 +204,65 @@ class ShaderNode(Entity):
         destroy(ent_text.bg)
         ent_text.bg = ent_text_back
 
+        ent_scaler = Entity(parent = self,
+            position = Vec3(
+                size[0] * 0.5 + self.ui_spacing + inner_space,
+                self.ui_build_pos - size[1] - self.ui_spacing * 2 - inner_space * 2,
+                -0.05),
+            scale = 0.03,
+            model = 'quad',
+            collider = 'box')
+        ent_scaler.dragged = False
 
         self.ui_build_pos -= size[1] + self.ui_spacing + inner_space * 2
         self.ui_build_width = max(self.ui_build_width, size[0] + self.ui_spacing * 2 + inner_space * 2)
 
         self.ui_back = self.build_back()
 
-        return (ent_text, ent_text_back)
+        def input(key):
+            if key == 'left mouse down' and ent_scaler.hovered:
+                ent_scaler.dragged = True
+                ent_scaler.mouse_start = mouse.position
+                ent_scaler.org_size = list(ent_text.node_size)
+                ent_scaler.org_x = self.x
+            if key == 'left mouse up':
+                ent_scaler.dragged = False
+
+        def update():
+            if ent_scaler.dragged:
+                if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
+                    ent_text.node_size[0] = ent_scaler.org_size[0] + (mouse.x - ent_scaler.mouse_start.x)
+                    ent_text.node_size[1] = ent_scaler.org_size[1] - mouse.y + ent_scaler.mouse_start.y
+                    
+                    ent_text.node_size[0] = clamp(ent_text.node_size[0], 0.2, 0.8)
+                    ent_text.node_size[1] = clamp(ent_text.node_size[1], 0.1, 0.6)
+
+                    self.x = ent_scaler.org_x + (ent_text.node_size[0] - ent_scaler.org_size[0]) * 0.5
+                    
+                    ent_scaler.x = ent_text.node_size[0] * 0.5 + self.ui_spacing + inner_space
+                    ent_scaler.y = ent_text.org_build_pos - ent_text.node_size[1] - self.ui_spacing * 2 - inner_space * 2
+
+                    ent_text.scroll_size = (floor(ent_text.node_size[0] / w), floor(ent_text.node_size[1] / h))
+                    ent_text.x = ent_text.node_size[0] * -0.5
+
+                    quadScale = Vec2(ent_text.node_size[0] + inner_space * 2, ent_text.node_size[1] + inner_space * 2)
+                    ent_text_back.scale = 1
+                    ent_text_back.model = Quad(scale = quadScale, radius=0.006)
+                    ent_text_back.collider = 'box'
+                    ent_text_back.origin_y = quadScale.y * 0.5
+
+                    self.ui_build_pos = ent_text.org_build_pos - (ent_text.node_size[1] + self.ui_spacing + inner_space * 2)
+                    self.ui_build_width = max(ent_text.org_build_width, ent_text.node_size[0] + self.ui_spacing * 2 + inner_space * 2)
+                    quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
+                    self.ui_back.model = Quad(scale = quadScale, radius=0.02)
+                    self.ui_back.origin_y = quadScale.y * 0.5
+
+                    
+
+        ent_scaler.input = input
+        ent_scaler.update = update
+
+        return (ent_text, ent_text_back, ent_scaler)
 
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
@@ -299,7 +354,7 @@ class ShaderNode(Entity):
         if self.dragged:
             self.x += mouse.velocity[0] / self.parent.scale_x
             self.y += mouse.velocity[1] / self.parent.scale_y * window.aspect_ratio
-            if mouse.velocity[0] != 0 or  mouse.velocity[1] != 0:
+            if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
                 for i in self.inputs:
                     i.update_line()
                 for o in self.outputs:
