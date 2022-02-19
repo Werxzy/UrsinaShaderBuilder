@@ -1,6 +1,6 @@
 import json
 import string
-from tkinter import Tk, filedialog
+from tkinter import Tk, filedialog, messagebox
 from ursina import *
 
 from bar_menu import BarMenu
@@ -46,9 +46,13 @@ class ShaderBuilderManager(Entity):
 
     bar_menu_options = {
         'File' : {
-            'New' : 'file,new',
+            'New...' : {
+                'New Empty': 'file,new,empty',
+            },
             'Open' : 'file,open',
             'Save' : 'file,save',
+            ' div': 'div',
+            'Exit': 'exit',
         },
         'Vertex' : 'mode,vertex',
         'Fragment' : 'mode,fragment',
@@ -69,6 +73,9 @@ class ShaderBuilderManager(Entity):
         self.node_menu = None
         self.selected_node = None
         self._mode = 'fragment'
+
+        self.tk = Tk()
+        self.tk.withdraw()
 
         self.preview_entity:Entity = None
         self.preview_cam = None
@@ -114,7 +121,8 @@ class ShaderBuilderManager(Entity):
             self.save_load(True)
 
         if key == 'n' and held_keys['control']:
-            self.destroy_all_nodes()
+            if self.confirm_window('Start a new Shader?\nAny unsaved work will be lost.'):
+                self.destroy_all_nodes()
 
     def update(self):
         if self.mode == 'hide all': return
@@ -211,12 +219,15 @@ class ShaderBuilderManager(Entity):
         with open(location, 'w') as json_file:
             json.dump(data, json_file)
 
-    def load_shader(self, location):
-        try:
-            data = json.load(open(location, 'r'))
-        except Exception as e:
-            print_warning('file error', e)
-            return
+    def load_shader(self, location, data = dict()):
+        if not self.confirm_window('Load shader?\nAny unsaved work will be lost.'): return
+
+        if location != '':
+            try:
+                data = json.load(open(location, 'r'))
+            except Exception as e:
+                print_warning('file error', e)
+                return
 
         if data['version'] != ShaderBuilderManager.version:
             print_warning('unsupported version', data['version'])
@@ -412,7 +423,15 @@ class ShaderBuilderManager(Entity):
                 self.save_load(False)
 
             elif vals[1] == 'new':
-                self.destroy_all_nodes()
+                if vals[2] == 'empty':
+                    if self.confirm_window('Start a new Shader?\nAny unsaved work will be lost.'):
+                        self.destroy_all_nodes()
+                elif vals[2] == 'base':
+                    pass
+
+        elif vals[0] == 'exit':
+            if self.confirm_window('Are you sure?\nAny unsaved work will be lost.'):
+                sys.exit()
             
         elif vals[0] == 'preview':
             if NodeConnector.prepared_node != None:
@@ -422,14 +441,14 @@ class ShaderBuilderManager(Entity):
 
     def save_load(self, to_load):
         ftypes = [('JSON files', '*.json'), ('All files', '*')]
-        root = Tk()
-        root.withdraw()
-        if to_load: loc = filedialog.Open(parent = root, filetypes = ftypes).show()
-        else:       loc = filedialog.SaveAs(parent = root, filetypes = ftypes).show()
-        root.destroy()
+        if to_load: loc = filedialog.Open(parent = self.tk, filetypes = ftypes).show()
+        else:       loc = filedialog.SaveAs(parent = self.tk, filetypes = ftypes).show()
         if loc != '': 
             if to_load: self.load_shader(loc)
             else:  self.save_shader(loc)
+
+    def confirm_window(self, message = 'Are you sure?'):
+        return messagebox.askquestion('Confirm', message, parent = self.tk) == 'yes'
 
     def append_node(self, node:ShaderNode):
         if node.valid_mode(self.mode):
