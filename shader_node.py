@@ -47,7 +47,7 @@ class ShaderNode(Entity):
         ent = Text(text, parent = self, color = text_color, scale = size)
         ent.position = Vec2(-ent.width * 0.5, self.ui_build_pos - self.ui_spacing) #adjust based on text width and starting y pos
         self.ui_build_pos -= ent.height + self.ui_spacing # add the starting y position for next element
-        self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
+        self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing * 2)
 
         return ent
 
@@ -175,6 +175,38 @@ class ShaderNode(Entity):
 
         return (ent_name, ent_field, ent_field_back)
 
+    # needs to be the last appended to be stable
+    # automatically appends the back
+    def append_expandable_text_field(self, text = '', size = [0.3,0.3], text_size = 0.8):
+        w = Text.get_width('a', font='VeraMono.ttf') * text_size
+        h = Text.size * text_size
+        inner_space = self.ui_spacing * 0.5
+        ent_text = TextField(parent = self, 
+            position = (size[0] * -0.5, self.ui_build_pos - self.ui_spacing - inner_space, 0), 
+            register_mouse_input = True, 
+            scroll_size = (floor(size[0] / w), floor(size[1] / h)),
+            text = text,
+            scale = text_size)
+        self.manager.append_activeable_entity(ent_text)
+        
+        quadScale = Vec2(size[0] + inner_space * 2, size[1] + inner_space * 2)
+        ent_text_back = Entity(parent = self, 
+            model = Quad(scale = quadScale, radius=0.006), 
+            y = self.ui_build_pos - self.ui_spacing,
+            z = 0.05, 
+            origin_y = quadScale.y * 0.5, 
+            color = c_node_dark,
+            collider = 'box')
+        destroy(ent_text.bg)
+        ent_text.bg = ent_text_back
+
+
+        self.ui_build_pos -= size[1] + self.ui_spacing + inner_space * 2
+        self.ui_build_width = max(self.ui_build_width, size[0] + self.ui_spacing * 2 + inner_space * 2)
+
+        self.ui_back = self.build_back()
+
+        return (ent_text, ent_text_back)
 
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
