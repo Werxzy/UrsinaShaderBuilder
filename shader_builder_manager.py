@@ -127,6 +127,9 @@ class ShaderBuilderManager(Entity):
                 self.destroy_all_nodes()
 
     def update(self):
+        if self.preview_entity != None:
+            self.preview_entity.rotation_y += time.dt * 10
+
         if self.mode == 'hide all': return
 
         if mouse.right:

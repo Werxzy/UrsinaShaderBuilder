@@ -13,10 +13,8 @@ config = {
 #loading config
 try:
 	with open('config.json', 'r') as f:
-		print(config)
 		config.update(json.load(f))
 	with open('config.json', 'w') as f:
-		print(config)
 		json.dump(config, f) # update any missing information
 except FileNotFoundError:
 	with open('config.json', 'w') as f:
