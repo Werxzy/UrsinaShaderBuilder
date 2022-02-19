@@ -9,7 +9,7 @@ class CommentNode(ShaderNode):
     def __init__(self, text = '', size = [0.3,0.2], **kwargs):
         super().__init__(**kwargs)
         self.append_text('Comment')
-        self.ui_text = self.append_expandable_text_field(text, size)
+        self.ui_text = self.append_expandable_text_field(text, list(size))
 
     def save(self):
         return {'text' : self.ui_text[0].text, 'size' : self.ui_text[0].node_size}

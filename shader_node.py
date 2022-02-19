@@ -177,7 +177,7 @@ class ShaderNode(Entity):
 
     # needs to be the last appended to be stable
     # automatically appends the back
-    def append_expandable_text_field(self, text = '', size = [0.3,0.3], text_size = 0.8):
+    def append_expandable_text_field(self, text = '', size = [0.3,0.2], text_size = 0.8):
         w = Text.get_width('a', font='VeraMono.ttf') * text_size
         h = Text.size * text_size
         inner_space = self.ui_spacing * 0.5
@@ -190,7 +190,7 @@ class ShaderNode(Entity):
             color = c_text)
         ent_text.render()
         self.manager.append_activeable_entity(ent_text)
-        ent_text.node_size = size
+        ent_text.node_size = list(size)
         ent_text.org_build_pos = self.ui_build_pos
         ent_text.org_build_width = self.ui_build_width
         
@@ -202,8 +202,6 @@ class ShaderNode(Entity):
             origin_y = quadScale.y * 0.5, 
             color = c_node_dark,
             collider = 'box')
-        destroy(ent_text.bg)
-        ent_text.bg = ent_text_back
 
         ent_scaler = Entity(parent = self,
             position = Vec3(
@@ -250,16 +248,16 @@ class ShaderNode(Entity):
                     ent_text.x = ent_text.node_size[0] * -0.5
 
                     quadScale = Vec2(ent_text.node_size[0] + inner_space * 2, ent_text.node_size[1] + inner_space * 2)
-                    ent_text_back.scale = 1
                     ent_text_back.model = Quad(scale = quadScale, radius=0.006)
-                    ent_text_back.collider = 'box'
                     ent_text_back.origin_y = quadScale.y * 0.5
+                    ent_text_back.collider = 'box'
 
                     self.ui_build_pos = ent_text.org_build_pos - (ent_text.node_size[1] + self.ui_spacing + inner_space * 2)
                     self.ui_build_width = max(ent_text.org_build_width, ent_text.node_size[0] + self.ui_spacing * 2 + inner_space * 2)
                     quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
                     self.ui_back.model = Quad(scale = quadScale, radius=0.02)
                     self.ui_back.origin_y = quadScale.y * 0.5
+                    self.ui_back.collider = 'box'
 
                     
 
