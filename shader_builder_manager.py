@@ -466,11 +466,15 @@ class ShaderBuilderManager(Entity):
 
     def save_load(self, to_load):
         ftypes = [('JSON files', '*.json'), ('All files', '*')]
-        if to_load: loc = filedialog.Open(parent = self.tk, filetypes = ftypes).show()
-        else:       loc = filedialog.SaveAs(parent = self.tk, filetypes = ftypes).show()
+        if to_load: loc:str = filedialog.Open(parent = self.tk, filetypes = ftypes).show()
+        else:       loc:str = filedialog.SaveAs(parent = self.tk, filetypes = ftypes).show()
         if loc != '': 
-            if to_load: self.load_shader(loc)
-            else:  self.save_shader(loc)
+            if to_load: 
+                self.load_shader(loc)
+            else:  
+                if not loc.endswith('.json'):
+                    loc += '.json'
+                self.save_shader(loc)
 
     def confirm_window(self, message = 'Are you sure?'):
         return messagebox.askquestion('Confirm', message, parent = self.tk) == 'yes'
