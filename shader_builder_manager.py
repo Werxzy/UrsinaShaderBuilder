@@ -75,6 +75,7 @@ class ShaderBuilderManager(Entity):
         self.node_menu = None
         self.selected_node = None
         self._mode = 'fragment'
+        self.activeable_entities = []
 
         self.tk = Tk()
         self.tk.withdraw()
@@ -100,12 +101,14 @@ class ShaderBuilderManager(Entity):
     def input(self, key):
         if self.mode == 'hide all': return
 
-        if key == 'scroll up' and self.node_menu == None:
+        not_active = not self.any_active_entities()
+
+        if key == 'scroll up' and not_active:
             self.scale *= 1.1
             self.scale_z = 1
             self.position = (self.position - mouse.position) * 1.1 + mouse.position
 
-        if key == 'scroll down' and self.node_menu == None:
+        if key == 'scroll down' and not_active:
             self.scale /= 1.1
             self.scale_z = 1
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
@@ -113,7 +116,7 @@ class ShaderBuilderManager(Entity):
         if key == 'right mouse up':
             self.create_menu_trigger = 1
             
-        if key == 'space' and self.node_menu == None:
+        if key == 'space' and not_active:
             self.create_menu_trigger = 2
 
         if key == 's' and held_keys['control']:
@@ -385,6 +388,28 @@ class ShaderBuilderManager(Entity):
         self.node_menu = None
         self.selected_node = None
 
+    def append_activeable_entity(self, e):
+        self.activeable_entities.append(e)
+
+        if hasattr(e, 'on_destroy'):
+            old_destroy = e.on_destroy
+            def new_destroy():
+                self.activeable_entities.remove(e)
+                old_destroy()
+            e.on_destroy = new_destroy
+        else:
+            def new_destroy():
+                self.activeable_entities.remove(e)
+            e.on_destroy = new_destroy
+
+    def any_active_entities(self):
+        if self.node_menu != None:
+            return True
+        for a in self.activeable_entities:
+            if a.active:
+                return True
+        return False
+        
     def create_node(self, val):
         sp = val.split(',')
         if sp[0] == 'ConstantNode':
