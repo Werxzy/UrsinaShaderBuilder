@@ -13,6 +13,8 @@ class ConvertNode(ShaderNode):
         'float', 'vec2', 'vec3', 'vec4',
         'int', 'ivec2', 'ivec3', 'ivec4',
         'uint', 'uvec2', 'uvec3', 'uvec4',
+        'mat2','mat3','mat4',
+        'mat2x3','mat2x4','mat3x2','mat3x4','mat4x2','mat4x3',
     ]
 
     sub_types = {
@@ -33,9 +35,9 @@ class ConvertNode(ShaderNode):
 
         self.ui_back = self.build_back()
 
-        self.rebuild_connections()
+        self.rebuild_connections(start_from)
 
-    def rebuild_connections(self, val = 'required'):
+    def rebuild_connections(self, val:str):
         if self.built:
             for i in self.inputs:
                 i.disconnect_all()
@@ -48,6 +50,13 @@ class ConvertNode(ShaderNode):
         
         type_from = self.ui_from[1].text
         type_to = self.ui_to[1].text
+
+        if val.startswith('mat'):
+            if self.check_field(self.ui_from[1], True, 'mat4'): return
+            if self.check_field(self.ui_to[1], True, 'mat3'): return
+        else:
+            if self.check_field(self.ui_from[1], False, 'vec3'): return
+            if self.check_field(self.ui_to[1], False, 'vec4'): return
 
         from_count = ConvertNode.component_count(type_from)
         to_count = ConvertNode.component_count(type_to)
@@ -66,7 +75,15 @@ class ConvertNode(ShaderNode):
         self.built = True
 
 
-    def component_count(data_type):
+    def check_field(self, field, is_mat, replacement):
+        if field.text.startswith('mat') != is_mat:
+            field.text = replacement
+            self.rebuild_connections(replacement)
+            return True
+        return False
+
+    def component_count(data_type:str):
+        if data_type.startswith('mat'): return 1
         try: return int(data_type[-1])
         except: return 1
 
