@@ -48,6 +48,7 @@ class ShaderBuilderManager(Entity):
         'File' : {
             'New...' : {
                 'New Empty': 'file,new,empty',
+                'New Prebuilt': 'file,new,base',
             },
             'Open' : 'file,open',
             'Save' : 'file,save',
@@ -427,7 +428,7 @@ class ShaderBuilderManager(Entity):
                     if self.confirm_window('Start a new Shader?\nAny unsaved work will be lost.'):
                         self.destroy_all_nodes()
                 elif vals[2] == 'base':
-                    pass
+                    self.load_shader('', Base_Shader)
 
         elif vals[0] == 'exit':
             if self.confirm_window('Are you sure?\nAny unsaved work will be lost.'):
