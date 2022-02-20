@@ -52,7 +52,7 @@ class ShaderBuilderManager(Entity):
         'File' : {
             'New...' : {
                 'New Empty': 'file,new,empty',
-                'New Prebuilt': 'file,new,base',
+                'Example Shader': 'file,new,base',
             },
             'Open' : 'file,open',
             'Save' : 'file,save',
@@ -92,7 +92,7 @@ class ShaderBuilderManager(Entity):
 
 
     def input(self, key):
-        if self.mode == 'hide all': return
+        if self.mode == 'preview': return
 
         not_active = not self.any_active_entities()
 
@@ -126,7 +126,7 @@ class ShaderBuilderManager(Entity):
         if self.preview_entity != None:
             self.preview_entity.rotation_y += time.dt * 10
 
-        if self.mode == 'hide all': return
+        if self.mode == 'preview': return
 
         if mouse.right:
             self.x += mouse.velocity[0]
@@ -258,7 +258,9 @@ class ShaderBuilderManager(Entity):
                 new_shader_nodes.update({name : new_node})
 
         self.shader_nodes.extend(new_shader_nodes.values())
-        self.set_nodes_visisble()
+        if self.mode == 'preview':
+                self.quit_preview()
+        self.mode = self.shader_nodes[0].mode
 
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
@@ -314,7 +316,7 @@ class ShaderBuilderManager(Entity):
         self.destroy_preview_entity()
         self.preview_entity = Entity(model = 'sphere', shader = s)
         self._prev_mode = self.mode
-        self.mode = 'hide all'
+        self.mode = 'preview'
 
     def quit_preview(self, mode = ''):
         if self.preview_cam != None:
@@ -435,7 +437,7 @@ class ShaderBuilderManager(Entity):
         vals = val.split(',')
 
         if vals[0] == 'mode':
-            if self.mode == 'hide all':
+            if self.mode == 'preview':
                 self.quit_preview()
             self.mode = vals[1]
             if NodeConnector.prepared_node != None:
