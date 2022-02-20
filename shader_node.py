@@ -379,17 +379,6 @@ class ShaderNode(Entity):
     # determines if the node is usable in the given mode.
     def valid_mode(self, mode): return True
 
-    # Checks if the node is ready to build.
-    def is_build_ready(self):
-        ready = True
-        
-        for i in self.inputs:
-            if not i.is_build_ready():
-                ready = False
-                break
-
-        return ready
-
     def clear_build_variables(self):
         for o in self.outputs:
             o.clear_build_variable()

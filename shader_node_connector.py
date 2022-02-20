@@ -255,12 +255,6 @@ class NodeConnector(Entity):
 
 # - - - shader builder functions - - -
 
-    # Returns if the connector has the variable initialized by its node.
-    def is_build_ready(self):
-        if not self.isOutput:
-            return self.connections[0].is_build_ready()
-        return self.build_variable != None
-
     # Clears the used variable.
     def clear_build_variable(self):
         self.build_variable = None
