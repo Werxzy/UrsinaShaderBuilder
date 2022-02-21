@@ -319,9 +319,18 @@ class ShaderBuilderManager(Entity):
 
         self.destroy_preview_entity()
         self.preview_entity = Entity(model = 'sphere', shader = s)
+
+        for data_name, v in self.shader_inputs.items():
+            data_type = v['data type']
+            if data_type in DataTypeLayouts.keys():
+                vals = ()
+                for _ in DataTypeLayouts[data_type].items():
+                    vals += (False if data_type[0] == 'b' else 0,)
+                self.preview_entity.set_shader_input(data_name, vals)
+            
         self._prev_mode = self.mode
         self.mode = 'preview'
-        self.preview_input_node = PreviewShaderInputNode(self.shader_inputs, self.preview_entity)
+        self.preview_input_node = PreviewShaderInputNode(self.shader_inputs, self.preview_entity, manager = self)
 
     def quit_preview(self, mode = ''):
         if self.preview_cam != None:

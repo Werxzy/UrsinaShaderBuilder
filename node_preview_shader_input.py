@@ -1,4 +1,4 @@
-from ursina import Scrollable, camera, window
+from ursina import *
 from shader_instructions import DataTypeLayouts
 from shader_node import ShaderNode
 
@@ -8,7 +8,7 @@ Not actually a shader node, but helps set values for previewing changes in the s
 
 class PreviewShaderInputNode(ShaderNode):
 
-    def __init__(self, input_list:dict, preview_entity, **kwargs):
+    def __init__(self, input_list:dict, preview_entity:Entity, **kwargs):
         super().__init__(parent = camera.ui, draggable = False, **kwargs)
 
         self.shader_inputs = dict()
@@ -16,7 +16,7 @@ class PreviewShaderInputNode(ShaderNode):
 
         self.append_text('Shader Inputs')
         self.append_divider(3)
-        self.append_text('model', size = 0.8)
+        self.append_text('Model', size = 0.8)
         self.append_divider()
         self.append_text('TODO: put in selector', size = 0.5)
 
@@ -28,14 +28,11 @@ class PreviewShaderInputNode(ShaderNode):
             self.append_text(data_type, size = 0.5)
             self.append_divider()
 
-            def on_change(val): 
-                self.update_shader_input(k)
-
             if data_type in DataTypeLayouts.keys():
                 self.shader_inputs.update({
                     k : {
                         'data_type' : data_type,
-                        'inputs' : [self.append_value_input(k2, v2, on_change = on_change) for k2,v2 in DataTypeLayouts[data_type].items()]
+                        'inputs' : [self.append_value_input(k2, v2, on_change = self.update_shader_input, on_change_att = str(k)) for k2,v2 in DataTypeLayouts[data_type].items()]
                     }
                 })
             else:
@@ -51,5 +48,14 @@ class PreviewShaderInputNode(ShaderNode):
             self.add_script(Scrollable(min = min, max = max))
         self.y = min
 
-    def update_shader_input(name):
-        pass
+    def update_shader_input(self, name):
+        data_type = self.shader_inputs[name]['data_type']
+        inp = self.shader_inputs[name]['inputs']
+
+        if data_type in DataTypeLayouts.keys():
+            vals = ()
+
+            for i in inp:
+                vals += ((i[1].text == 'true') if data_type[0] == 'b' else float(i[1].text),)
+                
+            self.preview_entity.set_shader_input(name, vals)
