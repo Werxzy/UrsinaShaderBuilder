@@ -334,7 +334,7 @@ class ShaderBuilderManager(Entity):
             self.preview_entity = None
 
     def build_shader_append(self, target, value):
-        if target == 'inout' or value in self.build[target]:
+        if target == 'inout' and value in self.build[target]:
             print('Detected duplicate inout value:', value) # this is okay, but don't have duplicates
         else:
             self.build[target] += value + '\n'
@@ -342,7 +342,7 @@ class ShaderBuilderManager(Entity):
     # used to build a list of inputs that can be set by set_shader_input
     def build_shader_input_append(self, data_type, name, default = ''):
         if name in self.shader_inputs:
-            self.shader_inputs
+            pass # update it?
         else:
             self.shader_inputs.update({name: {'data type' : data_type, 'default' : default}})
     

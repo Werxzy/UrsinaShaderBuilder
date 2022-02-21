@@ -20,6 +20,7 @@ class ShaderNode(Entity):
         self.inputs:list[NodeConnector] = []
         self.outputs:list[NodeConnector] = []
         self.dragged = False
+        self.draggable = True
         self.mode = ''
 
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
@@ -39,9 +40,9 @@ class ShaderNode(Entity):
 
 # - - - ui builder functions - - -
 
-    def append_divider(self):
+    def append_divider(self, size = 1):
         self.ui_build_pos -= self.ui_spacing
-        return Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001), color = c_node_dark)
+        return Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001 * size), color = c_node_dark)
 
     def append_text(self, text, text_color = c_text, size = 1):
         ent = Text(text, parent = self, color = text_color, scale = size)
@@ -353,7 +354,7 @@ class ShaderNode(Entity):
             self.dragged = False
 
     def update(self):
-        if self.dragged:
+        if self.dragged and self.draggable:
             self.x += mouse.velocity[0] / self.parent.scale_x
             self.y += mouse.velocity[1] / self.parent.scale_y * window.aspect_ratio
             if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:

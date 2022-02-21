@@ -34,8 +34,8 @@ class UserInOutNode(ShaderNode):
 
     def build_shader(self):
         if self.isOutput:
-            v1 = 'in' if self.ui_uniform[1].text == 'false' else 'uniform'
-            if v1 == 'uniform':
+            v1 = 'in ' if self.ui_uniform[1].text == 'false' else 'uniform '
+            if v1 == 'uniform ':
                 self.manager.build_shader_input_append(self.ui_type[1].text, self.ui_name[1].text)
 
             v1 += self.ui_type[1].text + ' ' + self.ui_name[1].text + ';'
