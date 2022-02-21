@@ -52,7 +52,7 @@ class ShaderNode(Entity):
 
         return ent
 
-    def append_value_input(self, name, data_type, text_color = c_text, on_change = None):
+    def append_value_input(self, name, data_type, text_color = c_text, on_change = None, on_change_att = ''):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
@@ -61,6 +61,8 @@ class ShaderNode(Entity):
             if data_type == 'float': ent_field.text = '0.0'
             if data_type in ['int', 'uint']: ent_field.text = '0'
             if data_type == 'var': ent_field.text = 'var'
+            ent_field.on_change_att = on_change_att
+            ent_field._prev_input = ent_field.text
 
             ent_field.text_entity.color = text_color
             ent_field.render()
@@ -91,6 +93,10 @@ class ShaderNode(Entity):
                         ent_field.text = '0'
                     else:
                         ent_field.text = ent_field.text[0] + ent_field.text[1:].replace('-','')
+
+                    if ent_field.text[0] == '0' and len(ent_field.text) > 1:
+                        if ent_field.text[1] != '.':
+                            ent_field.text = ent_field.text[1:]
                     
                 elif data_type == 'var':
                     if org_length == 0:
@@ -105,7 +111,9 @@ class ShaderNode(Entity):
                     ent_field.scroll_position = (0,0)
 
                 orig_render()
-                if on_change != None: on_change(ent_field.text)
+                if ent_field.text != ent_field._prev_input:
+                    if on_change != None:  on_change(ent_field.text if on_change_att == '' else ent_field.on_change_att)
+                ent_field._prev_input = ent_field.text
 
             ent_field.render = render
 
@@ -122,6 +130,7 @@ class ShaderNode(Entity):
             ent_field = Entity(parent = self, position = ent_name.position, scale = ent_name.height * 0.25, origin = (-2, 2, 0), model = x_model, color = text_color, visible = False)
             ent_field.text = 'false'
             ent_field.x += ent_name.width + self.ui_spacing * 0.75
+            ent_field.on_change_att = on_change_att
 
             quadScale = Vec2(ent_name.height + self.ui_spacing * 0.5, ent_name.height + self.ui_spacing * 0.5)
             ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
@@ -130,7 +139,7 @@ class ShaderNode(Entity):
             def set_value(val):
                 ent_field.text = 'true' if val else 'false'
                 ent_field.visible = val
-                if on_change != None: on_change(ent_field.text)
+                if on_change != None:  on_change(ent_field.text if on_change_att == '' else ent_field.on_change_att)
 
             ent_field.set_value = set_value
 
