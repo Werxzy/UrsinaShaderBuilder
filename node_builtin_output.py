@@ -52,9 +52,9 @@ class BuiltInOutputNode(ShaderNode):
         'p3d_ProjectionMatrixTranspose': ('uniform', 'mat4', 'vertex', 'fragment'),
         'p3d_ModelViewMatrixInverseTranspose': ('uniform', 'mat4', 'vertex', 'fragment'),
 
-        'p3d_Texture0': ('uniform', 'sampler2D', 'vertex', 'fragment'),
-        'p3d_Texture1': ('uniform', 'sampler2D', 'vertex', 'fragment'),
-        'p3d_Texture2': ('uniform', 'sampler2D', 'vertex', 'fragment'),
+        'p3d_Texture0': ('uniform', 'sampler2D', 'vertex', 'fragment', 'shader input'),
+        'p3d_Texture1': ('uniform', 'sampler2D', 'vertex', 'fragment', 'shader input'),
+        'p3d_Texture2': ('uniform', 'sampler2D', 'vertex', 'fragment', 'shader input'),
 
 
         'gl_Position': ('out', 'vec4', 'vertex'),
@@ -94,6 +94,8 @@ class BuiltInOutputNode(ShaderNode):
  
         else:
             self.main_connector.set_build_variable(self.variable)
+            if 'shader input' in att:
+                self.manager.build_shader_input_append(att[1], self.variable)
 
 
     def save(self):

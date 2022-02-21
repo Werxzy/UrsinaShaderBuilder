@@ -78,6 +78,7 @@ class ShaderBuilderManager(Entity):
         self.selected_node = None
         self._mode = 'fragment'
         self.activeable_entities = []
+        self.shader_inputs = dict()
 
         self.tk = Tk()
         self.tk.withdraw()
@@ -151,7 +152,10 @@ class ShaderBuilderManager(Entity):
             self.create_menu_trigger = 0
             
 
-    def build_shader(self, mode):
+    def build_shader(self, mode, clear_shader_inputs = True):
+        if clear_shader_inputs:
+            self.shader_inputs.clear()
+
         self.build = {
             'inout' : '',
             'function' : '',
@@ -212,7 +216,7 @@ class ShaderBuilderManager(Entity):
             data['nodes'][node.mode].update({node.save_name : node_data})
 
         v = self.build_shader('vertex')
-        f = self.build_shader('fragment')
+        f = self.build_shader('fragment', False)
 
         if v != 'bad': data.update({'vertex' : v})
         if f != 'bad': data.update({'fragment' : f})
@@ -295,7 +299,7 @@ class ShaderBuilderManager(Entity):
         build_time = time.time()
         
         v = self.build_shader('vertex')
-        f = self.build_shader('fragment')
+        f = self.build_shader('fragment', False)
         if v == 'bad' or f == 'bad':
             print_warning('Can\'t build shader.')
             return
@@ -331,7 +335,18 @@ class ShaderBuilderManager(Entity):
             self.preview_entity = None
 
     def build_shader_append(self, target, value):
-        self.build[target] += value + '\n'
+        if target == 'inout' or value in self.build[target]:
+            print('Detected duplicate inout value:', value) # this is okay, but don't have duplicates
+        else:
+            self.build[target] += value + '\n'
+
+    # used to build a list of inputs that can be set by set_shader_input
+    def build_shader_input_append(self, data_type, name, default = ''):
+        if name in self.shader_inputs:
+            self.shader_inputs
+        else:
+            self.shader_inputs.update({name: {'data type' : data_type, 'default' : default}})
+    
 
     # returns the variable name with a version if the variable need to be initialized
     # (_vec3_0, vec3 _vec3_0)
