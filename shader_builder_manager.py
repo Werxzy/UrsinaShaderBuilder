@@ -15,6 +15,7 @@ from node_instruction import InstructionNode
 from node_variable_splitter import VariableSplitterNode
 from node_convert import ConvertNode
 from node_comment import CommentNode
+from node_preview_shader_input import PreviewShaderInputNode
 
 from shader_instructions import DataTypeLayouts, GLSL_catagorized
 from color_atlas import *
@@ -320,11 +321,14 @@ class ShaderBuilderManager(Entity):
         self.preview_entity = Entity(model = 'sphere', shader = s)
         self._prev_mode = self.mode
         self.mode = 'preview'
+        self.preview_input_node = PreviewShaderInputNode(self.shader_inputs, self.preview_entity)
 
     def quit_preview(self, mode = ''):
         if self.preview_cam != None:
             destroy(self.preview_cam)
             self.preview_cam = None
+            destroy(self.preview_input_node)
+            self.preview_input_node = None
         
         self.mode = mode if mode != '' else self._prev_mode
 
