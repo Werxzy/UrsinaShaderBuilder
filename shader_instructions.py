@@ -44,6 +44,46 @@ DataTypes = [
     'sampler2DShadow',
 ]
 
+DataTypeLayouts = {
+    'float' : {'x':'float'},
+    'vec2' : {'x':'float','y':'float'},
+    'vec3' : {'x':'float','y':'float','z':'float'},
+    'vec4' : {'x':'float','y':'float','z':'float','w':'float'},
+
+    'int' : {'x':'int'},
+    'ivec2' : {'x':'int','y':'int'},
+    'ivec3' : {'x':'int','y':'int','z':'int'},
+    'ivec4' : {'x':'int','y':'int','z':'int','w':'int'},
+
+    'bool' : {'x':'bool'},
+    'bvec2' : {'x':'bool','y':'bool'},
+    'bvec3' : {'x':'bool','y':'bool','z':'bool'},
+    'bvec4' : {'x':'bool','y':'bool','z':'bool','w':'bool'},
+
+    'uint' : {'x':'uint'},
+    'uvec2' : {'x':'uint','y':'uint'},
+    'uvec3' : {'x':'uint','y':'uint','z':'uint'},
+    'uvec4' : {'x':'uint','y':'uint','z':'uint','w':'uint'},
+
+    'mat2' : {
+        '[0][0]':'float', '[0][1]':'float',
+        '[1][0]':'float', '[1][1]':'float',
+    },
+
+    'mat3' : {
+        '[0][0]':'float', '[0][1]':'float', '[0][2]':'float',
+        '[1][0]':'float', '[1][1]':'float', '[1][2]':'float',
+        '[2][0]':'float', '[2][1]':'float', '[2][2]':'float',
+    },
+
+    'mat4' : {
+        '[0][0]':'float', '[0][1]':'float', '[0][2]':'float', '[0][3]':'float', 
+        '[1][0]':'float', '[1][1]':'float', '[1][2]':'float', '[1][3]':'float', 
+        '[2][0]':'float', '[2][1]':'float', '[2][2]':'float', '[2][3]':'float', 
+        '[3][0]':'float', '[3][1]':'float', '[3][2]':'float', '[3][3]':'float', 
+    },
+}
+
 DataMultiTypes = {
     'vec' : ['vec2', 'vec3', 'vec4'],
     'mat' : ['mat2', 'mat3', 'mat4'],

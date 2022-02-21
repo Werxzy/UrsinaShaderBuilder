@@ -16,7 +16,7 @@ from node_variable_splitter import VariableSplitterNode
 from node_convert import ConvertNode
 from node_comment import CommentNode
 
-from shader_instructions import GLSL_catagorized
+from shader_instructions import DataTypeLayouts, GLSL_catagorized
 from color_atlas import *
 from builtin_shaders import Base_Shader
 
@@ -34,7 +34,7 @@ class ShaderBuilderManager(Entity):
             'Shader Output' : 'UserInOutNode,output', 
             'Built-In' : dict([(v,'BuiltInOutputNode,'+v) for v in BuiltInOutputNode.build_in_attributes.keys()])
             },
-        'Constant' : dict([(v,'ConstantNode,'+v) for v in ConstantNode.data_type_layouts]),
+        'Constant' : dict([(v,'ConstantNode,'+v) for v in DataTypeLayouts]),
         'Conversion' : {
             'Splitter / Merger' : 'VariableSplitterNode,a',
             'Type Conversion' : 'ConvertNode,a',
@@ -262,9 +262,8 @@ class ShaderBuilderManager(Entity):
                 new_shader_nodes.update({name : new_node})
 
         self.shader_nodes.extend(new_shader_nodes.values())
-        if self.mode == 'preview':
-                self.quit_preview()
-        self.mode = self.shader_nodes[0].mode
+        self.quit_preview(self.shader_nodes[0].mode)
+        self.set_nodes_visisble()
 
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
