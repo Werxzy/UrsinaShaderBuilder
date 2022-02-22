@@ -509,9 +509,7 @@ class ShaderBuilderManager(Entity):
     def load_file(self, types):
         ftypes = [(t[1:] + ' files', '*' + t) for t in types]
         ftypes.insert(0, ('All files', '*'))
-        path = filedialog.Open(parent = self.tk, filetypes = ftypes).show()
-        print (path)
-        return path
+        return filedialog.Open(parent = self.tk, filetypes = ftypes).show()
 
     def confirm_window(self, message = 'Are you sure?'):
         return messagebox.askquestion('Confirm', message, parent = self.tk) == 'yes'

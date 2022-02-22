@@ -103,10 +103,8 @@ class PreviewShaderInputNode(ShaderNode):
         if tex == '!load file!':
             from ursina.texture_importer import file_types
             p = self.manager.load_file(file_types)
-            if p != '':
-                tex = Texture(p)
-            else:
-                return
+            if p != '': tex = Texture(p)
+            else: return
 
         if isinstance(tex, str):
             tex = load_texture(tex)
@@ -122,8 +120,7 @@ class PreviewShaderInputNode(ShaderNode):
             if p != '':
                 p = p.split('/')
                 mesh = load_model(p[-1], Path('/'.join(p[:-1])))
-            else:
-                return
+            else: return
 
         if isinstance(mesh, str):
             mesh = load_model(mesh)
