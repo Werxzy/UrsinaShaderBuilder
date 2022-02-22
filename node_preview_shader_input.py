@@ -1,4 +1,5 @@
 from ursina import *
+from pathlib import Path
 from shader_instructions import DataTypeLayouts
 from shader_node import ShaderNode
 
@@ -20,6 +21,7 @@ class PreviewShaderInputNode(ShaderNode):
         self.append_drop_down(
             '', 
             {
+                'load model' : '!load file!',
                 'sphere' : 'sphere',
                 'cube' : 'cube',
                 'plane' : 'plane',
@@ -49,6 +51,8 @@ class PreviewShaderInputNode(ShaderNode):
                 self.append_drop_down(
                     '', 
                     {
+                        'load texture' : '!load file!',
+                        'None' : 'None',
                         'brick' : 'brick',
                         'circle' : 'circle',
                         'grass' : 'grass',
@@ -65,7 +69,7 @@ class PreviewShaderInputNode(ShaderNode):
                         'vignette' : 'vignette',
                     },
                     self.update_shader_sampler2D, 
-                    start_value = 'sphere', 
+                    start_value = 'None', 
                     extra_info = k)
             else:
                 self.append_text('TODO: put in selector', size = 0.5)
@@ -94,6 +98,16 @@ class PreviewShaderInputNode(ShaderNode):
 
 
     def update_shader_sampler2D(self, name, tex): 
+        if tex == 'None':
+            self.preview_entity.texture = None
+        if tex == '!load file!':
+            from ursina.texture_importer import file_types
+            p = self.manager.load_file(file_types)
+            if p != '':
+                tex = Texture(p)
+            else:
+                return
+
         if isinstance(tex, str):
             tex = load_texture(tex)
 
@@ -103,7 +117,14 @@ class PreviewShaderInputNode(ShaderNode):
             self.preview_entity.set_shader_input(name, tex)
 
     def update_shader_model(self, mesh): 
-        
+        if mesh == '!load file!':
+            p = self.manager.load_file(['.bam', '.ursinamesh', '.obj', '.glb', '.gltf', '.blend'])
+            if p != '':
+                p = p.split('/')
+                mesh = load_model(p[-1], Path('/'.join(p[:-1])))
+            else:
+                return
+
         if isinstance(mesh, str):
             mesh = load_model(mesh)
 
