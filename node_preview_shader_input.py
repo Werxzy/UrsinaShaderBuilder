@@ -17,16 +17,25 @@ class PreviewShaderInputNode(ShaderNode):
         self.append_text('Shader Inputs')
         self.append_divider(3)
         self.append_text('Model', size = 0.8)
-        self.append_divider()
-        self.append_text('TODO: put in selector', size = 0.5)
+        self.append_drop_down(
+            '', 
+            {
+                'cube' : 'cube',
+                'sphere' : 'sphere',
+                'plane' : 'plane',
+                'cube uv top' : 'cube_uv_top',
+                'icosphere' : 'icosphere',
+                'quad' : 'quad',
+                'circle' : 'circle',
+            },
+            self.update_shader_model)
 
         for k,v in input_list.items():
             data_type = v['data type']
 
-            self.append_divider(3)
+            self.append_divider()
             self.append_text(k, size = 0.8)
             self.append_text(data_type, size = 0.5)
-            self.append_divider()
 
             if data_type in DataTypeLayouts.keys():
                 self.shader_inputs.update({
@@ -35,6 +44,28 @@ class PreviewShaderInputNode(ShaderNode):
                         'inputs' : [self.append_value_input(k2, v2, on_change = self.update_shader_input, on_change_att = str(k)) for k2,v2 in DataTypeLayouts[data_type].items()]
                     }
                 })
+            elif data_type == 'sampler2D':
+                self.append_drop_down(
+                    '', 
+                    {
+                        'brick' : 'brick',
+                        'circle' : 'circle',
+                        'grass' : 'grass',
+                        'white_cube' : 'white_cube',
+                        'noise' : 'noise',
+                        'radial_gradient' : 'radial_gradient',
+                        'reflection_map_3' : 'reflection_map_3',
+                        'shore' : 'shore',
+                        'sky_default' : 'sky_default',
+                        'sky_sunset' : 'sky_sunset',
+                        'horizontal_gradient' : 'horizontal_gradient',
+                        'vertical_gradient' : 'vertical_gradient',
+                        'rainbow' : 'rainbow',
+                        'vignette' : 'vignette',
+                    },
+                    self.update_shader_sampler2D, 
+                    start_value = 'sphere', 
+                    extra_info = k)
             else:
                 self.append_text('TODO: put in selector', size = 0.5)
 
@@ -59,3 +90,21 @@ class PreviewShaderInputNode(ShaderNode):
                 vals += ((i[1].text == 'true') if data_type[0] == 'b' else float(i[1].text),)
                 
             self.preview_entity.set_shader_input(name, vals)
+
+
+    def update_shader_sampler2D(self, name, tex): 
+        if isinstance(tex, str):
+            tex = load_texture(tex)
+
+        if name == 'p3d_Texture0':
+            self.preview_entity.texture = tex
+        else:
+            self.preview_entity.set_shader_input(name, tex)
+
+    def update_shader_model(self, mesh): 
+        if isinstance(mesh, Mesh):
+            self.preview_entity.model = mesh
+        
+        if isinstance(mesh, str):
+            self.preview_entity.model = load_model(mesh)
+            self.preview_entity.origin = (0,0,0)
