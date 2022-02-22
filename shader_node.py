@@ -157,12 +157,15 @@ class ShaderNode(Entity):
 
         return (ent_name, ent_field, ent_field_back)
 
-    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = ''):
+    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = ''):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
+        height = ent_name.height
+        if name == '': ent_name.text = ''
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
         ent_field = Text(list(options.keys())[0] if start_value == '' else start_value, parent = self, position = ent_name.position, scale = 0.8, color = text_color)
         ent_field.x += ent_name.width + self.ui_spacing
+        ent_field.extra_info = str(extra_info)
 
         quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
         ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
@@ -171,7 +174,10 @@ class ShaderNode(Entity):
         def on_select_wrapper(option):
             ent_field.text = option
             self.manager.destroy_menu()
-            on_select(option)
+            if ent_field.extra_info == '':
+                on_select(option)
+            else:
+                on_select(extra_info, option)
 
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
@@ -181,7 +187,7 @@ class ShaderNode(Entity):
         ent_field_back.input = back_input
         ent_field_back.on_destroy = self.manager.destroy_menu
 
-        self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
+        self.ui_build_pos -= height + self.ui_spacing # add the starting y position for next element
 
         return (ent_name, ent_field, ent_field_back)
 
@@ -364,9 +370,9 @@ class ShaderNode(Entity):
 
     def update(self):
         if self.dragged and self.draggable:
-            self.x += mouse.velocity[0] / self.parent.scale_x
-            self.y += mouse.velocity[1] / self.parent.scale_y * window.aspect_ratio
             if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
+                self.x += mouse.velocity[0] / self.parent.scale_x
+                self.y += mouse.velocity[1] / self.parent.scale_y * window.aspect_ratio
                 for i in self.inputs:
                     i.update_line()
                 for o in self.outputs:
