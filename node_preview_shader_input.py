@@ -20,15 +20,16 @@ class PreviewShaderInputNode(ShaderNode):
         self.append_drop_down(
             '', 
             {
-                'cube' : 'cube',
                 'sphere' : 'sphere',
+                'cube' : 'cube',
                 'plane' : 'plane',
                 'cube uv top' : 'cube_uv_top',
                 'icosphere' : 'icosphere',
                 'quad' : 'quad',
                 'circle' : 'circle',
             },
-            self.update_shader_model)
+            self.update_shader_model, 
+            start_value = 'sphere')
 
         for k,v in input_list.items():
             data_type = v['data type']
@@ -102,9 +103,9 @@ class PreviewShaderInputNode(ShaderNode):
             self.preview_entity.set_shader_input(name, tex)
 
     def update_shader_model(self, mesh): 
-        if isinstance(mesh, Mesh):
-            self.preview_entity.model = mesh
         
         if isinstance(mesh, str):
-            self.preview_entity.model = load_model(mesh)
-            self.preview_entity.origin = (0,0,0)
+            mesh = load_model(mesh)
+
+        self.preview_entity.model = mesh
+        self.preview_entity.origin = (0,0,0)
