@@ -1,9 +1,9 @@
 import string
 from ursina import *
 from shader_instructions import *
-from color_atlas import *
 from shader_node_connector import NodeConnector
-from extra_models import x_vert, scale_arrow_vert
+from ExtraData.color_atlas import *
+from ExtraData.extra_models import x_vert, scale_arrow_vert
 
 '''
 Base class for all nodes.

@@ -3,23 +3,23 @@ import string
 from tkinter import Tk, filedialog, messagebox
 from ursina import *
 
-from bar_menu import BarMenu
-from search_menu import SearchMenu
+from Prefabs.bar_menu import BarMenu
+from Prefabs.search_menu import SearchMenu
 
 from shader_node import ShaderNode
 from shader_node_connector import NodeConnector
-from node_user_inout import UserInOutNode
-from node_variable import ConstantNode
-from node_builtin_output import BuiltInOutputNode
-from node_instruction import InstructionNode
-from node_variable_splitter import VariableSplitterNode
-from node_convert import ConvertNode
-from node_comment import CommentNode
-from node_preview_shader_input import PreviewShaderInputNode
+from Nodes.node_user_inout import UserInOutNode
+from Nodes.node_variable import ConstantNode
+from Nodes.node_builtin_output import BuiltInOutputNode
+from Nodes.node_instruction import InstructionNode
+from Nodes.node_variable_splitter import VariableSplitterNode
+from Nodes.node_convert import ConvertNode
+from Nodes.node_comment import CommentNode
+from Nodes.node_preview_shader_input import PreviewShaderInputNode
 
 from shader_instructions import DataTypeLayouts, GLSL_catagorized
-from color_atlas import *
-from builtin_shaders import Base_Shader
+from ExtraData.color_atlas import *
+from ExtraData.builtin_shaders import Base_Shader
 
 '''
 Manager file that holds all the nodes and builds the shader.
@@ -495,15 +495,15 @@ class ShaderBuilderManager(Entity):
                 self.preview_shader()
 
     def save_load(self, to_load):
-        ftypes = [('JSON files', '*.json'), ('All files', '*')]
+        ftypes = [('ursina shader files', '*.ursinashader'), ('JSON files', '*.json'), ('All files', '*')]
         if to_load: loc:str = filedialog.Open(parent = self.tk, filetypes = ftypes).show()
         else:       loc:str = filedialog.SaveAs(parent = self.tk, filetypes = ftypes).show()
         if loc != '': 
             if to_load: 
                 self.load_shader(loc)
             else:  
-                if not loc.endswith('.json'):
-                    loc += '.json'
+                if not loc.endswith('.ursinashader'):
+                    loc += '.ursinashader'
                 self.save_shader(loc)
 
     def load_file(self, types):

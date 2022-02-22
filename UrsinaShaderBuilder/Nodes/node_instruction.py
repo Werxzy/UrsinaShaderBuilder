@@ -1,6 +1,6 @@
 from ursina import *
 from shader_instructions import *
-from color_atlas import *
+from ExtraData.color_atlas import *
 from shader_node import ShaderNode
 
 '''

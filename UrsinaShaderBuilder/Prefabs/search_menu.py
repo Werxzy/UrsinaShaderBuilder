@@ -1,6 +1,6 @@
 from ursina import *
 from ursina import ursinamath
-from extra_models import right_arrow_vert
+from ExtraData.extra_models import right_arrow_vert
 '''
 Menu that allows being searched through.
 

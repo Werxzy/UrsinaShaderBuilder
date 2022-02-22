@@ -1,5 +1,5 @@
 from ursina import *
-from extra_models import right_arrow_vert
+from ExtraData.extra_models import right_arrow_vert
 
 
 class BarMenu(Entity):

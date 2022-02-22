@@ -1,6 +1,6 @@
 from ursina import *
-from color_atlas import *
-from curve_renderer import CurveRenderer
+from ExtraData.color_atlas import *
+from Prefabs.curve_renderer import CurveRenderer
 
 '''
 The input or output for a ShaderNode.

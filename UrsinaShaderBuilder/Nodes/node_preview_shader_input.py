@@ -72,7 +72,7 @@ class PreviewShaderInputNode(ShaderNode):
                     start_value = 'None', 
                     extra_info = k)
             else:
-                self.append_text('TODO: put in selector', size = 0.5)
+                self.append_text('Type not supported yet.', size = 0.5)
 
         self.ui_back = self.build_back()
         
