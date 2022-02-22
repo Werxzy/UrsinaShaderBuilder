@@ -331,6 +331,7 @@ class ShaderBuilderManager(Entity):
         self._prev_mode = self.mode
         self.mode = 'preview'
         self.preview_input_node = PreviewShaderInputNode(self.shader_inputs, self.preview_entity, manager = self)
+        self.scale = 1
 
     def quit_preview(self, mode = ''):
         if self.preview_cam != None:
