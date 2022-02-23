@@ -1,5 +1,5 @@
 cd .\UrsinaShaderBuilder\
-python -m ursina.build
+python -m ursina.build --overwrite
 cd .\build\python\
 
 set loc=C:\Users\Werxzy\AppData\Local\Programs\Python\Python39
