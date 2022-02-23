@@ -281,11 +281,11 @@ GLSL = {
     # },
 
     'Maximum' : build_func('Gets the maximum value(s).', 'max', 
-        inputTypes=[['genType','genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType','float', 'intType', 'int', 'uintType', 'uint']], 
-        outputTypes=['genType','genType', 'intType', 'intType', 'uintType', 'uintType']),
+        inputTypes=[['genType', 'genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType', 'float', 'intType', 'int', 'uintType', 'uint']], 
+        outputTypes=['genType', 'genType', 'intType', 'intType', 'uintType', 'uintType']),
     'Minimum' : build_func('Gets the minimum value(s).', 'min', 
-        inputTypes=[['genType','genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType','float', 'intType', 'int', 'uintType', 'uint']], 
-        outputTypes=['genType','genType', 'intType', 'intType', 'uintType', 'uintType']),
+        inputTypes=[['genType', 'genType', 'intType', 'intType', 'uintType', 'uintType'], ['genType', 'float', 'intType', 'int', 'uintType', 'uint']], 
+        outputTypes=['genType', 'genType', 'intType', 'intType', 'uintType', 'uintType']),
 
     'Clamp' : build_func('Clamps a value or vector\nbetween a minimum and maximum.', 'clamp', 
         names=['input_', 'min_', 'max_'],
@@ -298,7 +298,6 @@ GLSL = {
         inputTypes=[['genType','genType','genType','genType'], ['genType','genType','genType','genType'], ['genType','float','boolType','bool']], 
         outputTypes=['genType','genType','genType','genType']),
 
-    
     'Smooth Step' : build_func('Smoothly interpolates between 0 and 1.\n(I think?)', 'smoothstep', names=['edge_a_', 'edge_b_', 'x_'],
         inputTypes=[['genType','float'], ['genType','float'], ['genType','genType']], 
         outputTypes=['genType','genType']),
@@ -306,8 +305,8 @@ GLSL = {
     'Step' : build_func('Gives 0 where x is smaller,\n otherwise gives 1.', 'step', names=['edge_', 'x_'],
         inputTypes=[['genType','float'], ['genType','genType']], outputTypes=['genType','genType']),
 
-    'Is Not A Number' : build_func('For each component,\nreturns true if not a number.', 'isnan', inputTypes=[['genType'], ['boolType']]),
-    'Is Infinite' : build_func('For each component,\nreturns true if infinite', 'isinf', inputTypes=[['genType'], ['boolType']]),
+    'Is Not A Number' : build_func('For each component,\nreturns true if not a number.', 'isnan', inputTypes=[['genType'],], outputTypes=['boolType']),
+    'Is Infinite' : build_func('For each component,\nreturns true if infinite', 'isinf', inputTypes=[['genType'],], outputTypes=['boolType']),
     
 # Geometric functions
 
