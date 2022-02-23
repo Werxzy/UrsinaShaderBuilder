@@ -27,7 +27,7 @@ Manager file that holds all the nodes and builds the shader.
 
 class ShaderBuilderManager(Entity):
 
-    version = '0.1'
+    version = '0.1.0'
 
     menu_options = {
         'Inputs/Outputs' : {

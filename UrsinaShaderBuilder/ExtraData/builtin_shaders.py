@@ -1,5 +1,5 @@
 Base_Shader = {
-    "version": "0.1",
+    "version": "0.1.0",
     "nodes": {
         "fragment": {
             "node_0": {
