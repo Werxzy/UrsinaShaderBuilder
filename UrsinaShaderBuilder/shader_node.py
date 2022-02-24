@@ -314,6 +314,9 @@ class ShaderNode(Entity):
                     
                     if len(r_overlap) == 0:# no matching types
                         i.disconnect_all() # should only be one anyways
+                        to_pos = -nodes[0].position
+                        to_pos.y -= nodes[0].ui_build_pos * 0.5
+                        self.manager.send_message('Disconnected node due to incompatable types', self.manager.move_window_to, to_pos, nodes[0].mode)
                     else:
                         r = r_overlap
 

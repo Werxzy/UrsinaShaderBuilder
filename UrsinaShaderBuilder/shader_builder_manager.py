@@ -176,7 +176,9 @@ class ShaderBuilderManager(Entity):
 
         nodes_queued = self.get_ordered_nodes(mode)
         if nodes_queued[0]:
-            self.send_message('Warning : Required input not connected.', self.move_window_to, -nodes_queued[1].position, mode)
+            to_pos = -nodes_queued[1].position
+            to_pos.y -= nodes_queued[1].ui_build_pos * 0.5
+            self.send_message('Warning : Required input not connected.', self.move_window_to, to_pos, mode)
             return 'bad'
 
         for node in nodes_queued[1]:
@@ -237,11 +239,11 @@ class ShaderBuilderManager(Entity):
             try:
                 data = json.load(open(location, 'r'))
             except Exception as e:
-                print_warning('file error', e)
+                self.send_message('Failed to load file.')
                 return
 
         if data['version'] != ShaderBuilderManager.version:
-            print_warning('unsupported version', data['version'])
+            self.send_message('unsupported version' + data['version'])
             return
 
         self.destroy_all_nodes()
@@ -252,7 +254,7 @@ class ShaderBuilderManager(Entity):
             for name, node in nodes.items():
                 node_class = node['class']
                 if not all(c in string.ascii_letters for c in node_class):
-                    print_warning('Potential malicious input ' + node_class + '.\n')
+                    self.send_message('Warning : Potential malicious input in file : ' + node_class + '.\n')
                     return
 
                 new_node:ShaderNode = eval(node_class).load(self, node)
@@ -306,7 +308,6 @@ class ShaderBuilderManager(Entity):
         v = self.build_shader('vertex')
         f = self.build_shader('fragment', False)
         if v == 'bad' or f == 'bad':
-            print_warning('Can\'t build shader.')
             return
 
         build_time = time.time() - build_time
