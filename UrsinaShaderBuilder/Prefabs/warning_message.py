@@ -25,6 +25,7 @@ class WarningMessage(Entity):
         self.x_size = 0.025
 
         self.on_click = None
+        self.click_args = ()
 
         self.being_removed = False
 
@@ -76,7 +77,7 @@ class WarningMessage(Entity):
             if mouse.hovered_entity == self.ui_close:
                 self.remove()
             elif mouse.hovered_entity == self.ui_back and self.on_click != None:
-                self.on_click()
+                self.on_click(*self.click_args)
 
     def on_destroy(self):
         WarningMessage.messages.remove(self)

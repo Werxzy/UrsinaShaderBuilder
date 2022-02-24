@@ -5,6 +5,7 @@ from ursina import *
 
 from Prefabs.bar_menu import BarMenu
 from Prefabs.search_menu import SearchMenu
+from Prefabs.warning_message import WarningMessage
 
 from shader_node import ShaderNode
 from shader_node_connector import NodeConnector
@@ -108,6 +109,10 @@ class ShaderBuilderManager(Entity):
             self.scale_z = 1
             self.position = (self.position - mouse.position) / 1.1 + mouse.position
 
+        if key == 'right mouse down':
+            for an in self.animations:
+                an.kill()
+                
         if key == 'right mouse up':
             self.create_menu_trigger = 1
             
@@ -170,11 +175,11 @@ class ShaderBuilderManager(Entity):
             i.clear_build_variables()
 
         nodes_queued = self.get_ordered_nodes(mode)
-        if nodes_queued == 'bad':
-            print_warning('not all connection made')
+        if nodes_queued[0]:
+            self.send_message('Warning : Required input not connected.', self.move_window_to, -nodes_queued[1].position, mode)
             return 'bad'
 
-        for node in nodes_queued:
+        for node in nodes_queued[1]:
             node.build_shader()
         
         final_build = '#version 150\n\n'
@@ -281,7 +286,7 @@ class ShaderBuilderManager(Entity):
                 if not c.any_connected(): continue
                 node = c.connections[0].parent
                 if not node.is_all_connected() and mode != '':
-                    return 'bad'
+                    return (True, node)
 
                 if nodes_queued.count(node) > 0:
                     nodes_queued.remove(node)
@@ -293,7 +298,7 @@ class ShaderBuilderManager(Entity):
         # Was back to front, now needs to be front to back (flow from inputs to outputs)
         nodes_queued.reverse() 
 
-        return nodes_queued
+        return (False, nodes_queued)
 
     def preview_shader(self):
         build_time = time.time()
@@ -513,6 +518,14 @@ class ShaderBuilderManager(Entity):
 
     def confirm_window(self, message = 'Are you sure?'):
         return messagebox.askquestion('Confirm', message, parent = self.tk) == 'yes'
+
+    def send_message(self, message, on_click = None, *click_args):
+        WarningMessage(message, on_click = on_click, click_args = click_args, color_text = c_text, color_back = c_node_dark, color_close = c_red, z = -1)
+
+    def move_window_to(self, pos, mode):
+        self.mode = mode
+        from ursina import curve
+        self.animate('position', Vec3(pos[0], pos[1], 0), 1, curve=curve.in_out_cubic).start()
 
     def append_node(self, node:ShaderNode):
         if node.valid_mode(self.mode):
