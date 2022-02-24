@@ -32,6 +32,8 @@ if config['AntiAliasing'] == 1:
 from shader_node_connector import NodeConnector
 NodeConnector.line_quality = config['Line Quality']
 
+window.title = 'Ursina Shader Builder'
+
 app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1)
 
 sbm = ShaderBuilderManager()
