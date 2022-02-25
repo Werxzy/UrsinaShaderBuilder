@@ -184,7 +184,7 @@ class ShaderBuilderManager(Entity):
         for node in nodes_queued[1]:
             node.build_shader()
         
-        final_build = '#version 150\n\n'
+        final_build = '#version 450\n\n'
         final_build += self.build['inout'] + '\n'
         if len(self.build['function']) > 0: final_build += self.build['function'] + '\n'
         final_build += 'void main(){\n' + self.build['main'] + '}'
@@ -196,9 +196,9 @@ class ShaderBuilderManager(Entity):
         data = {'version': ShaderBuilderManager.version, 'nodes':{}}
         
         nodes_queued = self.get_ordered_nodes()
-        if nodes_queued == 'bad': return
+        if nodes_queued[0]: return
 
-        for i,node in enumerate(nodes_queued):
+        for i,node in enumerate(nodes_queued[1]):
             save_data = node.save()
             if save_data == 'no not save': continue
             # there may be a case in which a node shouldn't be saved
@@ -239,11 +239,11 @@ class ShaderBuilderManager(Entity):
             try:
                 data = json.load(open(location, 'r'))
             except Exception as e:
-                self.send_message('Failed to load file.')
+                self.send_message('Error : Failed to load file.')
                 return
 
         if data['version'] != ShaderBuilderManager.version:
-            self.send_message('unsupported version' + data['version'])
+            self.send_message('Error : Unsupported version : ' + data['version'])
             return
 
         self.destroy_all_nodes()
