@@ -17,7 +17,7 @@ class ArrayAccessNode(ShaderNode):
         self.ui_back = self.build_back()
         ui_divider.scale_x = self.ui_build_width
 
-        self.array_input = self.build_connector('Array', ['.+(\[\d+\])+'], False, 0.5, on_connect = self.on_connect, regex = True)
+        self.array_input = self.build_connector('Array', ['.+(\\[\\d+\\])+'], False, 0.5, on_connect = self.on_connect, regex = True)
 
         self.index_inputs:list[NodeConnector] = []
 
@@ -44,10 +44,12 @@ class ArrayAccessNode(ShaderNode):
                 self.build_connector(data_type, [data_type], True, 0.5)
 
             elif self.outputs[0].variable != data_type:
+                self.outputs[0].disconnect_all()
                 destroy(self.outputs[0])
                 self.outputs.clear()
                 self.build_connector(data_type, [data_type], True, 0.5)
         elif len(self.outputs) > 0:
+            self.outputs[0].disconnect_all()
             destroy(self.outputs[0])
             self.outputs.clear()
 

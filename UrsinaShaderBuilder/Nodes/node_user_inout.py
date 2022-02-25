@@ -11,7 +11,7 @@ class UserInOutNode(ShaderNode):
     array_options = {
         'Single Variable' : 0,
         'Array' : 1,
-        'Matrix' : 2,
+        '2D Array' : 2,
         '3D Array' : 3,
     }
 
