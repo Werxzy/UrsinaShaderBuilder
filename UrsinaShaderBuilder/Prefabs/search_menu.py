@@ -29,6 +29,7 @@ class SearchMenu(Entity):
         self.options = options
         self.option_nested_position = []
         self.on_selected = None
+        self.on_selected_include_key = False
         self.scroll_bar_radius = 0.015
         self.edge_spacing = 0.02
         self.text_spacing = 0.007
@@ -184,7 +185,10 @@ class SearchMenu(Entity):
                     self.update_options()
 
                 elif self.on_selected != None:
-                    self.on_selected(current_options[self.option_slots[ind].text])
+                    if self.on_selected_include_key:
+                        self.on_selected((self.option_slots[ind].text, current_options[self.option_slots[ind].text]))
+                    else:
+                        self.on_selected(current_options[self.option_slots[ind].text])
 
         if key == 'scroll down':
             self.update_options(1)
@@ -194,7 +198,10 @@ class SearchMenu(Entity):
         if key == 'enter' and not self.disable_search and self.search_text.text != '':
             current_options = self.get_current_options()
             if self._current_option_count > 1:
-                self.on_selected(current_options[self.option_slots[1].text])
+                if self.on_selected_include_key:
+                    self.on_selected((self.option_slots[1].text, current_options[self.option_slots[1].text]))
+                else:
+                    self.on_selected(current_options[self.option_slots[1].text])
     
     
     def update(self):
