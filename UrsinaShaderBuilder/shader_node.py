@@ -72,7 +72,7 @@ class ShaderNode(Entity):
 
             orig_render = ent_field.render
             
-            def render():
+            def render(call_change = True):
                 org_length = len(ent_field.text)
                 if data_type in ['float', 'int', 'uint']:
                     if org_length == 0:
@@ -111,7 +111,7 @@ class ShaderNode(Entity):
                     ent_field.scroll_position = (0,0)
 
                 orig_render()
-                if ent_field.text != ent_field._prev_input:
+                if ent_field.text != ent_field._prev_input and call_change:
                     if on_change != None:  on_change(ent_field.text if on_change_att == '' else ent_field.on_change_att)
                 ent_field._prev_input = ent_field.text
 
