@@ -289,8 +289,17 @@ class ShaderNode(Entity):
         ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
         return ent
 
-    def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False):
-        conn = NodeConnector(parent = self, x_disp = self.ui_build_width * 0.5, yth = offset, variable = variable, variable_type = variable_type, isOutput = isOutput, optional = optional)
+    def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False, on_connect = None, regex = False):
+        conn = NodeConnector(parent = self, 
+            x_disp = self.ui_build_width * 0.5, 
+            yth = offset, 
+            variable = variable, 
+            variable_type = variable_type, 
+            isOutput = isOutput, 
+            optional = optional, 
+            on_connect = on_connect, 
+            regex = regex)
+
         if isOutput:
             self.outputs.append(conn)
         else:
@@ -305,6 +314,11 @@ class ShaderNode(Entity):
         nodes = [self]
         while len(nodes) > 0:
             if len(nodes[0].inputs) > 0:
+                
+                for i in nodes[0].inputs:
+                    if i.on_connect != None:
+                        i.on_connect(len(i.connections) > 0)
+
                 r = set(range(len(nodes[0].inputs[0].variable_type)))
                 for i in nodes[0].inputs: # get overlaps that exist on each node (disconnect any if they suddenly don't work)
                     p_types = i.get_possible_data_types()

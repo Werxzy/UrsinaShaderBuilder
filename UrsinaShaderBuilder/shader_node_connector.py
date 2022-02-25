@@ -23,9 +23,13 @@ class NodeConnector(Entity):
         self.variable = ''
         self.variable_type:list[str] = []
         self.optional = False
+        self.on_connect = None # function called when a connection is completed (on_connect(connecting:bool) -> None)
+        self.regex = False
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        assert not (self.isOutput and self.regex)
 
         if not self.isOutput:
             self.ui_line = None
@@ -139,6 +143,9 @@ class NodeConnector(Entity):
 
     #returns list of pars of matching variable types's indicies (self, connector)
     def _matching_connections(self, connector):
+        if self.regex: return self.regex_matches(self.variable_type, connector.variable_type, False)
+        if connector.regex: return self.regex_matches(connector.variable_type, self.variable_type, True)
+
         matches = []
         self_range = range(len(self.variable_type))
         conn_range = range(len(connector.variable_type))
@@ -146,6 +153,26 @@ class NodeConnector(Entity):
             for j in conn_range:
                 if self.variable_type[i] == connector.variable_type[j]:
                     matches.append((i, j))
+        return matches
+
+    def regex_matches(self, a, b, swap):
+        import re
+        matches = []
+        self_range = range(len(a))
+        conn_range = range(len(b))
+        for i in self_range:
+            for j in conn_range:
+                if re.match(a[i], b[j]):
+                    matches.append((i, j) if not swap else (j, i))
+        return matches
+
+    def regex_matches_single(self, a, b, pos):
+        import re
+        matches = []
+        conn_range = range(len(a))
+        for i in conn_range:
+            if re.match(a[i], b) != None:
+                matches.append((i, pos))
         return matches
 
     # return list of pares of matching variables types's indicies, with respect to nodes' set types (self, connector)
@@ -156,10 +183,14 @@ class NodeConnector(Entity):
             return list(zip(range(l), l * [-1])) 
         if self.connections[0].parent.data_type_set == -1: return self._matching_connections(self.connections[0])
 
-        matches = []
         self_range = range(len(self.variable_type))
         set_pos = self.connections[0].parent.data_type_set
         var_type = self.connections[0].variable_type[set_pos]
+
+        if self.regex: 
+            return self.regex_matches_single(self.variable_type, var_type, set_pos)
+
+        matches = []
         for i in self_range:
             if self.variable_type[i] == var_type:
                 matches.append((i, set_pos))
@@ -198,6 +229,9 @@ class NodeConnector(Entity):
         self.ui_dot.color = c_conn_active
         if self.optional: self.ui_dot2.visible = False
 
+        if self.on_connect != None:
+            self.on_connect(True)
+
     # apply the disconnection and any changes required by the conneciton being made
     def _apply_disconnection(self, connector):
         if isinstance(connector, int):
@@ -214,6 +248,9 @@ class NodeConnector(Entity):
             if self.optional: self.ui_dot2.visible = True
 
         self.parent.disconnection(self)
+
+        if self.on_connect != None:
+            self.on_connect(False)
 
     def any_connected(self):
         return len(self.connections) > 0
