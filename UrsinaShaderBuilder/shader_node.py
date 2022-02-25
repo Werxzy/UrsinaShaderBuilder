@@ -157,7 +157,7 @@ class ShaderNode(Entity):
 
         return (ent_name, ent_field, ent_field_back)
 
-    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = ''):
+    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = '', set_to_key = False):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         height = ent_name.height
         if name == '': ent_name.text = ''
@@ -172,17 +172,19 @@ class ShaderNode(Entity):
         ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
 
         def on_select_wrapper(option):
-            ent_field.text = option
+            ent_field.text = str(option[0]) if set_to_key else str(option)
             self.manager.destroy_menu()
             if ent_field.extra_info == '':
-                on_select(option)
+                on_select(option[1] if set_to_key else option)
             else:
-                on_select(extra_info, option)
+                on_select(extra_info, option[1] if set_to_key else option)
 
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
+                l = len(options)
                 self.manager.create_menu(Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
-                    options, min(len(options), 8), on_select_wrapper, width = 0.16)
+                    options, min(l, 8), on_select_wrapper, width = 0.16, on_selected_include_key = set_to_key, 
+                    disable_scroll_bar = l <= 8, disable_search = l <= 8)
 
         ent_field_back.input = back_input
         ent_field_back.on_destroy = self.manager.destroy_menu
