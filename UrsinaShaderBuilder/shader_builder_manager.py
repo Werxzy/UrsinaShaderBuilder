@@ -17,6 +17,7 @@ from Nodes.node_variable_splitter import VariableSplitterNode
 from Nodes.node_convert import ConvertNode
 from Nodes.node_comment import CommentNode
 from Nodes.node_preview_shader_input import PreviewShaderInputNode
+from Nodes.node_array_access import ArrayAccessNode
 
 from shader_instructions import DataTypeLayouts, GLSL_catagorized
 from ExtraData.color_atlas import *
@@ -40,6 +41,9 @@ class ShaderBuilderManager(Entity):
         'Conversion' : {
             'Splitter / Merger' : 'VariableSplitterNode,a',
             'Type Conversion' : 'ConvertNode,a',
+        },
+        'Array' : {
+            'Array Access' : 'ArrayAccessNode,a',
         },
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
@@ -312,7 +316,7 @@ class ShaderBuilderManager(Entity):
 
         build_time = time.time() - build_time
 
-        print('Vertex Shadder :')
+        print('Vertex Shader :')
         print(v)
         print('Fragment Shader :')
         print(f)
@@ -455,6 +459,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(ConvertNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         elif sp[0] == 'CommentNode':
             self.append_node(CommentNode(parent = self, manager = self, text = 'howdy :)' if random.random() < 0.005 else '', position = self.node_menu.position, z = 0))
+        elif sp[0] == 'ArrayAccessNode':
+            self.append_node(ArrayAccessNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
