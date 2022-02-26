@@ -12,6 +12,9 @@ Almost always a child of shader_builder_manager
 '''
 
 class ShaderNode(Entity):
+
+    update_connection_queue = set()
+
     def __init__(self, **kwargs):
         super().__init__()
 
@@ -310,7 +313,12 @@ class ShaderNode(Entity):
 # - - - - - - -
 
     #goes through all of the outputs and checks the data types that are possible, disconnecting any invalid connections
-    def update_connections(self):
+    def update_connections(self, force = False):
+        
+        ShaderNode.update_connection_queue.add(self)
+        if not force and len(ShaderNode.update_connection_queue) > 1:
+            return
+
         nodes = [self]
         while len(nodes) > 0:
             if len(nodes[0].inputs) > 0:
@@ -350,6 +358,10 @@ class ShaderNode(Entity):
                         nodes.append(c.parent)
 
             nodes.pop(0)
+
+        ShaderNode.update_connection_queue.remove(self)
+        if len(ShaderNode.update_connection_queue) > 0:
+            ShaderNode.update_connection_queue.pop().update_connections(True)
 
     def disconnection(self, connector):
         if connector in self.inputs:
