@@ -47,6 +47,7 @@ class ArrayAssignNode(ShaderNode):
             elif self.outputs[0].variable_type[0] != data_type:
                 self.outputs[0].variable_type[0] = data_type
                 if assign_data_type != self.assign_input.variable_type[0]:
+                    self.inputs.remove(self.assign_input)
                     destroy(self.assign_input)
                     self.assign_input = self.build_connector(assign_data_type, [assign_data_type], False, 1.5)
                          
