@@ -36,22 +36,16 @@ class ArrayAccessNode(ShaderNode):
         while len(self.index_inputs) > size:
             conn = self.index_inputs.pop()
             self.inputs.remove(conn)
-            conn.disconnect_all()
             destroy(conn)
 
         if connecting:
+            if len(self.outputs) > 0 and self.outputs[0].variable != data_type:
+                destroy(self.outputs.pop())
             if len(self.outputs) == 0:
                 self.build_connector(data_type, [data_type], True, 0.5)
 
-            elif self.outputs[0].variable != data_type:
-                self.outputs[0].disconnect_all()
-                destroy(self.outputs[0])
-                self.outputs.clear()
-                self.build_connector(data_type, [data_type], True, 0.5)
         elif len(self.outputs) > 0:
-            self.outputs[0].disconnect_all()
-            destroy(self.outputs[0])
-            self.outputs.clear()
+            destroy(self.outputs.pop())
 
     def build_shader(self):
         v = self.inputs[0].get_build_variable()

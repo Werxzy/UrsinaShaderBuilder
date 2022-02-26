@@ -40,10 +40,8 @@ class ConvertNode(ShaderNode):
     def rebuild_connections(self, val:str):
         if self.built:
             for i in self.inputs:
-                i.disconnect_all()
                 destroy(i)
             for o in self.outputs:
-                o.disconnect_all()
                 destroy(o)
             self.inputs.clear()
             self.outputs.clear()

@@ -94,6 +94,9 @@ class NodeConnector(Entity):
         if NodeConnector.prepared_node == self:
             if mouse.velocity[0] != 0 or mouse.velocity[1] != 0:
                 self.update_prepared_line()
+
+    def on_destroy(self):
+        self.disconnect_all()
     
     
     # announce that a connection should be made and check if one can be
