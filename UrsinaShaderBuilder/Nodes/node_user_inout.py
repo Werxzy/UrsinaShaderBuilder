@@ -87,11 +87,18 @@ class UserInOutNode(ShaderNode):
             if v1 == 'uniform ':
                 self.manager.build_shader_input_append(self.ui_type[1].text, self.ui_name[1].text)
 
-            v1 += self.ui_type[1].text
-            for ui in self.ui_dimensions: v1 += '[' + ui[1].text + ']'
-            v1 += ' ' + self.ui_name[1].text + ';'
+            v_dec = self.ui_type[1].text
+            for ui in self.ui_dimensions: v_dec += '[' + ui[1].text + ']'
+            v_dec += ' ' + self.ui_name[1].text
+            
+            if len(self.ui_dimensions) > 0:
+                v2 = v_dec + '_C_ = ' + self.ui_name[1].text + ';'
+                self.manager.build_shader_append('main', v2, False)
+                self.main_connector.set_build_variable(self.ui_name[1].text + '_C_')
+            else:
+                self.main_connector.set_build_variable(self.ui_name[1].text)
 
-            self.main_connector.set_build_variable(self.ui_name[1].text)
+            v1 += v_dec + ';'
 
         else:
             v1 = 'out ' + self.ui_type[1].text
