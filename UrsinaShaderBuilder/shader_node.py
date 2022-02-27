@@ -89,6 +89,9 @@ class ShaderNode(Entity):
                     else: # data_type == 'uint':
                         ent_field.text = ''.join([e for e in ent_field.text if e in '0123456789'])
 
+                    if ent_field.text == '-':
+                        ent_field.text += '0'
+                        
                     if len(ent_field.text) == 0:
                         ent_field.text = '0'
                     else:
