@@ -298,8 +298,7 @@ class ShaderBuilderManager(Entity):
 
                 if nodes_queued.count(node) > 0:
                     nodes_queued.remove(node)
-                else:
-                    nodes_to_check.append(node)
+                nodes_to_check.append(node)
                 nodes_queued.append(node)
             n += 1
 
