@@ -31,6 +31,7 @@ Manager file that holds all the nodes and builds the shader.
 class ShaderBuilderManager(Entity):
 
     version = '0.1.1'
+    version_last_supported = '0.1.0'
 
     menu_options = {
         'Inputs/Outputs' : {
@@ -248,7 +249,7 @@ class ShaderBuilderManager(Entity):
                 self.send_message('Error : Failed to load file.')
                 return
 
-        if data['version'] != ShaderBuilderManager.version:
+        if not self.version_compatible(data['version']):
             self.send_message('Error : Unsupported version : ' + data['version'])
             return
 
@@ -278,6 +279,16 @@ class ShaderBuilderManager(Entity):
         self.shader_nodes.extend(new_shader_nodes.values())
         self.quit_preview(self.shader_nodes[0].mode)
         self.set_nodes_visisble()
+
+    def version_compatible(self, version):
+        v1 = ShaderBuilderManager.version_last_supported.split('.')
+        v2 = version.split('.')
+        for i in range(3):
+            if int(v2[i]) < int(v1[i]):
+                return False
+            if int(v2[i]) > int(v1[i]):
+                return True
+        return True
 
     def get_ordered_nodes(self, mode = ''):
         # queues the nodes from back to front and moves them back based on dependancies
