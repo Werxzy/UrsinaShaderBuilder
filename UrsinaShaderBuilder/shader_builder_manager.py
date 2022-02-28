@@ -19,6 +19,7 @@ from Nodes.node_comment import CommentNode
 from Nodes.node_preview_shader_input import PreviewShaderInputNode
 from Nodes.node_array_access import ArrayAccessNode
 from Nodes.node_array_assign import ArrayAssignNode
+from Nodes.node_array_create_empty import ArrayCreateEmptyNode
 
 from shader_instructions import DataTypeLayouts, GLSL_catagorized
 from ExtraData.color_atlas import *
@@ -47,6 +48,7 @@ class ShaderBuilderManager(Entity):
         'Array' : {
             'Array Access' : 'ArrayAccessNode,a',
             'Array Assign' : 'ArrayAssignNode,a',
+            'Array Create Empty' : 'ArrayCreateEmptyNode,a',
         },
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
@@ -486,6 +488,8 @@ class ShaderBuilderManager(Entity):
             self.append_node(ArrayAccessNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         elif sp[0] == 'ArrayAssignNode':
             self.append_node(ArrayAssignNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
+        elif sp[0] == 'ArrayCreateEmptyNode':
+            self.append_node(ArrayCreateEmptyNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
