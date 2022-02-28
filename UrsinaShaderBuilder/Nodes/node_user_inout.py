@@ -92,9 +92,8 @@ class UserInOutNode(ShaderNode):
             v_dec += ' ' + self.ui_name[1].text
             
             if len(self.ui_dimensions) > 0:
-                v2 = v_dec + '_C_ = ' + self.ui_name[1].text + ';'
+                v2 = self.main_connector.prepare_build_variable() + ' = ' + self.ui_name[1].text + ';'
                 self.manager.build_shader_append('main', v2, False)
-                self.main_connector.set_build_variable(self.ui_name[1].text + '_C_')
             else:
                 self.main_connector.set_build_variable(self.ui_name[1].text)
 

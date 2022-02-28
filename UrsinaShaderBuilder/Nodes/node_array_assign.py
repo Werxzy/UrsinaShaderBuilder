@@ -23,6 +23,8 @@ class ArrayAssignNode(ShaderNode):
         self.index_inputs:list[NodeConnector] = []
 
     def on_connect(self, connecting):
+        self.array_input.on_connect = None
+
         if connecting:
             data_type = self.array_input.connections[0].get_variable_type()
             size = data_type.count('[')
@@ -56,6 +58,8 @@ class ArrayAssignNode(ShaderNode):
             destroy(self.assign_input)
             self.assign_input = None
             destroy(self.outputs.pop())
+
+        self.array_input.on_connect = self.on_connect
 
     def build_shader(self):
         v = self.inputs[0].get_build_variable()
