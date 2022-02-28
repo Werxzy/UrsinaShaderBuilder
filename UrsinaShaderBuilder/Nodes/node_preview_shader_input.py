@@ -47,6 +47,12 @@ class PreviewShaderInputNode(ShaderNode):
                         'inputs' : [self.append_value_input(k2, v2, on_change = self.update_shader_input, on_change_att = str(k)) for k2,v2 in DataTypeLayouts[data_type].items()]
                     }
                 })
+
+                if k == 'p3d_ColorScale':
+                    for i in self.shader_inputs[k]['inputs']:
+                        i[1].text = '1.0'
+                        i[1].render()
+
             elif data_type == 'sampler2D':
                 self.append_drop_down(
                     '', 
@@ -93,8 +99,11 @@ class PreviewShaderInputNode(ShaderNode):
 
             for i in inp:
                 vals += ((i[1].text == 'true') if data_type[0] == 'b' else float(i[1].text),)
-                
-            self.preview_entity.set_shader_input(name, vals)
+
+            if name == 'p3d_ColorScale':
+                self.preview_entity.color = vals
+            else:
+                self.preview_entity.set_shader_input(name, vals)
 
 
     def update_shader_sampler2D(self, name, tex): 

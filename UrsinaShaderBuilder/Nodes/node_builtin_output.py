@@ -56,6 +56,8 @@ class BuiltInOutputNode(ShaderNode):
         # 'p3d_Texture1': ('uniform', 'sampler2D', 'vertex', 'fragment', 'shader input'),
         # 'p3d_Texture2': ('uniform', 'sampler2D', 'vertex', 'fragment', 'shader input'),
 
+        'p3d_ColorScale': ('uniform', 'vec4', 'vertex', 'fragment', 'shader input'),
+
 
         'gl_Position': ('out', 'vec4', 'vertex'),
 
