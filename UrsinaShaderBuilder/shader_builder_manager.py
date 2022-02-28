@@ -387,7 +387,7 @@ class ShaderBuilderManager(Entity):
 
     # returns the variable name with a version if the variable need to be initialized
     # (_vec3_0, vec3 _vec3_0)
-    def get_variable(self, data_type):
+    def get_variable(self, data_type:str):
         if data_type not in self.build_var_finished.keys(): # first variable of that type
             self.build_var_count[data_type] = -1
             self.build_var_finished[data_type] = list()
@@ -395,7 +395,16 @@ class ShaderBuilderManager(Entity):
         if len(self.build_var_finished[data_type]) == 0: # no variables not in use
             c = self.build_var_count[data_type] + 1
             self.build_var_count[data_type] = c
-            v = '_' + data_type + '_' + str(c)
+
+            v = data_type
+
+            pos = data_type.find('[')
+            if pos >= 0:
+                v = data_type[:pos] + '_array' + data_type[pos:]
+                v = v.replace(']','')
+                v = v.replace('[','_')
+
+            v = '_' + v + '_' + str(c)
             return (v, data_type + ' ' + v)
 
         v = self.build_var_finished[data_type].pop()

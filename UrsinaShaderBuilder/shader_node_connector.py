@@ -326,9 +326,12 @@ class NodeConnector(Entity):
     # otherwise include the type
     #   vec3 _vec3_0
     def prepare_build_variable(self, uses = 0):
-        v = self.parent.manager.get_variable(self.get_variable_type())
+        data_type = self.get_variable_type()
+        v = self.parent.manager.get_variable(data_type)
         self.build_variable = v[0]
         self.build_use_count = uses if uses > 0 else len(self.connections)
+        if 'array' in v[0]:
+            self.build_use_count = -1 # can't reuse arrays
         return v[1]
 
     # Sets the variable to a custom output. (usually a constant or global variable)

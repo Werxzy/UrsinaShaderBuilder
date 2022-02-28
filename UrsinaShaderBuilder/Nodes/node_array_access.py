@@ -13,7 +13,7 @@ class ArrayAccessNode(ShaderNode):
         
         self.append_text('Array Access')
         ui_divider = self.append_divider()
-        self.append_text('Get a single element\nof a given array', size = 0.7)
+        self.append_text('Get a single value\nof a given array', size = 0.7)
         self.ui_back = self.build_back()
         ui_divider.scale_x = self.ui_build_width
 

@@ -13,7 +13,7 @@ class ArrayAssignNode(ShaderNode):
         
         self.append_text('Array Assign')
         ui_divider = self.append_divider()
-        self.append_text('Set a value in\n a given array.', size = 0.7)
+        self.append_text('Set a value in\na given array.', size = 0.7)
         self.ui_back = self.build_back()
         ui_divider.scale_x = self.ui_build_width
 

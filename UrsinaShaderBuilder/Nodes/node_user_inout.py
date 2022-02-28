@@ -66,7 +66,7 @@ class UserInOutNode(ShaderNode):
         self.update_data_type()
 
     def update_data_type(self, var = 'required'):
-        ind = str.find(self.main_connector.variable_type[0], '[')
+        ind = self.main_connector.variable_type[0].find('[')
         if ind == -1:
             data_type = self.main_connector.variable_type[0]
         else:
