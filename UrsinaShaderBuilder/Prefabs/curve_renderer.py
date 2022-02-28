@@ -1,93 +1,62 @@
 from ursina import *
+from ExtraData.builtin_shaders import Curve_Shader
+from panda3d.core import BoundingBox
 
 '''
 Renders a Bezier curve based on given points.
 '''
 
 class CurveRenderer(Entity):
-    '''
-    def __init__(self, thickness=10, length=15, **kwargs):
-        super().__init__(**kwargs)
-        self.renderer = Entity(
-            parent = self,
-            model = Mesh(
-            vertices=[self.world_position for i in range(length)],
-            mode='line',
-            thickness=thickness,
-            static=False
-            )
-        )
-        self.renderer.color = color.white
 
+    meshes:dict[int, list[tuple[float, float, float]]] = {}
     
-
-    def set_curve(self, points):
-        count = len(self.renderer.model.vertices)
-        for i in range(count):
-            self.renderer.model.vertices[i] = self.mlerp(points, i / (count - 1))
-        self.renderer.model.generate()
-    '''
-
     def __init__(self, thickness=0.005, length=25, color=color.white, **kwargs):
         super().__init__(**kwargs)
+        shader = Shader(vertex = Curve_Shader['vertex'], fragment = Curve_Shader['fragment'])
+
+        if length not in CurveRenderer.meshes:
+            CurveRenderer.meshes.update({length : [(floor(i/2) / (length - 1),  ((i + 1)%2) - 0.5, 0) for i in range(length * 2)] })
+        
         self.renderer = Entity(
             parent = self,
-            model = Mesh(
-            vertices=[self.world_position for i in range(length * 2)],
-            mode='tristrip',
-            static=False
-            )
+            model = Mesh(vertices = CurveRenderer.meshes[length], mode='tristrip', static=False),
+            shader = shader
         )
+        
+        self.set_shader_input('thickness', thickness)
+        self.set_shader_input('C1', (0,0))
+        self.set_shader_input('C2', (0,0))
+        self.set_shader_input('C3', (0,0))
+        self.set_shader_input('C4', (0,0))
+
         self.renderer.color = color
-        self.thickness = thickness
         self.length = length
 
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    
-    def swapxy(self, p):
-        p.x, p.y = -p.y, p.x
-        return p
-
     def set_curve(self, points):
-        if len(points) == 4:
-            curve_points = self.lerp4(points, self.length)
-        else:
-            curve_points = [self.mlerp(points, i / (self.length - 1)) for i in range(self.length)]
+        points = [Vec2(p.x, p.y) for p in points]
+        if len(points) == 2:
+            points = [points[0], lerp(points[0], points[1], 0.3), lerp(points[0], points[1], 0.7), points[1]]
 
-        dir = (curve_points[1] - curve_points[0]).normalized()
-        dir = self.swapxy(dir) * self.thickness * 0.5
-        self.renderer.model.vertices[0:2] = [curve_points[0] + dir, curve_points[0] - dir]
-
-        dir = (curve_points[-2] - curve_points[-1]).normalized()
-        dir = self.swapxy(dir) * self.thickness * 0.5
-        self.renderer.model.vertices[-1:-3:-1] = [curve_points[-1] + dir, curve_points[-1] - dir]
-        
-        for i in range(1, self.length - 1):
-            dir = ((curve_points[i + 1] - curve_points[i]).normalized() + (curve_points[i] - curve_points[i - 1]).normalized()).normalized()
-            dir = self.swapxy(dir) * self.thickness * 0.5
-
-            self.renderer.model.vertices[i*2  ] = curve_points[i] + dir
-            self.renderer.model.vertices[i*2+1] = curve_points[i] - dir
-
-        self.renderer.model.generate()
-
-    def mlerp(self, points, t):
-        if abs(t) < 0.000001: return points[0]
-        if abs(t - 1) < 0.000001: return points[-1]
-        # if len(points) > 3: return self.mlerp([points[0], self.mlerp(points[1:-1], t), points[-1]], t)
-        ps = copy(points)
-        for i in range(len(ps) - 1, 0, -1):
-            for j in range(i):
-                ps[j] = ps[j] + (ps[j+1] - ps[j]) * t         
-        return ps[0]
-        
-    def lerp4(self, p, l):
-        a = (p[1] - p[0])*3
-        # b = (p[0] - p[1]*2 + p[2])*3
-        # c = (p[3] + (p[1] - p[2])*3 - p[0])
-        b = (p[2] - p[1])*3
-        c = (p[3] - b - p[0])
+        a = (points[1] - points[0])*3
+        b = (points[2] - points[1])*3
+        c = (points[3] - b - points[0])
         b -= a
-        return [p[0] + (a + (b + c*t)*t)*t for t in [i / (l - 1) for i in range(l)]]
+
+        self.set_shader_input('C1', c)
+        self.set_shader_input('C2', b)
+        self.set_shader_input('C3', a)
+        self.set_shader_input('C4', points[0])
+
+        mins = Vec3(points[0].x, points[0].y, 0)
+        maxs = Vec3(points[0].x, points[0].y, 0)
+        for p in points:
+            for x in range(2):
+                mins[x] = min(mins[x], p[x])
+                maxs[x] = max(maxs[x], p[x])
+
+        node = self.node()
+        node.setBounds(BoundingBox(mins, maxs))
+        node.setFinal(True)
