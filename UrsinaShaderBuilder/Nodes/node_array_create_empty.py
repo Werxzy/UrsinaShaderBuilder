@@ -3,7 +3,7 @@ from shader_instructions import DataTypes
 from shader_node import ShaderNode
 
 '''
-Node for accessing a specific element in the array
+Node for creating an empty array of a given size and data type.
 '''
 
 class ArrayCreateEmptyNode(ShaderNode):

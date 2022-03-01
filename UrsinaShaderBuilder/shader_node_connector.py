@@ -26,6 +26,9 @@ class NodeConnector(Entity):
         self.on_connect = None # function called when a connection is completed (on_connect(connecting:bool) -> None)
         self.regex = False
 
+        self.y_spacing = 0.005
+        self.y_height = 0.02 + self.y_spacing * 2
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -34,25 +37,24 @@ class NodeConnector(Entity):
         if not self.isOutput:
             self.ui_line = None
 
-        y_spacing = 0.005
-        y_height = 0.02 + y_spacing * 2
+        self.y = -self.y_height * yth
 
         self.ui_text = Text(self.variable.replace('_',' ').strip(), parent = self, scale = 0.7, color = c_text)
-        self.ui_text.y = -(y_height - self.ui_text.height) * 0.5 - y_height * yth
+        self.ui_text.y = -(self.y_height - self.ui_text.height) * 0.5
         
-        ui_back_width = y_height * 2.5 + self.ui_text.width
+        ui_back_width = self.y_height * 2.5 + self.ui_text.width
         self.ui_back = Entity(parent = self, 
-            model = Quad(scale = Vec2(ui_back_width, y_height + 0.0003), 
-                radius = y_height * 0.5), 
+            model = Quad(scale = Vec2(ui_back_width, self.y_height + 0.0003), 
+                radius = self.y_height * 0.5), 
             z = 0.2, 
-            y = -y_height * 0.5 - y_height * yth - 0.0003,
+            y = -self.y_height * 0.5 - 0.0003,
             color = c_node_dark,
             collider = 'box')
 
         self.ui_dot = Entity(parent = self, 
             model = 'circle',
-            scale = y_height * 0.8,
-            y = -y_height * 0.5 - y_height * yth,
+            scale = self.y_height * 0.8,
+            y = -self.y_height * 0.5,
             color = c_node_back)
 
         if self.optional:
@@ -64,13 +66,13 @@ class NodeConnector(Entity):
 
         if self.isOutput: # right size
             self.ui_text.x = x_disp + 0.01
-            self.ui_back.x = x_disp + ui_back_width * 0.5 - y_height
-            self.ui_dot.x = self.ui_back.x + ui_back_width * 0.5 - y_height * 0.5
+            self.ui_back.x = x_disp + ui_back_width * 0.5 - self.y_height
+            self.ui_dot.x = self.ui_back.x + ui_back_width * 0.5 - self.y_height * 0.5
 
         else: # left side
             self.ui_text.x = - x_disp - self.ui_text.width - 0.01
-            self.ui_back.x = - x_disp - ui_back_width * 0.5 + y_height
-            self.ui_dot.x = self.ui_back.x - ui_back_width * 0.5 + y_height * 0.5
+            self.ui_back.x = - x_disp - ui_back_width * 0.5 + self.y_height
+            self.ui_dot.x = self.ui_back.x - ui_back_width * 0.5 + self.y_height * 0.5
             
 
     def input(self, key):
@@ -291,6 +293,11 @@ class NodeConnector(Entity):
         # path = [start, start_bend, start_bend, end_bend, end_bend, end]
         path = [start, start_bend, end_bend, end]
         self.ui_line.set_curve(path)
+
+    def set_y(self, yth, line_update = True):
+        self.y = -self.y_height * yth
+        if line_update:
+            self.update_line()
 
 
 # - - - shader builder functions - - -
