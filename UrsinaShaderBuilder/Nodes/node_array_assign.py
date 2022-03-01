@@ -22,10 +22,10 @@ class ArrayAssignNode(ShaderNode):
         self.assign_input = None
         self.index_inputs:list[NodeConnector] = []
 
-    def on_connect(self, connecting):
+    def on_connect(self, **kwargs):
         self.array_input.on_connect = None
 
-        if connecting:
+        if kwargs['connected']:
             data_type = self.array_input.connections[0].get_variable_type()
             size = data_type.count('[')
             assign_data_type = data_type[:data_type.find('[')]
@@ -41,7 +41,7 @@ class ArrayAssignNode(ShaderNode):
             self.inputs.remove(conn)
             destroy(conn)
 
-        if connecting:
+        if kwargs['connected']:
             if len(self.outputs) == 0:
                 self.build_connector('Array', [data_type], True, 0.5)
                 self.assign_input = self.build_connector(assign_data_type, [assign_data_type], False, 1.5)

@@ -23,7 +23,7 @@ class NodeConnector(Entity):
         self.variable = ''
         self.variable_type:list[str] = []
         self.optional = False
-        self.on_connect = None # function called when a connection is completed (on_connect(connecting:bool) -> None)
+        self.on_connect = None # function called when a connection is completed or needs to be updated
         self.regex = False
 
         self.y_spacing = 0.005
@@ -118,7 +118,7 @@ class NodeConnector(Entity):
         self._apply_connection(connector)
         connector._apply_connection(self)
 
-        if self.isOutput: self.parent.update_connections()
+        if not self.isOutput: self.parent.update_connections()
         else: connector.parent.update_connections()
 
     # announce that a connection is to be undone
@@ -235,7 +235,7 @@ class NodeConnector(Entity):
         if self.optional: self.ui_dot2.visible = False
 
         if self.on_connect != None:
-            self.on_connect(True)
+            self.on_connect(connected = True, new_connection = True, connector = self)
 
     # apply the disconnection and any changes required by the conneciton being made
     def _apply_disconnection(self, connector):
@@ -255,7 +255,7 @@ class NodeConnector(Entity):
         self.parent.disconnection(self)
 
         if self.on_connect != None:
-            self.on_connect(False)
+            self.on_connect(connected = False, new_connection = True, connector = self)
 
     def any_connected(self):
         return len(self.connections) > 0

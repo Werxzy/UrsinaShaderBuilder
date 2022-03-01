@@ -328,7 +328,9 @@ class ShaderNode(Entity):
                 
                 for i in nodes[0].inputs:
                     if i.on_connect != None:
-                        i.on_connect(len(i.connections) > 0)
+                        i.on_connect(connected = len(i.connections) > 0, new_connection = False, connector = i)
+
+                old_set = nodes[0].data_type_set
 
                 r = set(range(len(nodes[0].inputs[0].variable_type)))
                 for i in nodes[0].inputs: # get overlaps that exist on each node (disconnect any if they suddenly don't work)
@@ -350,19 +352,22 @@ class ShaderNode(Entity):
                 if len(r) == 1: # one matching input set
                     nodes[0].data_type_set = r.pop()
 
+                if old_set != nodes[0].data_type_set:
                     for o in nodes[0].outputs:# propogate, since we know this node's output type
                         for c in o.connections:
-                            nodes.append(c.parent)
+                            if nodes.count(c.parent) == 0:
+                                nodes.append(c.parent)
 
             else: # node has only an output (should only have one usually)
                 nodes[0].data_type_set = 0
                 for o in nodes[0].outputs: # propogate, since we know this node's output type
                     for c in o.connections:
-                        nodes.append(c.parent)
+                        if nodes.count(c.parent) == 0:
+                            nodes.append(c.parent)
 
             nodes.pop(0)
 
-        ShaderNode.update_connection_queue.remove(self)
+        ShaderNode.update_connection_queue.discard(self)
         if len(ShaderNode.update_connection_queue) > 0:
             ShaderNode.update_connection_queue.pop().update_connections(True)
 

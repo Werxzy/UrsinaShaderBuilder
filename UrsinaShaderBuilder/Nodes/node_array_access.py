@@ -21,8 +21,8 @@ class ArrayAccessNode(ShaderNode):
 
         self.index_inputs:list[NodeConnector] = []
 
-    def on_connect(self, connecting):
-        if connecting:
+    def on_connect(self, **kwargs):
+        if kwargs['connected']:
             variable = self.array_input.connections[0].get_variable_type()
             size = variable.count('[')
             data_type = variable[:variable.find('[')]
@@ -38,7 +38,7 @@ class ArrayAccessNode(ShaderNode):
             self.inputs.remove(conn)
             destroy(conn)
 
-        if connecting:
+        if kwargs['connected']:
             if len(self.outputs) > 0 and self.outputs[0].variable != data_type:
                 destroy(self.outputs.pop())
             if len(self.outputs) == 0:
