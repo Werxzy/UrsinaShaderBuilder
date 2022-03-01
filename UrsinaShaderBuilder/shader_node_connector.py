@@ -327,6 +327,11 @@ class NodeConnector(Entity):
             return ''
         return self.variable_type[self.parent.data_type_set]
 
+    def get_usable_variable_types(self):
+        if self.parent.data_type_set == -1:
+            return self.variable_type
+        return [self.variable_type[self.parent.data_type_set]]
+
     # Creates the build variable and returns the variable assignment version
     # if there is a free variable to use
     #   _vec3_0

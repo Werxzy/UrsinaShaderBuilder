@@ -30,7 +30,6 @@ class ArrayCreateFilledNode(ShaderNode):
     # last connector is connected to. adjuste it and
     def new_connection(self, **kwargs):
         if kwargs['connected']:
-            print(kwargs)
             kwargs['connector'].on_connect = self.existing_connection
             kwargs['connector'].regex = False
 
@@ -40,9 +39,10 @@ class ArrayCreateFilledNode(ShaderNode):
     def existing_connection(self, **kwargs):
         if kwargs['new_connection']:
             if not kwargs['connected']:
-                self.last_disconnect = (kwargs['connector'], self.inputs.index(kwargs['connector']))
-                kwargs['connector'].enabled = False
-                self.inputs.remove(kwargs['connector'])
+                conn = kwargs['connector']
+                self.last_disconnect = (conn, self.inputs.index(conn))
+                conn.enabled = False
+                self.inputs.remove(conn)
 
             elif kwargs['connector'] == self.last_disconnect[0]:
                 self.inputs.insert(self.last_disconnect[1], self.last_disconnect[0])
@@ -55,19 +55,11 @@ class ArrayCreateFilledNode(ShaderNode):
         need_to_update = False
         if len(self.inputs) > 1:
             to_disconnect:list[NodeConnector] = []
-            if self.inputs[0].connections[0].parent.data_type_set == -1:
-                data_types = set(self.inputs[0].connections[0].variable_type)  
-            else:
-                 data_types = set([self.inputs[0].connections[0].variable_type[self.inputs[0].connections[0].parent.data_type_set]])
-            print(self.inputs)
+            data_types = set(self.inputs[0].connections[0].get_usable_variable_types())  
+
             if len(self.inputs) > 2:
                 for i in self.inputs[1:-1]:
-
-                    if i.connections[0].parent.data_type_set == -1:
-                        overlap = set(i.connections[0].variable_type)
-                    else:
-                        overlap = set([i.connections[0].variable_type[i.connections[0].parent.data_type_set]])
-                    overlap &= data_types
+                    overlap = data_types & set(i.connections[0].get_usable_variable_types())
 
                     if len(overlap) == 0:
                         to_disconnect.append(i)
@@ -91,7 +83,6 @@ class ArrayCreateFilledNode(ShaderNode):
                     self.outputs[0].variable_type = output_types
                     need_to_update = True
 
-    
         else:
             self.inputs[0].variable_type = ArrayCreateFilledNode.allowed_data_types
             self.inputs[0].regex = True
@@ -103,12 +94,6 @@ class ArrayCreateFilledNode(ShaderNode):
         self.update_connector_positions()
         if need_to_update and update_conn:
             self.update_connections()
-
-        print('- - types - -')
-        for i in self.inputs:
-            print(i.variable_type)
-        for o in self.outputs:
-            print(o.variable_type)
 
     def update_connector_positions(self):
         for y, i in enumerate(self.inputs):
