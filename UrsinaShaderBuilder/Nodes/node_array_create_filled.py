@@ -72,7 +72,6 @@ class ArrayCreateFilledNode(ShaderNode):
                 self.inputs.remove(i)
                 destroy(i)
                 
-
             for i in self.inputs:
                 i.variable_type = list(data_types)
                 i.regex = False
@@ -100,3 +99,12 @@ class ArrayCreateFilledNode(ShaderNode):
     def update_connector_positions(self):
         for y, i in enumerate(self.inputs):
             i.set_y(y + 0.5)
+
+    def build_shader(self):
+        v = self.outputs[0].prepare_build_variable() + ' = ' + self.outputs[0].get_variable_type() + '('
+        v += ', '.join([i.get_build_variable() for i in self.inputs[:-1]])
+        v += ');'
+        self.manager.build_shader_append('main', v)
+
+    def load(manager, data):
+        return ArrayCreateFilledNode(parent = manager, manager = manager)
