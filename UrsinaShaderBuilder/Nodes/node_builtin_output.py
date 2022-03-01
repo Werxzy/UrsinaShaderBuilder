@@ -64,7 +64,7 @@ class BuiltInOutputNode(ShaderNode):
         'gl_FragCoord': ('in', 'vec4', 'fragment'),
         'gl_FrontFacing': ('in', 'bool', 'fragment'),
         'gl_PointCoord': ('in', 'vec2', 'fragment'),
-        'gl_InstanceID': ('in', 'int', 'vertex'),
+        'gl_InstanceID': ('in', 'int', 'vertex', 'dont include'),
 
         'gl_FragDepth': ('out', 'vec2', 'fragment'),
         'p3d_FragColor': ('out', 'vec4', 'fragment'),
@@ -89,7 +89,8 @@ class BuiltInOutputNode(ShaderNode):
     def build_shader(self):
         att = BuiltInOutputNode.build_in_attributes[self.variable]
         v1 = att[0] + ' ' + att[1] + ' ' + self.variable + ';'
-        self.manager.build_shader_append('inout', v1)
+        if 'dont include' not in att:
+            self.manager.build_shader_append('inout', v1)
 
         if att[0] == 'out':
             v2 = self.variable + ' = ' + self.main_connector.get_build_variable() + ';'
