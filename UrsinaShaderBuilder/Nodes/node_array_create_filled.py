@@ -22,6 +22,8 @@ class ArrayCreateFilledNode(ShaderNode):
         self.append_text('Creates an array\n from given variables.', size = 0.7)
         ui_divider.scale_x = self.ui_build_width
         self.ui_back = self.build_back()
+
+        self.update_check = self.update_data_type
         
         self.last_disconnect = (None,0)
 
@@ -34,7 +36,7 @@ class ArrayCreateFilledNode(ShaderNode):
             kwargs['connector'].regex = False
 
             self.build_connector('', ArrayCreateFilledNode.allowed_data_types, False, len(self.inputs) + 0.5, optional = True, regex = True, on_connect = self.new_connection)
-            self.update_data_type()
+            self.update_data_type(True)
 
     def existing_connection(self, **kwargs):
         if kwargs['new_connection']:
@@ -48,10 +50,10 @@ class ArrayCreateFilledNode(ShaderNode):
                 self.inputs.insert(self.last_disconnect[1], self.last_disconnect[0])
                 self.last_disconnect[0].enabled = True
                 self.last_disconnect = (None,0)
-        if kwargs['new_connection']:
+
             self.update_data_type(True)
 
-    def update_data_type(self, update_conn = True):
+    def update_data_type(self, update_conn = False):
         need_to_update = False
         if len(self.inputs) > 1:
             to_disconnect:list[NodeConnector] = []

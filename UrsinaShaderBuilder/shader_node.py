@@ -25,6 +25,7 @@ class ShaderNode(Entity):
         self.dragged = False
         self.draggable = True
         self.mode = ''
+        self.update_check = None
 
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
         # needs to be checked any time that a connection would be made or removed
@@ -324,13 +325,14 @@ class ShaderNode(Entity):
 
         nodes = [self]
         while len(nodes) > 0:
+            if nodes[0].update_check != None:
+                nodes[0].update_check()
+
             if len(nodes[0].inputs) > 0:
                 
                 for i in nodes[0].inputs:
                     if i.on_connect != None:
                         i.on_connect(connected = len(i.connections) > 0, new_connection = False, connector = i)
-
-                old_set = nodes[0].data_type_set
 
                 r = set(range(len(nodes[0].inputs[0].variable_type)))
                 for i in nodes[0].inputs: # get overlaps that exist on each node (disconnect any if they suddenly don't work)
@@ -352,11 +354,10 @@ class ShaderNode(Entity):
                 if len(r) == 1: # one matching input set
                     nodes[0].data_type_set = r.pop()
 
-                if old_set != nodes[0].data_type_set:
-                    for o in nodes[0].outputs:# propogate, since we know this node's output type
-                        for c in o.connections:
-                            if nodes.count(c.parent) == 0:
-                                nodes.append(c.parent)
+                for o in nodes[0].outputs:# propogate, since we know this node's output type
+                    for c in o.connections:
+                        if nodes.count(c.parent) == 0:
+                            nodes.append(c.parent)
 
             else: # node has only an output (should only have one usually)
                 nodes[0].data_type_set = 0
