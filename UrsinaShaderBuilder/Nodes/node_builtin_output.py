@@ -64,7 +64,7 @@ class BuiltInOutputNode(ShaderNode):
         'gl_FragCoord': ('in', 'vec4', 'fragment'),
         'gl_FrontFacing': ('in', 'bool', 'fragment'),
         'gl_PointCoord': ('in', 'vec2', 'fragment'),
-        'gl_InstanceID;': ('in', 'int', 'vertex'),
+        'gl_InstanceID': ('in', 'int', 'vertex'),
 
         'gl_FragDepth': ('out', 'vec2', 'fragment'),
         'p3d_FragColor': ('out', 'vec4', 'fragment'),

@@ -16,6 +16,13 @@ class VariableSplitterNode(ShaderNode):
         'mat3' : ['vec3', 'vec3', 'vec3'],
         'mat2' : ['vec2', 'vec2'],
 
+        'mat4x2' : ['vec2', 'vec2', 'vec2', 'vec2'],
+        'mat4x3' : ['vec3', 'vec3', 'vec3', 'vec3'],
+        'mat3x4' : ['vec4', 'vec4', 'vec4'],
+        'mat3x2' : ['vec2', 'vec2', 'vec2'],
+        'mat2x4' : ['vec4', 'vec4'],
+        'mat2x3' : ['vec3', 'vec3'],
+
         'ivec4' : ['int', 'int', 'int', 'int'],
         'ivec3' : ['int', 'int', 'int'],
         'ivec2' : ['int', 'int'],
