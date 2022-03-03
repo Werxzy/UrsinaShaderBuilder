@@ -92,10 +92,16 @@ class InstancedGroup(Entity):
         self.any_updated = True
 
     # sets a value and notifies that the specific shader attribute needs to be updated.
-    def update_value(self, entity, name, value = ''):
-        self.values[name][self.entities.index(entity)] = value if value != '' else getattr(entity, name)
-        self.any_updated = True
-        self.to_update.add(name)
+    def update_value(self, entity, name, value = None):
+        i = self.entities.index(entity)
+        
+        if value == None:
+            value = getattr(entity, name)
+
+        if self.values[name][i] != value:
+            self.values[name][i] = value
+            self.any_updated = True
+            self.to_update.add(name)
 
 
 if __name__ == '__main__':
