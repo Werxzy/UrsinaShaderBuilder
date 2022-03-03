@@ -1,11 +1,11 @@
 from ursina import *
 import json
 
-with open('Example\\basic.ursinashader') as f:
+with open('Example\\Basic Shaders\\basic.ursinashader') as f:
 # with open('basic.ursinashader') as f: # location depends on how it's run
     shader_file = json.load(f)
 
-with open('Example\\basicWinputs.ursinashader') as f:
+with open('Example\\Basic Shaders\\basicWinputs.ursinashader') as f:
 # with open('basicWinputs.ursinashader') as f:
     shader_file2 = json.load(f)
 

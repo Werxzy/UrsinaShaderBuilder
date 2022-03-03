@@ -89,13 +89,13 @@ class VariableSplitterNode(ShaderNode):
     def build_shader(self):
         if self.ui_merge[1].text == 'false':
             v = self.inputs[0].get_build_variable()
-            t = self.outputs[0].get_variable_type()
+            t = self.inputs[0].get_variable_type()
 
             for i,o in enumerate(self.outputs):
                 if not o.any_connected(): continue
 
                 v2 = o.prepare_build_variable()
-                comp = ['[0]', '[1]', '[2]', '[3]'] if t.startswith('mat') or t.startswith('_mat') else ['.x', '.y', '.z', '.w'] 
+                comp = ['[0]', '[1]', '[2]', '[3]'] if t.startswith('mat') else ['.x', '.y', '.z', '.w'] 
                     
                 inst = v2 + ' = ' + v + comp[i] + ';'
                 self.manager.build_shader_append('main', inst)
