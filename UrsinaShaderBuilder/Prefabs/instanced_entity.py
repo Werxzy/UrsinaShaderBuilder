@@ -31,6 +31,7 @@ class InstancedGroup(Entity):
         self.shader_attributes = shader_attributes
         self.values = dict((v, []) for v in shader_attributes.keys())
         self.max_count = 256
+        self.group_chain:InstancedGroup = None
         
         self.any_updated = False
         self.count_update = False
@@ -38,6 +39,8 @@ class InstancedGroup(Entity):
 
         self.default_class:type = InstancedEntity
         self.default_kwargs:dict[str] = {}
+
+        self.org_kwargs = kwargs
 
         # not sure what to do with the bounding box
         from panda3d.core import BoundingBox
@@ -47,6 +50,8 @@ class InstancedGroup(Entity):
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        assert self.max_count > 0
 
     def update(self):
         # Updates the number of instances of the model/shader
@@ -62,13 +67,30 @@ class InstancedGroup(Entity):
             self.to_update.clear()
 
     # Creates a new entity for the group.
-    def new_entity(self, **kwargs):
+    def new_entity(self, **kwargs) -> InstancedEntity:
         e = self.default_class(**(self.default_kwargs | kwargs))
         self.append(e)
         return e
 
     # Adds an entity to the list and notifies that shader attributes need to be updated.
+    # If the number of entities reaches the max count, then a new group is created with the same settings.
     def append(self, entity:InstancedEntity):
+        if len(self.entities) == self.max_count:
+            if self.group_chain == None:
+                self.group_chain = InstancedGroup(
+                    shader_attributes = self.shader_attributes,
+                    **(self.org_kwargs | {
+                        'parent' : self, 
+                        'position' : (0,0,0), 
+                        'scale' : 1, 
+                        'rotation' : (0,0,0),
+                        'max_count' : self.max_count,
+                        'default_class' : self.default_class,
+                        'default_kwargs' : self.default_kwargs
+                    }))
+            self.group_chain.append(entity)
+            return
+
         self.entities.append(entity)
         entity.instance_group = self
         
@@ -102,7 +124,6 @@ class InstancedGroup(Entity):
             self.values[name][i] = value
             self.any_updated = True
             self.to_update.add(name)
-
 
 if __name__ == '__main__':
     app = Ursina(vsync=False)
@@ -143,13 +164,7 @@ if __name__ == '__main__':
         color.rgb *= max(dot(normalize(vec3(1,1,1)), normalize(normal)), 0.2);
         fragColor = color.rgba;
     }
-    ''',
-    default_input={
-        'positions' : [Vec3(i,0,0) for i in range(256)],
-        'rotations' : [Vec4(0) for i in range(256)],
-        'scales' : [Vec3(1) for i in range(256)],
-        'colors' : [Vec4(1,1,1,1) for i in range(256)],
-    })
+    ''')
 
     instEntity = InstancedGroup(
         model = 'cube',
