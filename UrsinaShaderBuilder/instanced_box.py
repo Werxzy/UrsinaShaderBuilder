@@ -9,7 +9,6 @@ class InstancedBox(InstancedEntity):
     def __init__(self, **kwargs):
         self.box_scale = (0.1, 0.1, 0.02, 0.02)
         self.relative_position = Vec4(0,0,0,0)
-        self.old_position = Vec4(0,0,0,0)
 
         super().__init__(**( {'parent' : camera.ui} | kwargs | {'collider' : None}))
 
@@ -30,8 +29,7 @@ class InstancedBox(InstancedEntity):
     def update(self):
         if self.instance_group != None:
             np = self.get_position(self.instance_group)
-            if self.old_position != np:
-                self.old_position = np
+            if self.relative_position.xyz != np:
                 self.relative_position = Vec4(np, 0)
 
     def __setattr__(self, name, value):
