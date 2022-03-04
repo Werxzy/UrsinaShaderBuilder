@@ -3,6 +3,7 @@ from ursina import *
 class InstancedEntity(Entity):
 
     def __init__(self, **kwargs):
+        self.priority = 10
         self.instance_group:InstancedGroup = None
         super().__init__(**kwargs)
 
@@ -25,6 +26,7 @@ class InstancedEntity(Entity):
 class InstancedGroup(Entity):
 
     def __init__(self, shader_attributes:dict[str, str] = {}, ursina_shader_file:dict = None, **kwargs):
+        self.priority = 20
         self.entities:list[InstancedEntity] = []
         self.shader_attributes = shader_attributes
         self.values = dict((v, []) for v in shader_attributes.keys())
