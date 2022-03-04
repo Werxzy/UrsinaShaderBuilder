@@ -25,31 +25,28 @@ class InstancedEntity(Entity):
 class InstancedGroup(Entity):
 
     def __init__(self, shader_attributes:dict[str, str] = {}, ursina_shader_file:dict = None, **kwargs):
-        super().__init__()
-
         self.entities:list[InstancedEntity] = []
         self.shader_attributes = shader_attributes
         self.values = dict((v, []) for v in shader_attributes.keys())
         self.max_count = 256
         self.group_chain:InstancedGroup = None
         
-        self.any_updated = False
-        self.count_update = False
-        self.to_update = set()
+        self.any_updated = True
+        self.count_update = True
+        self.to_update = set(shader_attributes.keys())
 
         self.default_class:type = InstancedEntity
         self.default_kwargs:dict[str] = {}
 
         self.org_kwargs = kwargs
 
+        super().__init__(**kwargs)
+
         # not sure what to do with the bounding box
         from panda3d.core import BoundingBox
         node = self.node()       
         node.setBounds(BoundingBox(Vec3(-100,-100,-100), Vec3(100,100,100)))
         node.setFinal(True)
-
-        for key, value in kwargs.items():
-            setattr(self, key, value)
 
         assert self.max_count > 0
 
@@ -63,7 +60,7 @@ class InstancedGroup(Entity):
         if self.any_updated:
             self.any_updated = False
             for k in self.to_update:
-                self.set_shader_input(self.shader_attributes[k], self.values[k])
+                self.set_shader_input(self.shader_attributes[k], self.values[k] if len(self.entities) > 0 else [0])
             self.to_update.clear()
 
     # Creates a new entity for the group.
@@ -108,6 +105,7 @@ class InstancedGroup(Entity):
         
         for k in self.shader_attributes:
             self.values[k].pop(i)
+        self.entities.pop(i)
 
         self.to_update.update(self.shader_attributes.keys())
         self.count_update = True
