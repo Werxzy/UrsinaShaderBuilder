@@ -55,6 +55,7 @@ class InstancedGroup(Entity):
         if self.count_update:
             self.count_update = False
             self.setInstanceCount(len(self.entities))
+            self.visible = len(self.entities) > 0
 
         # Updates any changes of the shader attributes.
         if self.any_updated:

@@ -146,7 +146,7 @@ class ShaderNode(Entity):
             quadScale = Vec2(ent_name.height + self.ui_spacing * 0.5, ent_name.height + self.ui_spacing * 0.5)
             # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
             # ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25)
-            ent_field_back = ent_field_back = InstancedBox.main_group.new_entity(parent = self, 
+            ent_field_back = InstancedBox.main_group.new_entity(parent = self, 
                 box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
                 color = c_node_dark,
                 collider = 'box')
@@ -186,8 +186,14 @@ class ShaderNode(Entity):
         ent_field.extra_info = str(extra_info)
 
         quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
-        ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
-        ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
+        # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
+        # ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_field.y + self.ui_spacing * 0.25)
+        ent_field_back = InstancedBox.main_group.new_entity(parent = self, 
+                box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
+                color = c_node_dark,
+                collider = 'box')
+        ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25) + Vec2(quadScale.x,-quadScale.y) * 0.5
+        ent_field_back.z = 0.05
 
         def on_select_wrapper(option):
             ent_field.text = str(option[0]) if set_to_key else str(option)
@@ -205,7 +211,13 @@ class ShaderNode(Entity):
                     disable_scroll_bar = l <= 8, disable_search = l <= 8)
 
         ent_field_back.input = back_input
-        ent_field_back.on_destroy = self.manager.destroy_menu
+
+        ent_field_back.old_destroy = ent_field_back.on_destroy
+        def destoy_wrapper():
+            ent_field_back.old_destroy()
+            self.manager.destroy_menu()
+            
+        ent_field_back.on_destroy = destoy_wrapper
 
         self.ui_build_pos -= height + self.ui_spacing # add the starting y position for next element
 
