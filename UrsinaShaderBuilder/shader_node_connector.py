@@ -1,6 +1,7 @@
 from ursina import *
 from ExtraData.color_atlas import *
 from Prefabs.curve_renderer import CurveRenderer
+from instanced_box import InstancedBox
 
 '''
 The input or output for a ShaderNode.
@@ -43,25 +44,33 @@ class NodeConnector(Entity):
         self.ui_text.y = -(self.y_height - self.ui_text.height) * 0.5
         
         ui_back_width = self.y_height * 2.5 + self.ui_text.width
-        self.ui_back = Entity(parent = self, 
-            model = Quad(scale = Vec2(ui_back_width, self.y_height + 0.0003), 
-                radius = self.y_height * 0.5), 
-            z = 0.2, 
-            y = -self.y_height * 0.5 - 0.0003,
-            color = c_node_dark,
+
+        self.ui_back = InstancedBox.main_group.new_entity(parent = self, 
+            box_scale = (ui_back_width * 0.5 - self.y_height * 0.5,0.0003, self.y_height, self.y_height), 
+            position = (0, -self.y_height * 0.5, 0.2), 
+            color = c_node_dark, 
             collider = 'box')
 
-        self.ui_dot = Entity(parent = self, 
-            model = 'circle',
-            scale = self.y_height * 0.8,
-            y = -self.y_height * 0.5,
+        # self.ui_dot = Entity(parent = self, 
+        #     model = 'circle',
+        #     scale = self.y_height * 0.8,
+        #     y = -self.y_height * 0.5,
+        #     color = c_node_back)
+
+        self.ui_dot = InstancedBox.main_group.new_entity(parent = self, 
+            box_scale = (0,0, self.y_height * 0.8, self.y_height * 0.8), 
+            y = -self.y_height * 0.5, 
             color = c_node_back)
 
         if self.optional:
-            self.ui_dot2 = Entity(parent = self.ui_dot, 
-                model = 'circle',
-                scale = 0.7,
-                z = -0.01,
+            # self.ui_dot2 = Entity(parent = self.ui_dot, 
+            #     model = 'circle',
+            #     scale = 0.7,
+            #     z = -0.01,
+            #     color = c_node_dark)
+            self.ui_dot2 = InstancedBox.main_group.new_entity(parent = self.ui_dot, 
+                box_scale = (0,0, self.y_height * 0.8 * 0.7, self.y_height * 0.8 * 0.7), 
+                z = -0.1,
                 color = c_node_dark)
 
         if self.isOutput: # right size

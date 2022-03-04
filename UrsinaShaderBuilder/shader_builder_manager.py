@@ -6,7 +6,8 @@ from ursina import *
 from Prefabs.bar_menu import BarMenu
 from Prefabs.search_menu import SearchMenu
 from Prefabs.warning_message import WarningMessage
-
+from instanced_box import InstancedBox
+ 
 from shader_node import ShaderNode
 from shader_node_connector import NodeConnector
 from Nodes.node_user_inout import UserInOutNode
@@ -79,6 +80,9 @@ class ShaderBuilderManager(Entity):
 
     def __init__(self, **kwargs):
         super().__init__(parent = camera.ui)
+        InstancedBox.init_group(parent = self)
+        print(InstancedBox.main_group.scale)
+        print(camera.ui.scale)
 
         self.shader_nodes:list[ShaderNode] = []
         self.bar_menu = BarMenu(options = ShaderBuilderManager.bar_menu_options, z = -2, on_selected = self.bar_menu_selected)
@@ -594,3 +598,4 @@ class ShaderBuilderManager(Entity):
     def set_nodes_visisble(self):
         for n in self.shader_nodes:
             n.enabled = n.mode == self._mode
+        InstancedBox.update_visibility()

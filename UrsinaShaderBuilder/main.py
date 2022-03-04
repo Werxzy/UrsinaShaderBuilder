@@ -34,7 +34,11 @@ NodeConnector.line_quality = config['Line Quality']
 
 window.title = 'Ursina Shader Builder'
 
-app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1)
+app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1, vsync = False)
+
+camera.ui_render.set_depth_test(1)
+camera.ui_render.set_depth_write(1)
+# turns out for instanced rendering, depth writing/testing is important
 
 sbm = ShaderBuilderManager()
 

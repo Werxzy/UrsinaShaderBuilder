@@ -1,5 +1,6 @@
 import string
 from ursina import *
+from instanced_box import InstancedBox
 from shader_instructions import *
 from shader_node_connector import NodeConnector
 from ExtraData.color_atlas import *
@@ -125,8 +126,11 @@ class ShaderNode(Entity):
             ent_field.render = render
 
             quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_name.height + self.ui_spacing * 0.5)
-            ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark)
-            ent_field_back.position = ent_name.position + Vec2(ent_name.width + self.ui_spacing * 0.5, self.ui_spacing * 0.25)
+            # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark)
+            ent_field_back = InstancedBox.main_group.new_entity(parent = self, 
+                box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
+                color = c_node_dark)
+            ent_field_back.position = ent_name.position + Vec2(ent_name.width + self.ui_spacing * 0.5, self.ui_spacing * 0.25) + Vec2(quadScale.x,-quadScale.y) * 0.5
             ent_field_back.z = 0.05
 
             ent_field.scroll_size = (floor(quadScale.x / ent_field.text_entity.width * len(ent_field.text) / 0.8 - 1),1)
@@ -140,8 +144,15 @@ class ShaderNode(Entity):
             ent_field.on_change_att = on_change_att
 
             quadScale = Vec2(ent_name.height + self.ui_spacing * 0.5, ent_name.height + self.ui_spacing * 0.5)
-            ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
-            ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25)
+            # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
+            # ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25)
+            ent_field_back = ent_field_back = InstancedBox.main_group.new_entity(parent = self, 
+                box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
+                color = c_node_dark,
+                collider = 'box')
+            ent_field_back.position = Vec2(ent_name.x + ent_name.width + self.ui_spacing * 0.5, ent_name.y + self.ui_spacing * 0.25) + Vec2(quadScale.x,-quadScale.y) * 0.5
+            ent_field_back.z = 0.05
+            
 
             def set_value(val):
                 ent_field.text = 'true' if val else 'false'
@@ -280,8 +291,10 @@ class ShaderNode(Entity):
                     self.ui_build_pos = ent_text.org_build_pos - (ent_text.node_size[1] + self.ui_spacing + inner_space * 2)
                     self.ui_build_width = max(ent_text.org_build_width, ent_text.node_size[0] + self.ui_spacing * 2 + inner_space * 2)
                     quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
-                    self.ui_back.model = Quad(scale = quadScale, radius=0.02)
-                    self.ui_back.origin_y = quadScale.y * 0.5
+                    # self.ui_back.model = Quad(scale = quadScale, radius=0.02)
+                    # self.ui_back.origin_y = quadScale.y * 0.5
+                    self.ui_back.box_scale = (quadScale.x * 0.5 - 0.02, quadScale.y * 0.5 - 0.02, 0.04, 0.04) 
+                    self.ui_back.position = (0, -quadScale.y * 0.5, self.ui_back.position.z)
                     self.ui_back.collider = 'box'
 
                     
@@ -293,7 +306,18 @@ class ShaderNode(Entity):
 
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
-        ent = Entity(parent = self, model = Quad(scale = quadScale, radius=0.02), z = 0.1, origin_y = quadScale.y * 0.5, color = c_node_back, collider='box')
+        # ent = Entity(parent = self, 
+        #     model = Quad(scale = quadScale, radius=0.02), 
+        #     z = 0.1, 
+        #     origin_y = quadScale.y * 0.5, 
+        #     color = c_node_back, 
+        #     collider='box')
+
+        ent = InstancedBox.main_group.new_entity(parent = self, 
+            box_scale = (quadScale.x * 0.5 - 0.02, quadScale.y * 0.5 - 0.02, 0.04, 0.04), 
+            position = (0, -quadScale.y * 0.5, 0.1), 
+            color = c_node_back, 
+            collider = 'box')
         return ent
 
     def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False, on_connect = None, regex = False):
