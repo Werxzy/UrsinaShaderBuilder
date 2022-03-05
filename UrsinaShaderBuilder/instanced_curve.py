@@ -1,6 +1,10 @@
 from ursina import *
 from Prefabs.instanced_entity import InstancedEntity, InstancedGroup
-from ExtraData.builtin_shaders import Instanced_Curve_Shader
+
+Instanced_Curve_Shader = {
+    "vertex": "#version 450\n\nuniform vec4[128] Cvals1;\nin vec4 p3d_Vertex;\nuniform vec4[128] Cvals2;\nuniform float thickness;\nuniform vec4[128] positions;\nuniform vec4[128] colors;\nuniform mat4 p3d_ModelViewProjectionMatrix;\nin vec2 p3d_MultiTexCoord0;\nout vec4 col;\nout vec2 uv;\nout vec4 gl_Position;\n\nvoid main(){\nvec4[128] _vec4_array_128_3 = colors;\nvec4[128] _vec4_array_128_2 = positions;\nvec4[128] _vec4_array_128_1 = Cvals2;\nvec4[128] _vec4_array_128_0 = Cvals1;\nvec4 _vec4_0 = _vec4_array_128_0[gl_InstanceID];\nvec2 _vec2_0 = vec2(_vec4_0.xy);\nfloat _float_0 = _vec4_0.z;\nfloat _float_1 = _vec4_0.w;\nvec2 _vec2_1 = vec2(_float_0,_float_1);\n_float_1 = p3d_Vertex.x;\n_float_0 = p3d_Vertex.y;\nvec2 _vec2_2=3.0*_vec2_0;\nvec2 _vec2_3=2.0*_vec2_1;\n_vec2_2=_vec2_2*_float_1;\n_vec4_0 = _vec4_array_128_1[gl_InstanceID];\n_vec2_3=_vec2_2+_vec2_3;\n_vec2_2 = vec2(_vec4_0.xy);\nfloat _float_2 = _vec4_0.z;\nfloat _float_3 = _vec4_0.w;\n_vec2_3=_vec2_3*_float_1;\n_vec2_0=_float_1*_vec2_0;\n_vec2_3=_vec2_3+_vec2_2;\n_vec2_1=_vec2_0+_vec2_1;\nfloat _float_4 = _vec2_3.x;\nfloat _float_5 = _vec2_3.y;\n_vec2_1=_float_1*_vec2_1;\n_float_5=_float_5*-1;\n_vec2_2=_vec2_1+_vec2_2;\n_vec2_1 = vec2(_float_5,_float_4);\n_vec2_3 = vec2(_float_2,_float_3);\n_vec2_2=_float_1*_vec2_2;\n_float_0=_float_0*thickness;\n_vec2_1=normalize(_vec2_1);\n_vec2_3=_vec2_2+_vec2_3;\n_vec2_1=_vec2_1*_float_0;\n_vec2_3=_vec2_1+_vec2_3;\n_vec4_0 = vec4(_vec2_3,0,1);\nvec4 _vec4_1 = _vec4_array_128_2[gl_InstanceID];\n_vec4_0=_vec4_1+_vec4_0;\n_vec4_1 = _vec4_array_128_3[gl_InstanceID];\n_vec4_0=p3d_ModelViewProjectionMatrix*_vec4_0;\ncol = _vec4_1;\nuv = p3d_MultiTexCoord0;\ngl_Position = _vec4_0;\n}",
+    "fragment": "#version 450\n\nin vec2 uv;\nuniform sampler2D p3d_Texture0;\nin vec4 col;\nout vec4 p3d_FragColor;\n\nvoid main(){\nvec4 _vec4_0=texture(p3d_Texture0,uv);\n_vec4_0=col*_vec4_0;\np3d_FragColor = _vec4_0;\n}"
+}
 
 class InstancedCurve(InstancedEntity):
 

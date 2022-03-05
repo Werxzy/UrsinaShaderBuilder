@@ -1,6 +1,10 @@
 from ursina import *
 from Prefabs.instanced_entity import InstancedEntity, InstancedGroup
-from ExtraData.builtin_shaders import Box_Shader
+
+Box_Shader = {
+    "vertex": "#version 450\n\nuniform vec4[128] scales;\nin vec4 p3d_Vertex;\nuniform vec4[128] positions;\nuniform vec4[128] colors;\nuniform mat4 p3d_ModelViewProjectionMatrix;\nout vec4 color;\nout vec4 gl_Position;\n\nvoid main(){\nvec4[128] _vec4_array_128_2 = colors;\nvec4[128] _vec4_array_128_1 = positions;\nvec4[128] _vec4_array_128_0 = scales;\nvec4 _vec4_0 = _vec4_array_128_0[gl_InstanceID];\nvec2 _vec2_0 = vec2(_vec4_0.xy);\nfloat _float_0 = _vec4_0.z;\nfloat _float_1 = _vec4_0.w;\nvec2 _vec2_1 = vec2(p3d_Vertex.xy);\nfloat _float_2 = p3d_Vertex.z;\nfloat _float_3 = p3d_Vertex.w;\nvec2 _vec2_2 = vec2(_float_0,_float_1);\nvec2 _vec2_3=sign(_vec2_1);\n_vec2_1=_vec2_2*_vec2_1;\n_vec2_3=_vec2_0*_vec2_3;\n_vec2_1=_vec2_3+_vec2_1;\n_vec4_0 = vec4(_vec2_1,_float_2,_float_3);\nvec4 _vec4_1 = _vec4_array_128_1[gl_InstanceID];\n_vec4_0=_vec4_1+_vec4_0;\n_vec4_1 = _vec4_array_128_2[gl_InstanceID];\n_vec4_0=p3d_ModelViewProjectionMatrix*_vec4_0;\ncolor = _vec4_1;\ngl_Position = _vec4_0;\n}",
+    "fragment": "#version 450\n\nin vec4 color;\nout vec4 p3d_FragColor;\n\nvoid main(){\np3d_FragColor = color;\n}"
+}
 
 class InstancedBox(InstancedEntity):
 
