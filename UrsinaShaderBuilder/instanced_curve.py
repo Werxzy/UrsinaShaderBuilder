@@ -9,6 +9,7 @@ Instanced_Curve_Shader = {
 class InstancedCurve(InstancedEntity):
 
     main_group:InstancedGroup = None
+    line_quality = 26
 
     def __init__(self, **kwargs):
         self.relative_position = Vec4(0,0,0,0)
@@ -49,12 +50,12 @@ class InstancedCurve(InstancedEntity):
                 self.relative_position = Vec4(np, 0)
 
     def init_group(parent):
-        length = 100
-            
         InstancedCurve.main_group = InstancedGroup(
             parent = parent,
             default_class = InstancedCurve,
-            model = Mesh(vertices = [(floor(i/2) / (length - 1),  ((i + 1)%2) - 0.5, 0) for i in range(length * 2)], mode='tristrip', static=False),
+            model = Mesh(vertices = [(floor(i/2) / (InstancedCurve.line_quality - 1),  ((i + 1)%2) - 0.5, 0) for i in range(InstancedCurve.line_quality * 2)], 
+                mode='tristrip', 
+                static=False),
             shader_attributes = {
                 'relative_position' : 'positions' ,
                 'c_val1' : 'Cvals1',

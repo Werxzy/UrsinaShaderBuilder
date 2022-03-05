@@ -29,12 +29,12 @@ if config['AntiAliasing'] == 1:
 	loadPrcFileData('', 'framebuffer-multisample 1')
 	loadPrcFileData('', 'multisamples 2')
 
-from shader_node_connector import NodeConnector
-NodeConnector.line_quality = config['Line Quality']
+from instanced_curve import InstancedCurve
+InstancedCurve.line_quality = config['Line Quality']
 
 window.title = 'Ursina Shader Builder'
 
-app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1, vsync = False)
+app = Ursina(borderless = False, fullscreen = config['Start Fullscreen'] == 1)
 
 camera.ui_render.set_depth_test(1)
 camera.ui_render.set_depth_write(1)

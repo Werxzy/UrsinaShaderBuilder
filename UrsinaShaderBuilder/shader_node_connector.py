@@ -10,7 +10,6 @@ The input or output for a ShaderNode.
 
 class NodeConnector(Entity):
     
-    line_quality = 26
     prepared_node = None
     prepared_line = None
 
