@@ -21,12 +21,6 @@ class InstancedCurve(InstancedEntity):
             e = e.parent
         return True
 
-    def update(self):
-        if self.instance_group != None:
-            np = self.get_position(self.instance_group)
-            if self.relative_position.xyz != np:
-                self.relative_position = Vec4(np, 0)
-
     def __setattr__(self, name, value):
         if name == 'visible' and self.instance_group != None:
             self.instance_group.update_value(self, 'color', self.color if value else (0,0,0,0))
@@ -44,6 +38,11 @@ class InstancedCurve(InstancedEntity):
         # self.c_val = [c, b, a, points[0]]
         self.c_val1 = [c.x, c.y, b.x, b.y]
         self.c_val2 = [a.x, a.y, points[0].x, points[0].y]
+
+        if self.instance_group != None:
+            np = self.get_position(self.instance_group)
+            if self.relative_position.xyz != np:
+                self.relative_position = Vec4(np, 0)
 
     def init_group(parent):
         length = 100
