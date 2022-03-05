@@ -63,7 +63,7 @@ class InstancedGroup(Entity):
         if self.any_updated:
             self.any_updated = False
             for k in self.to_update:
-                self.set_shader_input(self.shader_attributes[k], self.values[k] if len(self.entities) > 0 else [0])
+                self.set_shader_input(self.shader_attributes[k], self.values[k] if len(self.entities) > 0 else [0,0,0,0])
             self.to_update.clear()
 
     # Creates a new entity for the group.
@@ -77,9 +77,16 @@ class InstancedGroup(Entity):
     def append(self, entity:InstancedEntity):
         if len(self.entities) == self.max_count:
             if self.group_chain == None:
+                copy_kwargs = dict()
+                for k, v in self.org_kwargs.items():
+                    if k in ['model']:
+                        copy_kwargs.update({k : deepcopy(v)})
+                    else:
+                        copy_kwargs.update({k : v})
+
                 self.group_chain = InstancedGroup(
                     shader_attributes = self.shader_attributes,
-                    **(self.org_kwargs | {
+                    **(copy_kwargs | {
                         'parent' : self, 
                         'position' : (0,0,0), 
                         'scale' : 1, 
