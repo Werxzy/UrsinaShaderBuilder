@@ -1,6 +1,7 @@
 from ursina import *
 from ExtraData.color_atlas import *
 from Prefabs.curve_renderer import CurveRenderer
+from instanced_curve import InstancedCurve
 from instanced_box import InstancedBox
 
 '''
@@ -92,7 +93,7 @@ class NodeConnector(Entity):
                     self.destroy_prepared_line()
                 else:
                     NodeConnector.prepared_node = self
-                    NodeConnector.prepared_line = CurveRenderer(length = 6, parent = self, color = c_conn_active)
+                    NodeConnector.prepared_line = InstancedCurve.main_group.new_entity(parent = self, color = c_conn_active)
                     self.update_prepared_line()
                     
             elif NodeConnector.prepared_node == self and mouse.hovered_entity is None:
@@ -237,7 +238,7 @@ class NodeConnector(Entity):
                 self._apply_disconnection(0)
             self.connections.append(connector)
 
-            self.ui_line = CurveRenderer(length = NodeConnector.line_quality, parent = self, color = c_conn_active)
+            self.ui_line = InstancedCurve.main_group.new_entity(parent = self, color = c_conn_active)
             self.update_line()
 
         self.ui_dot.color = c_conn_active
