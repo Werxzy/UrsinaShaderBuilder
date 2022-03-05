@@ -3,9 +3,8 @@ from ursina import *
 class InstancedEntity(Entity):
 
     def __init__(self, **kwargs):
-        self.priority = 10
         self.instance_group:InstancedGroup = None
-        super().__init__(**kwargs)
+        super().__init__(priority = 10, **kwargs)
 
     # Watches if any of the known attributes are being changed, then notifies the group entity.
     def __setattr__(self, name, value):       
@@ -26,7 +25,6 @@ class InstancedEntity(Entity):
 class InstancedGroup(Entity):
 
     def __init__(self, shader_attributes:dict[str, str] = {}, ursina_shader_file:dict = None, **kwargs):
-        self.priority = 20
         self.entities:list[InstancedEntity] = []
         self.shader_attributes = shader_attributes
         self.values = dict((v, []) for v in shader_attributes.keys())
@@ -42,7 +40,7 @@ class InstancedGroup(Entity):
 
         self.org_kwargs = kwargs
 
-        super().__init__(**kwargs)
+        super().__init__(priority = 20, **kwargs)
 
         # not sure what to do with the bounding box
         from panda3d.core import BoundingBox
