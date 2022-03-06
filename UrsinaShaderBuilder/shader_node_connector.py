@@ -84,6 +84,17 @@ class NodeConnector(Entity):
             self.ui_dot.x = self.ui_back.x - ui_back_width * 0.5 + self.y_height * 0.5
             
 
+    def __setattr__(self, name, value):
+        if name == 'enabled':
+            if hasattr(self, 'ui_back'):
+                self.ui_back.collider = 'box' if value else None
+                self.ui_back.visible = value
+                self.ui_dot.visible = value
+                if self.optional: 
+                    self.ui_dot2.visible = value and len(self.connections) == 0 
+
+        return super().__setattr__(name, value)
+
     def input(self, key):
         if key == 'left mouse down':
             if self.ui_back.hovered:

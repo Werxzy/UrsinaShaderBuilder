@@ -40,10 +40,16 @@ class ArrayCreateFilledNode(ShaderNode):
     def existing_connection(self, **kwargs):
         if kwargs['new_connection']:
             if not kwargs['connected']:
+                if self.last_disconnect[0] != None:
+                    self.last_disconnect[0].on_destroy = None
+                    destroy(self.last_disconnect[0])
+                    self.last_disconnect = (None,0)
+
                 conn = kwargs['connector']
-                self.last_disconnect = (conn, self.inputs.index(conn))
-                conn.enabled = False
-                self.inputs.remove(conn)
+                if conn in self.inputs:
+                    self.last_disconnect = (conn, self.inputs.index(conn))
+                    conn.enabled = False
+                    self.inputs.remove(conn)
 
             elif kwargs['connector'] == self.last_disconnect[0]:
                 self.inputs.insert(self.last_disconnect[1], self.last_disconnect[0])
@@ -68,7 +74,8 @@ class ArrayCreateFilledNode(ShaderNode):
                         data_types = overlap
             
             for i in to_disconnect:
-                self.inputs.remove(i)
+                if i in self.inputs:
+                    self.inputs.remove(i)
                 destroy(i)
                 
             for i in self.inputs:
