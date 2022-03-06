@@ -27,13 +27,13 @@ class ConvertNode(ShaderNode):
 
         self.built = False
 
-        self.ui_name = self.append_text('Convert', size = 0.8)
-        self.div = self.append_divider()
+        self.append_text('Convert', size = 0.8)
+        self.append_divider()
 
         self.ui_from = self.append_drop_down('From', dict([(v,v) for v in ConvertNode.allowed_types]), self.rebuild_connections, start_value = start_from)
         self.ui_to = self.append_drop_down('To', dict([(v,v) for v in ConvertNode.allowed_types]), self.rebuild_connections, start_value = start_to)
 
-        self.ui_back = self.build_back()
+        self.build_back()
 
         self.rebuild_connections(start_from)
 

@@ -49,15 +49,15 @@ class VariableSplitterNode(ShaderNode):
     def __init__(self, data_type = '', merge = False, **kwargs):
         super().__init__(**kwargs)
 
-        self.ui_name = self.append_text('Split/Merge', size = 0.8)
+        self.append_text('Split/Merge', size = 0.8)
 
-        self.div = self.append_divider()
+        self.append_divider()
 
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in VariableSplitterNode.versions), self.menu_select)
         if data_type != '': self.ui_type[1].text = data_type
 
         self.ui_merge = self.append_value_input('Merge', 'bool', on_change = self.rebuild_connections)
-        self.ui_back = self.build_back()
+        self.build_back()
         self.built = False
 
         self.rebuild_connections()

@@ -80,7 +80,7 @@ class PreviewShaderInputNode(ShaderNode):
             else:
                 self.append_text('Type not supported yet.', size = 0.5)
 
-        self.ui_back = self.build_back()
+        self.build_back()
         
         self.x = window.left.x + self.ui_build_width * 0.5 + self.ui_spacing
         

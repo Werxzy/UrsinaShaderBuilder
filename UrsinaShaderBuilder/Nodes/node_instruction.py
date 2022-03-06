@@ -13,16 +13,16 @@ class InstructionNode(ShaderNode):
 
         self.instruction = instruction
         
-        self.ui_name = self.append_text(instruction)
+        self.append_text(instruction)
         self.ui_divider1 = self.append_divider()
-        self.ui_desc = self.append_text(GLSL[instruction]['description'], size=0.7)
+        self.append_text(GLSL[instruction]['description'], size=0.7)
         self.ui_divider2 = self.append_divider()
-        self.ui_func = self.append_text(GLSL[instruction]['function'], size=0.7)
+        self.append_text(GLSL[instruction]['function'], size=0.7)
 
-        self.ui_divider1.scale_x = self.ui_build_width
-        self.ui_divider2.scale_x = self.ui_build_width
+        self.ui_divider1[0].scale_x = self.ui_build_width
+        self.ui_divider2[0].scale_x = self.ui_build_width
 
-        self.ui_back = self.build_back()
+        self.build_back()
 
         i = 0.5
         # build inputs

@@ -32,32 +32,22 @@ class UserInOutNode(ShaderNode):
         self.ui_is_array = self.append_drop_down('', UserInOutNode.array_options, on_select = self.on_array_change,
             set_to_key = True)
         
-        self.ui_back_start_pos = self.ui_build_pos
-        self.ui_back = self.build_back()
+        self.build_back()
         self.ui_dimensions = []
 
         self.main_connector = self.build_connector('', [self.ui_type[1].text], isOutput, 0.5)
 
     def on_array_change(self, option, replace_vals = []):
-        old_vals = []
-        for ui in self.ui_dimensions:
-            old_vals.append(ui[1].text)
-            for sub in ui:
-                destroy(sub)
-        self.ui_dimensions.clear()
-        destroy(self.ui_back)
-        self.ui_build_pos = self.ui_back_start_pos
+        while len(self.ui_dimensions) > option:
+            self.remove_ui_section(self.ui_dimensions.pop())
 
-        if len(replace_vals) > 0:
-            old_vals = replace_vals
-
-        for i in range(option):
+        for i in range(len(self.ui_dimensions), option):
             self.ui_dimensions.append(self.append_value_input('[]'*i + '['+ 'xyzw'[i] +']', 'uint', on_change = self.update_data_type))
-            if i < len(old_vals):
-                self.ui_dimensions[i][1].text = old_vals[i]
+            if i < len(replace_vals):
+                self.ui_dimensions[i][1].text = replace_vals[i]
                 self.ui_dimensions[i][1].render(False)
 
-        self.ui_back = self.build_back()
+        self.build_back()
 
         self.update_data_type()
 

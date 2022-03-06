@@ -1,4 +1,3 @@
-from tkinter import image_names
 from ursina import destroy
 from shader_node_connector import NodeConnector
 from shader_node import ShaderNode
@@ -20,8 +19,8 @@ class ArrayCreateFilledNode(ShaderNode):
         self.append_text('Create filled Array')
         ui_divider = self.append_divider()
         self.append_text('Creates an array\n from given variables.', size = 0.7)
-        ui_divider.scale_x = self.ui_build_width
-        self.ui_back = self.build_back()
+        ui_divider[0].scale_x = self.ui_build_width
+        self.build_back()
 
         self.update_check = self.update_data_type
         

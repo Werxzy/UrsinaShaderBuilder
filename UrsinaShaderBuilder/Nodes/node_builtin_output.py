@@ -76,9 +76,8 @@ class BuiltInOutputNode(ShaderNode):
         self.variable = variable
         att = BuiltInOutputNode.build_in_attributes[variable]
 
-        self.ui_name = self.append_text(self.variable, size = 0.8)
-        
-        self.ui_back = self.build_back()
+        self.append_text(self.variable, size = 0.8)
+        self.build_back()
 
         self.main_connector = self.build_connector(att[1], [att[1]], 'out' != att[0], 0.157)
 

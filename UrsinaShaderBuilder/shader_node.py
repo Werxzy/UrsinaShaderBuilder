@@ -28,6 +28,9 @@ class ShaderNode(Entity):
         self.mode = ''
         self.update_check = None
 
+        self.ui_section = []
+        self.ui_back = None
+
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
         # needs to be checked any time that a connection would be made or removed
             # or when node settings are changed 
@@ -47,7 +50,12 @@ class ShaderNode(Entity):
 
     def append_divider(self, size = 1):
         self.ui_build_pos -= self.ui_spacing
-        return Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001 * size), color = c_node_dark)
+        ent = Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001 * size), color = c_node_dark)
+        
+        section = (ent, self.ui_spacing)
+        self.ui_section.append(section)
+
+        return section
 
     def append_text(self, text, text_color = c_text, size = 1):
         ent = Text(text, parent = self, color = text_color, scale = size)
@@ -55,7 +63,10 @@ class ShaderNode(Entity):
         self.ui_build_pos -= ent.height + self.ui_spacing # add the starting y position for next element
         self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing * 2)
 
-        return ent
+        section = (ent, ent.height + self.ui_spacing)
+        self.ui_section.append(section)
+
+        return section
 
     def append_value_input(self, name, data_type, text_color = c_text, on_change = None, on_change_att = ''):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
@@ -173,7 +184,10 @@ class ShaderNode(Entity):
         self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
 
-        return (ent_name, ent_field, ent_field_back)
+        section = (ent_name, ent_field, ent_field_back, ent_name.height + self.ui_spacing)
+        self.ui_section.append(section)
+
+        return section
 
     def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = '', set_to_key = False):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
@@ -220,6 +234,8 @@ class ShaderNode(Entity):
         ent_field_back.on_destroy = destoy_wrapper
 
         self.ui_build_pos -= height + self.ui_spacing # add the starting y position for next element
+
+        self.ui_section.append((ent_name, ent_field, ent_field_back, height + self.ui_spacing))
 
         return (ent_name, ent_field, ent_field_back)
 
@@ -318,19 +334,35 @@ class ShaderNode(Entity):
 
     def build_back(self):
         quadScale = Vec2(self.ui_build_width, -self.ui_build_pos + self.ui_spacing)
-        # ent = Entity(parent = self, 
-        #     model = Quad(scale = quadScale, radius=0.02), 
-        #     z = 0.1, 
-        #     origin_y = quadScale.y * 0.5, 
-        #     color = c_node_back, 
-        #     collider='box')
+        
+        if self.ui_back == None:
+            self.ui_back = InstancedBox.main_group.new_entity(parent = self, 
+                box_scale = (quadScale.x * 0.5 - 0.02, quadScale.y * 0.5 - 0.02, 0.04, 0.04), 
+                position = (0, -quadScale.y * 0.5, 0.1), 
+                color = c_node_back, 
+                collider = 'box')
+        else:
+            self.ui_back.box_scale = (quadScale.x * 0.5 - 0.02, quadScale.y * 0.5 - 0.02, 0.04, 0.04)
+            self.ui_back.position = (0, -quadScale.y * 0.5, 0.1)
+            self.ui_back.collider = 'box'
 
-        ent = InstancedBox.main_group.new_entity(parent = self, 
-            box_scale = (quadScale.x * 0.5 - 0.02, quadScale.y * 0.5 - 0.02, 0.04, 0.04), 
-            position = (0, -quadScale.y * 0.5, 0.1), 
-            color = c_node_back, 
-            collider = 'box')
-        return ent
+        return self.ui_back
+
+    # Remove a section and move all entities below it up by it's height
+    def remove_ui_section(self, section):
+        i = self.ui_section.index(section)
+        removed = self.ui_section.pop(i)
+        y = removed[-1]
+
+        for n in range(i, len(self.ui_section)):
+            for e in n[:-1]:
+                e.y += y
+        
+        for e in removed[:-1]:
+            destroy(e)
+
+        self.ui_build_pos += y
+        
 
     def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False, on_connect = None, regex = False):
         conn = NodeConnector(parent = self, 

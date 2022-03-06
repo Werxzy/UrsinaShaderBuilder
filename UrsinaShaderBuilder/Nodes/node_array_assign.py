@@ -14,8 +14,8 @@ class ArrayAssignNode(ShaderNode):
         self.append_text('Array Assign')
         ui_divider = self.append_divider()
         self.append_text('Set a value in\na given array.', size = 0.7)
-        self.ui_back = self.build_back()
-        ui_divider.scale_x = self.ui_build_width
+        self.build_back()
+        ui_divider[0].scale_x = self.ui_build_width
 
         self.array_input = self.build_connector('Array', ['.+(\\[\\d+\\])+'], False, 0.5, on_connect = self.on_connect, regex = True)
 
