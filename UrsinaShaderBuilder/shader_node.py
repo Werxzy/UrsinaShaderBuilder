@@ -49,24 +49,16 @@ class ShaderNode(Entity):
 # - - - ui builder functions - - -
 
     def append_divider(self, size = 1):
-        self.ui_build_pos -= self.ui_spacing
-        ent = Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos), scale = (0.2,0.001 * size), color = c_node_dark)
+        ent = Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos - self.ui_spacing), scale = (0.2,0.001 * size), color = c_node_dark)
         
-        section = (ent, self.ui_spacing)
-        self.ui_section.append(section)
-
-        return section
+        return self.append_ui_section((ent, self.ui_spacing))
 
     def append_text(self, text, text_color = c_text, size = 1):
         ent = Text(text, parent = self, color = text_color, scale = size)
         ent.position = Vec2(-ent.width * 0.5, self.ui_build_pos - self.ui_spacing) #adjust based on text width and starting y pos
-        self.ui_build_pos -= ent.height + self.ui_spacing # add the starting y position for next element
         self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing * 2)
 
-        section = (ent, ent.height + self.ui_spacing)
-        self.ui_section.append(section)
-
-        return section
+        return self.append_ui_section((ent, ent.height + self.ui_spacing))
 
     def append_value_input(self, name, data_type, text_color = c_text, on_change = None, on_change_att = ''):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
@@ -181,13 +173,8 @@ class ShaderNode(Entity):
         else:
             print_warning('ShaderNode.append_value_input() : invalid data type : ' + str(data_type))           
 
-        self.ui_build_pos -= ent_name.height + self.ui_spacing # add the starting y position for next element
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
-
-        section = (ent_name, ent_field, ent_field_back, ent_name.height + self.ui_spacing)
-        self.ui_section.append(section)
-
-        return section
+        return self.append_ui_section((ent_name, ent_field, ent_field_back, ent_name.height + self.ui_spacing))
 
     def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = '', set_to_key = False):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
@@ -197,7 +184,7 @@ class ShaderNode(Entity):
 
         ent_field = Text(list(options.keys())[0] if start_value == '' else start_value, parent = self, position = ent_name.position, scale = 0.8, color = text_color)
         ent_field.x += ent_name.width + self.ui_spacing
-        ent_field.extra_info = str(extra_info)
+        ent_field.extra_info = extra_info
 
         quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
         # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
@@ -233,11 +220,32 @@ class ShaderNode(Entity):
             
         ent_field_back.on_destroy = destoy_wrapper
 
-        self.ui_build_pos -= height + self.ui_spacing # add the starting y position for next element
+        return self.append_ui_section((ent_name, ent_field, ent_field_back, height + self.ui_spacing))
 
-        self.ui_section.append((ent_name, ent_field, ent_field_back, height + self.ui_spacing))
+    def append_button(self, text, on_click, extra_info = '', color = c_node_dark):
 
-        return (ent_name, ent_field, ent_field_back)
+        button_text = Text(text, parent = self, position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing), scale = 0.8, color = c_text)
+        button_text.extra_info = extra_info
+
+        quadScale = Vec2(self.ui_build_width - self.ui_spacing * 2.5, button_text.height + self.ui_spacing * 0.5)
+        button_back = InstancedBox.main_group.new_entity(parent = self, 
+            box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
+            position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing * 0.75) + Vec2(quadScale.x,-quadScale.y) * 0.5,
+            z = 0.05,
+            color = color,
+            collider = 'box')
+
+        def input(key):
+            if key == 'left mouse' and button_back.hovered:
+                if button_text.extra_info == '':
+                    on_click()
+                else:
+                    on_click(button_text.extra_info)
+
+        button_back.input = input
+
+        return self.append_ui_section((button_text, button_back, button_text.height + self.ui_spacing))
+        
 
     # needs to be the last appended to be stable
     # automatically appends the back
@@ -347,6 +355,13 @@ class ShaderNode(Entity):
             self.ui_back.collider = 'box'
 
         return self.ui_back
+
+    # adds the section to the list
+    # section = (entity, ... , height:float)
+    def append_ui_section(self, section):
+        self.ui_build_pos -= section[-1] # add the starting y position for next element
+        self.ui_section.append(section)
+        return section
 
     # Remove a section and move all entities below it up by it's height
     def remove_ui_section(self, section):
