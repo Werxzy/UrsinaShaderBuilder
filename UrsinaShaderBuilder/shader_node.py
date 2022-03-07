@@ -363,6 +363,39 @@ class ShaderNode(Entity):
 
         self.ui_build_pos += y
         
+    # moves an existing section to the position after relative_section and moves all elements in between up or down to make room
+    def move_ui_section(self, section, relative_section, before = False):
+        i = self.ui_section.index(section)
+        to = self.ui_section.index(relative_section)
+        removed = self.ui_section.pop(i)
+        y = removed[-1]
+        disp = 0
+
+        if before: 
+            to -= 1 
+
+        if i < to:
+            for n in self.ui_section[i:to]:
+                for e in n[:-1]:
+                    e.y += y
+                disp += n[-1]
+
+            for e in removed[:-1]:
+                e.y -= disp
+            
+            self.ui_section.insert(to, removed)
+
+        else:
+            for n in self.ui_section[to + 1:i]:
+                for e in n[:-1]:
+                    e.y -= y
+                disp += n[-1]
+                
+            for e in removed[:-1]:
+                e.y += disp
+
+            self.ui_section.insert(to + 1, removed)
+
 
     def build_connector(self, variable, variable_type, isOutput, offset = 0, optional = False, on_connect = None, regex = False):
         conn = NodeConnector(parent = self, 

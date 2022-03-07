@@ -50,7 +50,6 @@ class VariableSplitterNode(ShaderNode):
         super().__init__(**kwargs)
 
         self.append_text('Split/Merge', size = 0.8)
-
         self.append_divider()
 
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in VariableSplitterNode.versions), self.menu_select)
