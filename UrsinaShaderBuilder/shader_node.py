@@ -29,6 +29,7 @@ class ShaderNode(Entity):
         self.update_check = None
 
         self.ui_section = []
+        self.dividers = []
         self.ui_back = None
 
         self.data_type_set = -1 # nth data type in [float, vec2, vec3, ...]
@@ -50,7 +51,7 @@ class ShaderNode(Entity):
 
     def append_divider(self, size = 1):
         ent = Entity(parent = self, model = 'quad', position = Vec2(0, self.ui_build_pos - self.ui_spacing), scale = (0.2,0.001 * size), color = c_node_dark)
-        
+        self.dividers.append(ent)
         return self.append_ui_section((ent, self.ui_spacing))
 
     def append_text(self, text, text_color = c_text, size = 1):
@@ -224,10 +225,10 @@ class ShaderNode(Entity):
 
     def append_button(self, text, on_click, extra_info = '', color = c_node_dark):
 
-        button_text = Text(text, parent = self, position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing), scale = 0.8, color = c_text)
+        button_text = Text(text, parent = self, position = Vec2(self.ui_spacing * 1.5 - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing), scale = 0.8, color = c_text)
         button_text.extra_info = extra_info
 
-        quadScale = Vec2(self.ui_build_width - self.ui_spacing * 2.5, button_text.height + self.ui_spacing * 0.5)
+        quadScale = Vec2(self.ui_build_width - self.ui_spacing * 2, button_text.height + self.ui_spacing * 0.5)
         button_back = InstancedBox.main_group.new_entity(parent = self, 
             box_scale = (quadScale.x * 0.5 - 0.006, quadScale.y * 0.5 - 0.006, 0.006 * 2, 0.006 * 2), 
             position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing * 0.75) + Vec2(quadScale.x,-quadScale.y) * 0.5,
@@ -236,7 +237,7 @@ class ShaderNode(Entity):
             collider = 'box')
 
         def input(key):
-            if key == 'left mouse' and button_back.hovered:
+            if key == 'left mouse down' and mouse.hovered_entity == button_back:
                 if button_text.extra_info == '':
                     on_click()
                 else:
@@ -354,10 +355,14 @@ class ShaderNode(Entity):
             self.ui_back.position = (0, -quadScale.y * 0.5, 0.1)
             self.ui_back.collider = 'box'
 
+        for d in self.dividers:
+            d.scale_x = self.ui_build_width
+
         return self.ui_back
 
     # adds the section to the list
-    # section = (entity, ... , height:float)
+    # section[:-1] = entities:list[Entity]
+    # section[-1] = height:float
     def append_ui_section(self, section):
         self.ui_build_pos -= section[-1] # add the starting y position for next element
         self.ui_section.append(section)
@@ -368,6 +373,9 @@ class ShaderNode(Entity):
         i = self.ui_section.index(section)
         removed = self.ui_section.pop(i)
         y = removed[-1]
+
+        if section[0] in self.dividers:
+            self.dividers.remove(section[0])
 
         for n in range(i, len(self.ui_section)):
             for e in n[:-1]:

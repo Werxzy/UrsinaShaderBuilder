@@ -12,8 +12,8 @@ class ConstantNode(ShaderNode):
 
         self.data_type = data_type
 
-        self.ui_name = self.append_text(data_type, size = 0.8)
-        self.ui_divider1 = self.append_divider()
+        self.append_text(data_type, size = 0.8)
+        self.append_divider()
         self.values = [self.append_value_input(k, v) for k,v in DataTypeLayouts[data_type].items()]
 
         self.build_back()

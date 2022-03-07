@@ -17,9 +17,8 @@ class ArrayCreateEmptyNode(ShaderNode):
         super().__init__(**kwargs)
         
         self.append_text('Create Empty Array')
-        ui_divider = self.append_divider()
+        self.append_divider()
         self.append_text('Creates an empty array\n of a given size.', size = 0.7)
-        ui_divider[0].scale_x = self.ui_build_width
 
         self.ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
         if data_type != '': self.ui_type[1].text = data_type
