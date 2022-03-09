@@ -21,7 +21,7 @@ class StructDefinitionNode(ShaderNode):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.ui_build_width = 0.26
+        self.ui_build_width = 0.25
 
         self.append_text('Struct Definition', size = 0.8)
         self.append_divider()
@@ -57,7 +57,7 @@ class StructDefinitionNode(ShaderNode):
 
         self.build_back()
 
-        self.section_groups.append([ui_name, ui_type, ui_array, ui_buttons, [None], ui_div])
+        self.section_groups.append([ui_buttons, ui_name, ui_type, ui_array, ui_div, list()])
 
 
     def append_side_buttons(self, section_starter):
@@ -102,7 +102,35 @@ class StructDefinitionNode(ShaderNode):
         return button
 
     def button_press(self, data):
-        print(data)
+        group = self.find_group(data[0])
+        b = data[1]
+
+        if b == 0: # move up
+            if group == 0: return
+            self.move_group_up(group)
+
+        elif b == 1: # move down
+            if group + 1 == len(self.section_groups): return
+            self.move_group_up(group + 1)
+
+        elif b == 2: # remove
+            for e in self.section_groups[group][:-1]:
+                self.remove_ui_section(e)
+            for e in self.section_groups[group][-1]:
+                self.remove_ui_section(e)
+            self.section_groups.pop(group)
+            self.build_back()
+
+    def move_group_up(self, group):
+        prev_div = self.section_groups[group - 1][0]
+        array = self.section_groups[group][4]
+
+        for e in self.section_groups[group][:-1]:
+            self.move_ui_section(e, prev_div, True)
+        for e in self.section_groups[group][-1]:
+            self.move_ui_section(e, array, True)
+
+        (self.section_groups[group], self.section_groups[group - 1]) = (self.section_groups[group - 1], self.section_groups[group])
 
     def on_selected(self, info, key):
         pass

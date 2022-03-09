@@ -377,7 +377,7 @@ class ShaderNode(Entity):
         if section[0] in self.dividers:
             self.dividers.remove(section[0])
 
-        for n in range(i, len(self.ui_section)):
+        for n in self.ui_section[i:len(self.ui_section)]:
             for e in n[:-1]:
                 e.y += y
         
