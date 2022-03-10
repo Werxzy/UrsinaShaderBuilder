@@ -25,6 +25,10 @@ class StructDefinitionNode(ShaderNode):
 
         self.append_text('Struct Definition', size = 0.8)
         self.append_divider()
+        ui_name = self.append_value_input('Name', 'var')
+        ui_name[1].text = 'struct_name'
+        ui_name[1].render()
+        self.append_divider()
         self.button = self.append_button('Add Variable', self.add_group, color = c_green_dark)
         self.build_back()
 
@@ -57,7 +61,9 @@ class StructDefinitionNode(ShaderNode):
 
         self.build_back()
 
-        self.section_groups.append([ui_buttons, ui_name, ui_type, ui_array, ui_div, list()])
+        section = [ui_buttons, ui_name, ui_type, ui_array, ui_div, list()]
+        self.section_groups.append(section)
+        return section
 
 
     def append_side_buttons(self, section_starter):
