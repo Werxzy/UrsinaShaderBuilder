@@ -25,9 +25,9 @@ class StructDefinitionNode(ShaderNode):
 
         self.append_text('Struct Definition', size = 0.8)
         self.append_divider()
-        ui_name = self.append_value_input('Name', 'var')
-        ui_name[1].text = 'struct_name'
-        ui_name[1].render()
+        self.ui_name = self.append_value_input('Name', 'var')
+        self.ui_name[1].text = 'struct_name'
+        self.ui_name[1].render()
         self.append_divider()
         self.button = self.append_button('Add Variable', self.add_group, color = c_green_dark)
         self.build_back()
@@ -130,12 +130,12 @@ class StructDefinitionNode(ShaderNode):
 
     def move_group_up(self, group):
         start = self.section_groups[group - 1][0]
-        array = self.section_groups[group][-3]
+        div = self.section_groups[group][-2]
 
         for e in self.section_groups[group][:-1]:
             self.move_ui_section(e, start, True)
         for e in self.section_groups[group][-1]:
-            self.move_ui_section(e, array, True)
+            self.move_ui_section(e, div, True)
 
         (self.section_groups[group], self.section_groups[group - 1]) = (self.section_groups[group - 1], self.section_groups[group])
 
@@ -159,9 +159,23 @@ class StructDefinitionNode(ShaderNode):
                 dimensions[i][1].render(False)
 
         self.build_back()
-    
 
+
+    def build_shader(self):
+        v = 'struct ' + self.ui_name[1].text + '{\n'
+
+        for i, g in enumerate(self.section_groups):
+            v += g[1][1].text
+            for d in g[-1]:
+                v += '[' + d[1].text + ']'
+            v += ' _' + str(i) + ';\n'
         
-        
+        v += '};'
+
+        self.manager.build_shader_append('struct', v)
+
+    def save(self): return {}
+
+    def load(manager, data): return None
         
 
