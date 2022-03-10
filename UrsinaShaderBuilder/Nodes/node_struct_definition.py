@@ -135,9 +135,23 @@ class StructDefinitionNode(ShaderNode):
     def on_selected(self, info, key):
         pass
 
-    def on_array_change(self, info, key):
-        pass
+    def on_array_change(self, info, option, replace_vals = []):
+        group = self.find_group(info)
+        dimensions = self.section_groups[group][5]
+        divider = self.section_groups[group][4]
 
+        while len(dimensions) > option:
+            self.remove_ui_section(dimensions.pop())
+
+        for i in range(len(dimensions), option):
+            d = self.append_value_input('[]'*i + '['+ 'xyzw'[i] +']', 'uint')
+            dimensions.append(d)
+            self.move_ui_section(d, divider, True)
+            if i < len(replace_vals):
+                dimensions[i][1].text = replace_vals[i]
+                dimensions[i][1].render(False)
+
+        self.build_back()
     
 
         
