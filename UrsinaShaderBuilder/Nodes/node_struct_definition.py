@@ -47,34 +47,35 @@ class StructDefinitionNode(ShaderNode):
         return -1
 
     def add_group(self):
-        ui_name = self.append_value_input('Name', 'var')
-        ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected, extra_info = ui_name)
-        ui_array = self.append_drop_down('', StructDefinitionNode.array_options, on_select = self.on_array_change, extra_info = ui_name, set_to_key = True)
-        ui_buttons = self.append_side_buttons(ui_name)
+        # ui_name = self.append_value_input('Name', 'var')
+        ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
+        ui_array = self.append_drop_down('', StructDefinitionNode.array_options, on_select = self.on_array_change, extra_info = ui_type, set_to_key = True)
+        ui_buttons = self.append_side_buttons(ui_type)
         ui_div = self.append_divider()
         
         self.move_ui_section(ui_buttons, self.button, True)
-        self.move_ui_section(ui_name, self.button, True)
+        # self.move_ui_section(ui_name, self.button, True)
         self.move_ui_section(ui_type, self.button, True)
         self.move_ui_section(ui_array, self.button, True)
         self.move_ui_section(ui_div, self.button, True)
 
         self.build_back()
 
-        section = [ui_buttons, ui_name, ui_type, ui_array, ui_div, list()]
+        section = [ui_buttons, ui_type, ui_array, ui_div, list()]
+        # section = [ui_buttons, ui_name, ui_type, ui_array, ui_div, list()]
         self.section_groups.append(section)
         return section
 
 
     def append_side_buttons(self, section_starter):
-        button_size = 0.02
-        spacing = self.ui_spacing * 0.75
+        button_size = 0.015
+        spacing = self.ui_spacing * 0.5
         rounding = 0.01
         extra = 0.01
         quadScale = Vec2(button_size + spacing * 2, button_size * 3 + spacing * 4)
         back = InstancedBox.main_group.new_entity(parent = self, 
             box_scale = (quadScale.x * 0.5 - rounding + extra, quadScale.y * 0.5 - rounding, rounding * 2, rounding * 2), 
-            position = (-self.ui_build_width * 0.5 - button_size * 0.5 - spacing + extra, -quadScale.y * 0.5 + self.ui_build_pos - spacing, 0.2), 
+            position = (-self.ui_build_width * 0.5 - button_size * 0.5 - spacing + extra, -quadScale.y * 0.5 + self.ui_build_pos, 0.2), 
             color = c_node_dark)
 
         x_start = -button_size * 0.5 - extra
@@ -128,23 +129,23 @@ class StructDefinitionNode(ShaderNode):
             self.build_back()
 
     def move_group_up(self, group):
-        prev_div = self.section_groups[group - 1][0]
-        array = self.section_groups[group][4]
+        start = self.section_groups[group - 1][0]
+        array = self.section_groups[group][-3]
 
         for e in self.section_groups[group][:-1]:
-            self.move_ui_section(e, prev_div, True)
+            self.move_ui_section(e, start, True)
         for e in self.section_groups[group][-1]:
             self.move_ui_section(e, array, True)
 
         (self.section_groups[group], self.section_groups[group - 1]) = (self.section_groups[group - 1], self.section_groups[group])
 
-    def on_selected(self, info, key):
+    def on_selected(self, key):
         pass
 
     def on_array_change(self, info, option, replace_vals = []):
         group = self.find_group(info)
-        dimensions = self.section_groups[group][5]
-        divider = self.section_groups[group][4]
+        dimensions = self.section_groups[group][-1]
+        divider = self.section_groups[group][-2]
 
         while len(dimensions) > option:
             self.remove_ui_section(dimensions.pop())
