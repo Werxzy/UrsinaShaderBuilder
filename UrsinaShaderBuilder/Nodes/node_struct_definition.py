@@ -151,7 +151,7 @@ class StructDefinitionNode(ShaderNode):
             self.remove_ui_section(dimensions.pop())
 
         for i in range(len(dimensions), option):
-            d = self.append_value_input('[]'*i + '['+ 'xyzw'[i] +']', 'uint')
+            d = self.append_value_input(f"{'[]'*i}[{'xyzw'[i]}]", 'uint')
             dimensions.append(d)
             self.move_ui_section(d, divider, True)
             if i < len(replace_vals):
@@ -162,13 +162,13 @@ class StructDefinitionNode(ShaderNode):
 
 
     def build_shader(self):
-        v = 'struct ' + self.ui_name[1].text + '{\n'
+        v = f'struct {self.ui_name[1].text}{{\n'
 
         for i, g in enumerate(self.section_groups):
             v += g[1][1].text
             for d in g[-1]:
-                v += '[' + d[1].text + ']'
-            v += ' _' + str(i) + ';\n'
+                v += f'[{d[1].text}]'
+            v += f' _{i};\n'
         
         v += '};'
 
