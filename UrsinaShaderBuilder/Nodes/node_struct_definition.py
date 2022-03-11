@@ -174,7 +174,11 @@ class StructDefinitionNode(ShaderNode):
 
         self.manager.build_shader_append('struct', v)
 
-    def save(self): return {}
+    def save(self): 
+        return {
+            'name' : self.ui_name[1].text,
+            'variables' : [[g[1][1].text] + [d[1].text for d in g[-1]] for g in self.section_groups]
+        }
 
     def load(manager, data): return None
         
