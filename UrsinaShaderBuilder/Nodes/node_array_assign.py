@@ -62,12 +62,11 @@ class ArrayAssignNode(ShaderNode):
 
     def build_shader(self):
         v = self.inputs[0].get_build_variable()
-        indices = ''.join(['[' + (i.get_build_variable() if i.any_connected() else '0') + ']' for i in self.index_inputs])
-        v2 = self.assign_input.get_build_variable()
+        indices = ''.join([f'[{i.get_build_variable() if i.any_connected() else "0"}]' for i in self.index_inputs])
 
         self.outputs[0].set_build_variable(v)
 
-        inst = v + indices + ' = ' + v2 + ';'
+        inst = f'{v}{indices} = {self.assign_input.get_build_variable()};'
         self.manager.build_shader_append('main', inst)
 
     def load(manager, data):

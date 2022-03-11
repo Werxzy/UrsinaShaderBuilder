@@ -114,7 +114,7 @@ def simple_func(desc, func, types = ['genType']):
         'description' : desc, 
         'inputs' : {'a_': list(types)}, 
         'outputs': {'result': list(types)}, 
-        'function' : 'result=' + func + '(a_);'
+        'function' : f'result={func}(a_);'
         }
 
 def build_func(desc, func, names = 'abcdef', inputTypes = [['genType'],], outputTypes = ['genType']):
@@ -122,17 +122,13 @@ def build_func(desc, func, names = 'abcdef', inputTypes = [['genType'],], output
         'description' : desc, 
         'inputs' : {}, 
         'outputs': {'result': list(outputTypes)}, 
-        'function' : 'result=' + func + '('
+        'function' : f'result={func}('
         }
 
     for i in range(len(inputTypes)):
-        v = names[i]
-        if len(v) == 1:
-            v += '_'
+        v = f'{names[i]}{"_" * (len(names[i]) == 1)}'
         re['inputs'].update({v : list(inputTypes[i])})
-        if i > 0: 
-            re['function'] += ','
-        re['function'] += v
+        re['function'] += f'{"," * (i > 0)}{v}'
     
     re['function'] += ');'
 

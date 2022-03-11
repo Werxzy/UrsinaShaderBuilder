@@ -98,8 +98,7 @@ class ConvertNode(ShaderNode):
         from_count = ConvertNode.component_count(type_from)
         to_count = ConvertNode.component_count(type_to)
 
-        v = self.outputs[0].prepare_build_variable()
-        inst = v + ' = ' + type_to + '('
+        inst = f'{self.outputs[0].prepare_build_variable()} = {type_to}('
         inst_extra = []
 
         if from_count <= to_count:
@@ -114,7 +113,7 @@ class ConvertNode(ShaderNode):
             for i in range(1, len(self.outputs)):
                 if self.outputs[i].any_connected():
                     vo = self.outputs[i].prepare_build_variable()
-                    inst_extra.append(vo + ' = ' + in_var + '.' + 'xyzw'[i + to_count - 1] + ';')
+                    inst_extra.append(f'{vo} = {in_var}.{"xyzw"[i + to_count - 1]};')
 
         inst += ');'
         self.manager.build_shader_append('main', inst)

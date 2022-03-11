@@ -93,16 +93,13 @@ class VariableSplitterNode(ShaderNode):
             for i,o in enumerate(self.outputs):
                 if not o.any_connected(): continue
 
-                v2 = o.prepare_build_variable()
                 comp = ['[0]', '[1]', '[2]', '[3]'] if t.startswith('mat') else ['.x', '.y', '.z', '.w'] 
                     
-                inst = v2 + ' = ' + v + comp[i] + ';'
+                inst = f'{o.prepare_build_variable()} = {v}{comp[i]};'
                 self.manager.build_shader_append('main', inst)
 
         else:
-            v = self.outputs[0].prepare_build_variable()
-            t = self.outputs[0].get_variable_type()
-            inst = v + ' = ' + t + '('
+            inst = f'{self.outputs[0].prepare_build_variable()} = {self.outputs[0].get_variable_type()}('
 
             for i,inp in enumerate(self.inputs):
                 if i > 0:  inst += ','

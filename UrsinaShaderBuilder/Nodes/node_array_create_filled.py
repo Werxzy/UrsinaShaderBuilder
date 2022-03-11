@@ -81,7 +81,7 @@ class ArrayCreateFilledNode(ShaderNode):
                 i.variable_type = list(data_types)
                 i.regex = False
 
-            output_types = [d + '[' + str(len(self.inputs) - 1) + ']' for d in data_types]
+            output_types = [f'{d}[{len(self.inputs)-1}]' for d in data_types]
             if len(self.outputs) == 0:
                 self.build_connector('', output_types, True, 0.5)
             else:
@@ -106,9 +106,8 @@ class ArrayCreateFilledNode(ShaderNode):
             i.set_y(y + 0.5)
 
     def build_shader(self):
-        v = self.outputs[0].prepare_build_variable() + ' = ' + self.outputs[0].get_variable_type() + '('
-        v += ', '.join([i.get_build_variable() for i in self.inputs[:-1]])
-        v += ');'
+        v = f'{self.outputs[0].prepare_build_variable()} = {self.outputs[0].get_variable_type()}('
+        v += ', '.join([i.get_build_variable() for i in self.inputs[:-1]]) + ');'
         self.manager.build_shader_append('main', v)
 
     def load(manager, data):

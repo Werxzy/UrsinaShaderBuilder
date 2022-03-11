@@ -178,6 +178,7 @@ class ShaderBuilderManager(Entity):
             self.shader_inputs.clear()
 
         self.build = {
+            'struct' : '',
             'inout' : '',
             'function' : '',
             'main' : '',
@@ -200,9 +201,10 @@ class ShaderBuilderManager(Entity):
             node.build_shader()
         
         final_build = '#version 450\n\n'
-        final_build += self.build['inout'] + '\n'
-        if len(self.build['function']) > 0: final_build += self.build['function'] + '\n'
-        final_build += 'void main(){\n' + self.build['main'] + '}'
+        final_build += f'{self.build["struct"]}\n' if self.build['struct'] else ''
+        final_build += f'{self.build["inout"]}\n'
+        final_build += f'{self.build["function"]}\n' if self.build['function'] else ''
+        final_build += f'void main(){{\n{self.build["main"]}}}'
 
         return final_build
 
@@ -381,9 +383,9 @@ class ShaderBuilderManager(Entity):
         if target == 'inout' and value in self.build[target]:
             print('Detected duplicate inout value:', value) # this is okay, but don't have duplicates
         elif to_end:
-            self.build[target] += value + '\n'
+            self.build[target] += f'{value}\n'
         else:
-            self.build[target] = value + '\n' + self.build[target]
+            self.build[target] = f'{value}\n{self.build[target]}'
 
     # used to build a list of inputs that can be set by set_shader_input
     def build_shader_input_append(self, data_type, name, default = ''):
@@ -408,12 +410,11 @@ class ShaderBuilderManager(Entity):
 
             pos = data_type.find('[')
             if pos >= 0:
-                v = data_type[:pos] + '_array' + data_type[pos:]
-                v = v.replace(']','')
-                v = v.replace('[','_')
+                v = f'{data_type[:pos]}_array{data_type[pos:]}'
+                v = v.replace(']','').replace('[','_')
 
-            v = '_' + v + '_' + str(c)
-            return (v, data_type + ' ' + v)
+            v = f'_{v}_{c}'
+            return (v, f'{data_type} {v}')
 
         v = self.build_var_finished[data_type].pop()
 

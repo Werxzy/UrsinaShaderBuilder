@@ -87,12 +87,12 @@ class BuiltInOutputNode(ShaderNode):
 
     def build_shader(self):
         att = BuiltInOutputNode.build_in_attributes[self.variable]
-        v1 = att[0] + ' ' + att[1] + ' ' + self.variable + ';'
+        v1 = f'{att[0]} {att[1]} {self.variable};'
         if 'dont include' not in att:
             self.manager.build_shader_append('inout', v1)
 
         if att[0] == 'out':
-            v2 = self.variable + ' = ' + self.main_connector.get_build_variable() + ';'
+            v2 = f'{self.variable} = {self.main_connector.get_build_variable()};'
             self.manager.build_shader_append('main', v2)
  
         else:

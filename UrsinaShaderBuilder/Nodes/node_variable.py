@@ -22,7 +22,7 @@ class ConstantNode(ShaderNode):
 
     def build_shader(self):
         if len(self.values) > 1:
-            var = self.data_type + '(' + ','.join([v[1].text for v in self.values]) + ')'
+            var = f'{self.data_type}({",".join([v[1].text for v in self.values])})'
         else:
             var = self.values[0][1].text
         self.outputs[0].set_build_variable(var)

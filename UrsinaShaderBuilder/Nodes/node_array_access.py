@@ -47,11 +47,9 @@ class ArrayAccessNode(ShaderNode):
             destroy(self.outputs.pop())
 
     def build_shader(self):
-        v = self.inputs[0].get_build_variable()
-        indices = ''.join(['[' + (i.get_build_variable() if i.any_connected() else '0') + ']' for i in self.index_inputs])
-        v2 = self.outputs[0].prepare_build_variable()
+        indices = ''.join([f'[{i.get_build_variable() if i.any_connected() else "0"}]' for i in self.index_inputs])
 
-        inst = v2 + ' = ' + v + indices + ';'
+        inst = f'{self.outputs[0].prepare_build_variable()} = {self.inputs[0].get_build_variable()}{indices};'
         self.manager.build_shader_append('main', inst)
     
 

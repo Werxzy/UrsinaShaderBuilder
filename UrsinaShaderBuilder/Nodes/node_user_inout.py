@@ -42,7 +42,7 @@ class UserInOutNode(ShaderNode):
             self.remove_ui_section(self.ui_dimensions.pop())
 
         for i in range(len(self.ui_dimensions), option):
-            self.ui_dimensions.append(self.append_value_input('[]'*i + '['+ 'xyzw'[i] +']', 'uint', on_change = self.update_data_type))
+            self.ui_dimensions.append(self.append_value_input(f"{'[]'*i}[{'xyzw'[i]}]", 'uint', on_change = self.update_data_type))
             if i < len(replace_vals):
                 self.ui_dimensions[i][1].text = replace_vals[i]
                 self.ui_dimensions[i][1].render(False)
@@ -63,7 +63,7 @@ class UserInOutNode(ShaderNode):
             data_type = self.main_connector.variable_type[0][:ind]
         
         for ui in self.ui_dimensions:
-            data_type += '[' + ui[1].text + ']'
+            data_type += f'[{ui[1].text}]'
 
         self.main_connector.variable_type = [data_type]
         if self.isOutput:
@@ -78,11 +78,11 @@ class UserInOutNode(ShaderNode):
                 self.manager.build_shader_input_append(self.ui_type[1].text, self.ui_name[1].text)
 
             v_dec = self.ui_type[1].text
-            for ui in self.ui_dimensions: v_dec += '[' + ui[1].text + ']'
+            for ui in self.ui_dimensions: v_dec += f'[{ui[1].text}]'
             v_dec += ' ' + self.ui_name[1].text
             
             if len(self.ui_dimensions) > 0:
-                v2 = self.main_connector.prepare_build_variable() + ' = ' + self.ui_name[1].text + ';'
+                v2 = f'{self.main_connector.prepare_build_variable()} = {self.ui_name[1].text};'
                 self.manager.build_shader_append('main', v2, False)
             else:
                 self.main_connector.set_build_variable(self.ui_name[1].text)
@@ -90,11 +90,11 @@ class UserInOutNode(ShaderNode):
             v1 += v_dec + ';'
 
         else:
-            v1 = 'out ' + self.ui_type[1].text
-            for ui in self.ui_dimensions: v1 += '[' + ui[1].text + ']'
-            v1 += ' ' + self.ui_name[1].text + ';'
+            v1 = f'out {self.ui_type[1].text}'
+            for ui in self.ui_dimensions: v1 += f'[{ui[1].text}]'
+            v1 += f' {self.ui_name[1].text};'
 
-            v2 = self.ui_name[1].text + ' = ' + self.main_connector.get_build_variable() + ';'
+            v2 = f'{self.ui_name[1].text} = {self.main_connector.get_build_variable()};'
             self.manager.build_shader_append('main', v2)
 
         self.manager.build_shader_append('inout', v1)

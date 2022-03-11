@@ -64,7 +64,7 @@ class ArrayCreateEmptyNode(ShaderNode):
             data_type = self.main_connector.variable_type[0][:ind]
         
         for ui in self.ui_dimensions:
-            data_type += '[' + ui[1].text + ']'
+            data_type += f'[{ui[1].text}]'
 
         self.main_connector.variable_type = [data_type]
         self.update_connections()
