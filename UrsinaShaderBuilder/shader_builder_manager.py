@@ -23,6 +23,7 @@ from Nodes.node_array_access import ArrayAccessNode
 from Nodes.node_array_assign import ArrayAssignNode
 from Nodes.node_array_create_empty import ArrayCreateEmptyNode
 from Nodes.node_array_create_filled import ArrayCreateFilledNode
+from Nodes.node_struct_definition import StructDefinitionNode
 
 from shader_instructions import DataTypeLayouts, GLSL_catagorized
 from ExtraData.color_atlas import *
@@ -45,14 +46,17 @@ class ShaderBuilderManager(Entity):
             },
         'Constant' : dict([(v,'ConstantNode,'+v) for v in DataTypeLayouts]),
         'Conversion' : {
-            'Splitter / Merger' : 'VariableSplitterNode,a',
-            'Type Conversion' : 'ConvertNode,a',
+            'Splitter / Merger' : 'NodeByName,VariableSplitterNode',
+            'Type Conversion' : 'NodeByName,ConvertNode',
         },
         'Array' : {
-            'Array Access' : 'ArrayAccessNode,a',
-            'Array Assign' : 'ArrayAssignNode,a',
-            'Array Create Empty' : 'ArrayCreateEmptyNode,a',
-            'Array Create Fillable' : 'ArrayCreateFilledNode,a',
+            'Array Access' : 'NodeByName,ArrayAccessNode',
+            'Array Assign' : 'NodeByName,ArrayAssignNode',
+            'Array Create Empty' : 'NodeByName,ArrayCreateEmptyNode',
+            'Array Create Fillable' : 'NodeByName,ArrayCreateFilledNode',
+        },
+        'Struct' : {
+            'Struct Definition' : 'NodeByName,StructDefinitionNode',
         },
         # 'Instruction' : dict([(v,'InstructionNode,'+v) for v in GLSL])
     }
@@ -485,20 +489,10 @@ class ShaderBuilderManager(Entity):
             self.append_node(UserInOutNode(parent = self, manager = self, isOutput = sp[1] == 'input', position = self.node_menu.position, z = 0))
         elif sp[0] == 'BuiltInOutputNode':
             self.append_node(BuiltInOutputNode(parent = self, manager = self, variable = sp[1], position = self.node_menu.position, z = 0))
-        elif sp[0] == 'VariableSplitterNode':
-            self.append_node(VariableSplitterNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
-        elif sp[0] == 'ConvertNode':
-            self.append_node(ConvertNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
         elif sp[0] == 'CommentNode':
             self.append_node(CommentNode(parent = self, manager = self, text = 'howdy :)' if random.random() < 0.005 else '', position = self.node_menu.position, z = 0))
-        elif sp[0] == 'ArrayAccessNode':
-            self.append_node(ArrayAccessNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
-        elif sp[0] == 'ArrayAssignNode':
-            self.append_node(ArrayAssignNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
-        elif sp[0] == 'ArrayCreateEmptyNode':
-            self.append_node(ArrayCreateEmptyNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
-        elif sp[0] == 'ArrayCreateFilledNode':
-            self.append_node(ArrayCreateFilledNode(parent = self, manager = self, position = self.node_menu.position, z = 0))
+        elif sp[0] == 'NodeByName':
+            self.append_node(eval(sp[1])(parent = self, manager = self, position = self.node_menu.position, z = 0))
         else:
             return
         self.destroy_menu()
