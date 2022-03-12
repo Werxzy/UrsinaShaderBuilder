@@ -18,7 +18,7 @@ class StructDefinitionNode(ShaderNode):
         '3D Array' : 3,
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, name = 'struct_name', **kwargs):
         super().__init__(**kwargs)
 
         self.ui_build_width = 0.25
@@ -26,7 +26,7 @@ class StructDefinitionNode(ShaderNode):
         self.append_text('Struct Definition', size = 0.8)
         self.append_divider()
         self.ui_name = self.append_value_input('Name', 'var')
-        self.ui_name[1].text = 'struct_name'
+        self.ui_name[1].text = name
         self.ui_name[1].render()
         self.append_divider()
         self.button = self.append_button('Add Variable', self.add_group, color = c_green_dark)
@@ -46,15 +46,15 @@ class StructDefinitionNode(ShaderNode):
                 return i
         return -1
 
-    def add_group(self):
-        # ui_name = self.append_value_input('Name', 'var')
+    def add_group(self, data_type = None, array_start = None, array_sizes = None):
         ui_type = self.append_drop_down('Type', dict((v,v) for v in DataTypes), self.on_selected)
+        if data_type: ui_type[1].text = data_type
         ui_array = self.append_drop_down('', StructDefinitionNode.array_options, on_select = self.on_array_change, extra_info = ui_type, set_to_key = True)
+        if array_start: ui_array[1].text = array_start
         ui_buttons = self.append_side_buttons(ui_type)
         ui_div = self.append_divider()
         
         self.move_ui_section(ui_buttons, self.button, True)
-        # self.move_ui_section(ui_name, self.button, True)
         self.move_ui_section(ui_type, self.button, True)
         self.move_ui_section(ui_array, self.button, True)
         self.move_ui_section(ui_div, self.button, True)
@@ -62,8 +62,10 @@ class StructDefinitionNode(ShaderNode):
         self.build_back()
 
         section = [ui_buttons, ui_type, ui_array, ui_div, list()]
-        # section = [ui_buttons, ui_name, ui_type, ui_array, ui_div, list()]
         self.section_groups.append(section)
+
+        if array_sizes: self.on_array_change(ui_buttons, len(array_sizes), array_sizes)
+
         return section
 
 
@@ -180,6 +182,12 @@ class StructDefinitionNode(ShaderNode):
             'variables' : [[g[1][1].text] + [d[1].text for d in g[-1]] for g in self.section_groups]
         }
 
-    def load(manager, data): return None
+    def load(manager, data):
+        node = StructDefinitionNode(parent = manager, manager = manager, name = data['name'])
+        for v in data['variables']:
+            c = len(v) - 1
+            if c: node.add_group(v[0], list(StructDefinitionNode.array_options)[c], v[1:])
+            else: node.add_group(v[0], None, None)
         
-
+        return node
+        
