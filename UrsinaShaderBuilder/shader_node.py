@@ -61,7 +61,7 @@ class ShaderNode(Entity):
 
         return self.append_ui_section((ent, ent.height + self.ui_spacing))
 
-    def append_value_input(self, name, data_type, text_color = c_text, on_change = None, on_change_att = ''):
+    def append_value_input(self, name, data_type, text_color = c_text, on_change = None, on_change_att = None):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
@@ -124,7 +124,7 @@ class ShaderNode(Entity):
 
                 orig_render()
                 if ent_field.text != ent_field._prev_input and call_change:
-                    if on_change != None:  on_change(ent_field.text if on_change_att == '' else ent_field.on_change_att)
+                    if on_change:  on_change(ent_field.on_change_att or ent_field.text)
                 ent_field._prev_input = ent_field.text
 
             ent_field.render = render
@@ -161,7 +161,7 @@ class ShaderNode(Entity):
             def set_value(val):
                 ent_field.text = 'true' if val else 'false'
                 ent_field.visible = val
-                if on_change != None:  on_change(ent_field.text if on_change_att == '' else ent_field.on_change_att)
+                if on_change:  on_change(ent_field.on_change_att or ent_field.text)
 
             ent_field.set_value = set_value
 
@@ -177,13 +177,13 @@ class ShaderNode(Entity):
         # self.ui_build_width = max(self.ui_build_width, ent.width + self.ui_spacing)
         return self.append_ui_section((ent_name, ent_field, ent_field_back, ent_name.height + self.ui_spacing))
 
-    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = '', extra_info = '', set_to_key = False):
+    def append_drop_down(self, name, options:dict, on_select, text_color = c_text, start_value = None, extra_info = None, set_to_key = False):
         ent_name = Text(name + ':', parent = self, scale = 0.8, color = text_color)
         height = ent_name.height
         if name == '': ent_name.text = ''
         ent_name.position = Vec2(self.ui_spacing - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing)
 
-        ent_field = Text(list(options.keys())[0] if start_value == '' else start_value, parent = self, position = ent_name.position, scale = 0.8, color = text_color)
+        ent_field = Text(start_value or list(options.keys())[0], parent = self, position = ent_name.position, scale = 0.8, color = text_color)
         ent_field.x += ent_name.width + self.ui_spacing
         ent_field.extra_info = extra_info
 
@@ -200,10 +200,10 @@ class ShaderNode(Entity):
         def on_select_wrapper(option):
             ent_field.text = str(option[0]) if set_to_key else str(option)
             self.manager.destroy_menu()
-            if ent_field.extra_info == '':
-                on_select(option[1] if set_to_key else option)
-            else:
+            if ent_field.extra_info:
                 on_select(extra_info, option[1] if set_to_key else option)
+            else:
+                on_select(option[1] if set_to_key else option)
 
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
@@ -223,7 +223,7 @@ class ShaderNode(Entity):
 
         return self.append_ui_section((ent_name, ent_field, ent_field_back, height + self.ui_spacing))
 
-    def append_button(self, text, on_click, extra_info = '', color = c_node_dark):
+    def append_button(self, text, on_click, extra_info = None, color = c_node_dark):
 
         button_text = Text(text, parent = self, position = Vec2(self.ui_spacing * 1.5 - self.ui_build_width * 0.5, self.ui_build_pos - self.ui_spacing), scale = 0.8, color = c_text)
         button_text.extra_info = extra_info
@@ -238,10 +238,10 @@ class ShaderNode(Entity):
 
         def input(key):
             if key == 'left mouse down' and mouse.hovered_entity == button_back:
-                if button_text.extra_info == '':
-                    on_click()
-                else:
+                if button_text.extra_info:
                     on_click(button_text.extra_info)
+                else:
+                    on_click()
 
         button_back.input = input
 
