@@ -186,6 +186,7 @@ class ShaderNode(Entity):
         ent_field = Text(start_value or list(options.keys())[0], parent = self, position = ent_name.position, scale = 0.8, color = text_color)
         ent_field.x += ent_name.width + self.ui_spacing
         ent_field.extra_info = extra_info
+        ent_field.options = dict(options)
 
         quadScale = Vec2(self.ui_build_width - ent_name.width - self.ui_spacing * 2.5, ent_field.height + self.ui_spacing * 0.5)
         # ent_field_back = Entity(parent = self, model = Quad(scale = quadScale, radius=0.006), z = 0.05, origin_x = -quadScale.x * 0.5, origin_y = quadScale.y * 0.5, color = c_node_dark, collider='box')
@@ -207,9 +208,9 @@ class ShaderNode(Entity):
 
         def back_input(key):
             if key == 'left mouse down' and ent_field_back.hovered:
-                l = len(options)
+                l = len(ent_field.options)
                 self.manager.create_menu(Vec3(ent_field_back.get_position(self.manager)) - Vec3(ent_field_back.origin_x, -self.ui_spacing * 0.5,0),
-                    options, min(l, 8), on_select_wrapper, width = 0.16, on_selected_include_key = set_to_key, 
+                    ent_field.options, min(l, 8), on_select_wrapper, width = 0.16, on_selected_include_key = set_to_key, 
                     disable_scroll_bar = l <= 8, disable_search = l <= 8)
 
         ent_field_back.input = back_input

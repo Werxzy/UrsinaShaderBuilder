@@ -143,6 +143,7 @@ class StructDefinitionNode(ShaderNode):
 
     def on_selected(self, key):
         pass
+        #TODO update data type when things change
 
     def on_array_change(self, info, option, replace_vals = []):
         group = self.find_group(info)
